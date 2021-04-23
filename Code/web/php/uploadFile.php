@@ -134,13 +134,13 @@ function getLinksList($csv, $people) {
 
     $fromPersonIndex = array_search($fromPerson, $people);
     $toPersonIndex = array_search($toPerson, $people);
-    $messageType = $row["messageType"];
 
     // Add link to array
     $links[sizeof($links)] = array(
       "source" => $fromPersonIndex,
       "target" => $toPersonIndex,
-      "messageType" => $messageType
+      "messageType" => $row["messageType"],
+      "sentiment" => $row["sentiment"]
     );
   }
 
