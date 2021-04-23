@@ -27,8 +27,8 @@ function handleRequest() {
 
 /**
  * Check if the received request was valid
- * @param  FileObject $fileObj object containing the uploaded file.
- * @return Boolean             whether the request was valid.
+ * @param  FileObject $fileObj Object containing the uploaded file.
+ * @return Boolean             Whether the request was valid.
  */
 function checkValidRequest($fileObj) {
   // Check if file exists.
@@ -49,8 +49,8 @@ function checkValidRequest($fileObj) {
 
 /**
  * Parse the CSV file into an array
- * @param  String $fileName the CSV file to parse
- * @return Array            an array containing the CSV data.
+ * @param  String $fileName The CSV file to parse
+ * @return Array            An array containing the CSV data.
  */
 function parseCSV($fileName) {
   if (!file_exists($fileName)) {
@@ -68,8 +68,8 @@ function parseCSV($fileName) {
 
 /**
  * Get an array of unique people from uploaded CSV
- * @param  Array $csv array with CSV contents
- * @return Array      list of unique email-addresses and job titles
+ * @param  Array $csv Array with CSV contents
+ * @return Array      List of unique email-addresses and job titles
  */
 function getPeopleList($csv) {
   $people = [];
@@ -107,9 +107,9 @@ function getPeopleList($csv) {
 
 /**
  * Get an array of links between emailaddresses from uploaded CSV
- * @param  Array $csv     array with CSV contents
- * @param  Array $emails  array of unique emailaddresses
- * @return Array          array of links between emails
+ * @param  Array $csv     Array with CSV contents
+ * @param  Array $emails  Array of unique emailaddresses
+ * @return Array          Array of links between emails
  */
 function getLinksList($csv, $people) {
   $links = [];

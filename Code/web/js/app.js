@@ -7,7 +7,7 @@ let formElement;
 
 /**
  * Callback when the file upload has succesfully fininshed
- * @param {XMLHttpRequest} data the submit request object
+ * @param {XMLHttpRequest} data The submit request object
  */
 function uploadCallbackSuccess(data) {
   document.body.innerHTML += data.response;
@@ -15,7 +15,7 @@ function uploadCallbackSuccess(data) {
 
 /**
  * Callback when the file upload has fininshed with an error
- * @param {XMLHttpRequest} data the submit request object
+ * @param {XMLHttpRequest} data The submit request object
  */
 function uploadCallbackError(data) {
   console.log("Error: ", data.response);
