@@ -16,10 +16,13 @@ function handleRequest() {
   $fileName = $_FILES['csvFile']['tmp_name'];
 
   $csv = parseCSV($fileName);
-  $emails = getEmailList($csv);
-  $links = getLinksList($csv, $emails);
+  $people = getPeopleList($csv);
+  $links = getLinksList($csv, $people);
 
-  var_dump($links);
+  $jsonArray = array("nodes" => $people, "links" => $links);
+  $json = json_encode($jsonArray, JSON_PRETTY_PRINT);
+
+  echo $json;
 }
 
 /**
@@ -64,36 +67,42 @@ function parseCSV($fileName) {
 }
 
 /**
- * Get an array of unique email-addresses from uploaded CSV
+ * Get an array of unique people from uploaded CSV
  * @param  Array $csv array with CSV contents
- * @return Array      list of unique email-addresses
+ * @return Array      list of unique email-addresses and job titles
  */
-function getEmailList($csv) {
-  $emails = [];
+function getPeopleList($csv) {
+  $people = [];
 
   foreach ($csv as $row) {
     // Check if this row has a fromEmail attribute.
-    if (array_key_exists("fromEmail", $row)) {
-      $email = $row['fromEmail'];
+    if (array_key_exists("fromEmail", $row) && array_key_exists("fromJobtitle", $row)) {
+      $person = array(
+        "email" => $row['fromEmail'],
+        "jobtitle" => $row['fromJobtitle']
+      );
       // Check whether this emailaddress is already in the array.
-      if (!in_array($email, $emails)) {
+      if (!in_array($person, $people)) {
         // Add the e-mailaddress to the array.
-        $emails[sizeof($emails)] = $email;
+        $people[sizeof($people)] = $person;
       }
     }
 
     // Check if this row has a toEmail attribute.
-    if (array_key_exists("toEmail", $row)) {
-      $email = $row['toEmail'];
+    if (array_key_exists("toEmail", $row) && array_key_exists("toJobtitle", $row)) {
+      $person = array(
+        "email" => $row['toEmail'],
+        "jobtitle" => $row['toJobtitle']
+      );
       // Check whether this emailaddress is already in the array.
-      if (!in_array($email, $emails)) {
+      if (!in_array($person, $people)) {
         // Add the e-mailaddress to the array.
-        $emails[sizeof($emails)] = $email;
+        $people[sizeof($people)] = $person;
       }
     }
   }
 
-  return $emails;
+  return $people;
 }
 
 /**
@@ -102,8 +111,40 @@ function getEmailList($csv) {
  * @param  Array $emails  array of unique emailaddresses
  * @return Array          array of links between emails
  */
-function getLinksList($csv, $emails) {
+function getLinksList($csv, $people) {
+  $links = [];
 
+  foreach ($csv as $row) {
+    // Skip this link if it doesn't contain all the attributes we need.
+    if (!array_key_exists("fromEmail", $row) ||
+        !array_key_exists("toEmail", $row) ||
+        !array_key_exists("messageType", $row)) {
+          continue;
+    }
+
+    $fromPerson = array(
+      "email" => $row['fromEmail'],
+      "jobtitle" => $row['fromJobtitle']
+    );
+
+    $toPerson = array(
+      "email" => $row['toEmail'],
+      "jobtitle" => $row['toJobtitle']
+    );
+
+    $fromPersonIndex = array_search($fromPerson, $people);
+    $toPersonIndex = array_search($toPerson, $people);
+    $messageType = $row["messageType"];
+
+    // Add link to array
+    $links[sizeof($links)] = array(
+      "source" => $fromPersonIndex,
+      "target" => $toPersonIndex,
+      "messageType" => $messageType
+    );
+  }
+
+  return $links;
 }
 
 handleRequest();
