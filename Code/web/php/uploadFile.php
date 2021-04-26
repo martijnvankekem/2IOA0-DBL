@@ -4,6 +4,20 @@
   * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+// Job title mappings
+$jobTitleMappings = array(
+  "Employee" => 0,
+  "Trader" => 1,
+  "Unknown" => 2,
+  "Vice President" => 3,
+  "Manager" => 4,
+  "CEO" => 5,
+  "Managing Director" => 6,
+  "Director" => 7,
+  "President" => 8,
+  "In House Lawyer" => 9
+);
+
 /**
  * Begin handling the request
  */
@@ -77,6 +91,7 @@ function parseCSV($fileName) {
  * @return Array      List of unique email-addresses and job titles
  */
 function getPeopleList($csv) {
+  global $jobTitleMappings;
   $people = [];
 
   foreach ($csv as $row) {
@@ -84,7 +99,8 @@ function getPeopleList($csv) {
     if (array_key_exists("fromEmail", $row) && array_key_exists("fromJobtitle", $row)) {
       $person = array(
         "email" => $row['fromEmail'],
-        "jobtitle" => $row['fromJobtitle']
+        "jobtitle" => $row['fromJobtitle'],
+        "size" => $jobTitleMappings[$row['fromJobtitle']]
       );
       // Check whether this emailaddress is already in the array.
       if (!in_array($person, $people)) {
@@ -97,7 +113,8 @@ function getPeopleList($csv) {
     if (array_key_exists("toEmail", $row) && array_key_exists("toJobtitle", $row)) {
       $person = array(
         "email" => $row['toEmail'],
-        "jobtitle" => $row['toJobtitle']
+        "jobtitle" => $row['toJobtitle'],
+        "size" => $jobTitleMappings[$row['toJobtitle']]
       );
       // Check whether this emailaddress is already in the array.
       if (!in_array($person, $people)) {
@@ -120,6 +137,7 @@ function getLinksList($csv, $people) {
   $links = [];
 
   foreach ($csv as $row) {
+    // if (sizeof($links) > 100) break; // TODO: REMOVE THIS!!! ONLY FOR DEBUGGING!!!
     // Skip this link if it doesn't contain all the attributes we need.
     if (!array_key_exists("fromEmail", $row) ||
         !array_key_exists("fromJobtitle", $row) ||
@@ -140,13 +158,10 @@ function getLinksList($csv, $people) {
       "jobtitle" => $row['toJobtitle']
     );
 
-    $fromPersonIndex = array_search($fromPerson, $people);
-    $toPersonIndex = array_search($toPerson, $people);
-
     // Add link to array
     $links[sizeof($links)] = array(
-      "source" => $fromPersonIndex,
-      "target" => $toPersonIndex,
+      "source" => $fromPerson["email"],
+      "target" => $toPerson["email"],
       "messageType" => $row["messageType"],
       "sentiment" => $row["sentiment"]
     );

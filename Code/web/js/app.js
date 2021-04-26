@@ -1,34 +1,28 @@
 /**
-  * Main application - DBL Visualization
+  * Main application - DBL Visualisation
   * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
 let formElement;
+let visualisationData = null;
+let canvas;
 
-/**
- * Callback when the file upload has succesfully fininshed
- * @param {XMLHttpRequest} data The submit request object
- */
-function uploadCallbackSuccess(data) {
-  document.body.innerHTML += data.response;
-}
-
-/**
- * Callback when the file upload has fininshed with an error
- * @param {XMLHttpRequest} data The submit request object
- */
-function uploadCallbackError(data) {
-  console.log("Error: ", data.response);
-}
+// Dimensions
+const margins = {left: 70, right: 5, bottom: 50};
+const textRotation = 45; // Rotation in degrees
+let width = document.documentElement.clientWidth - margins.left - margins.right;
+let height = document.documentElement.clientHeight - margins.bottom;
 
 /**
  * User submits the upload form
  * @param {Event} e Object for the submit event.
  */
 function formSubmit(e) {
-  // Prevent automatic form submission
+  // Prevent automatic form submission and show spinner
   e.preventDefault();
+  document.getElementById("spinner").style.display = "block";
 
+  // Get the uploaded file to send to server
   let file = $("#csvFile")[0].files[0];
   let formData = new FormData();
   formData.append('csvFile', file, file.name);
@@ -50,6 +44,48 @@ function formSubmit(e) {
 }
 
 /**
+ * Callback when the file upload has succesfully fininshed
+ * @param {XMLHttpRequest} data The submit request object
+ */
+function uploadCallbackSuccess(data) {
+  let jsonString = data.response;
+  visualisationData = JSON.parse(jsonString);
+
+  createArcDiagram(canvas, visualisationData);
+
+  // Hide the spinner and upload container
+  document.getElementById("uploadContainer").style.display = "none";
+  document.getElementById("spinner").style.display = "none";
+}
+
+/**
+ * Callback when the file upload has fininshed with an error
+ * @param {XMLHttpRequest} data The submit request object
+ */
+function uploadCallbackError(data) {
+  console.log("Error: ", data.response);
+
+  // Hide the spinner
+   document.getElementById("spinner").style.display = "none";
+}
+
+/**
+ * When the window has been resized
+ */
+function onWindowResized() {
+  // Save the new dimensions
+  canvas.width  = document.documentElement.clientWidth;
+  width = document.documentElement.clientWidth - margins.left - margins.right;
+  canvas.height = document.documentElement.clientHeight;
+  height = document.documentElement.clientHeight - margins.bottom;
+
+  // Redraw the image if it is already drawn
+  if (visualisationData != null) {
+    createArcDiagram(canvas, visualisationData);
+  }
+}
+
+/**
  * When the DOM content is loaded.
  */
 function onWindowLoaded() {
@@ -57,6 +93,12 @@ function onWindowLoaded() {
   formElement = document.getElementById("uploadForm");
   formElement.onsubmit = formSubmit;
 
+  // Set initial canvas size
+  canvas = document.getElementById("canvas");
+  onWindowResized();
+
+  // Register onResize function handler
+  window.onresize = onWindowResized;
 }
 
 // Register onLoad function handler

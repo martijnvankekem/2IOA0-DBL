@@ -1,0 +1,64 @@
+/**
+  * Main stylesheet - DBL Visualization
+  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
+ */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto:wght@100&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans",sans-serif;
+}
+
+/* Upload form */
+.uploadContainer {
+  width: 100%;
+  height: 100vh;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.uploadContainer .container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  border-radius: 20px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.uploadContainer .container h1 {
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 10px;
+}
+
+.uploadContainer .container p {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 0.8em;
+}
+
+.uploadContainer .container input[type="submit"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 10px 20px;
+  background-color: #2196f3;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+}
+
+/* Visualisation container */
+.visualisation {
+  z-index: -1;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
