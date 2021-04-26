@@ -15,10 +15,12 @@ function handleRequest() {
 
   $fileName = $_FILES['csvFile']['tmp_name'];
 
+  // Extract CSV data into arrays
   $csv = parseCSV($fileName);
   $people = getPeopleList($csv);
   $links = getLinksList($csv, $people);
 
+  // Create JSON array
   $jsonArray = array("nodes" => $people, "links" => $links);
   $json = json_encode($jsonArray, JSON_PRETTY_PRINT);
 
@@ -57,10 +59,13 @@ function parseCSV($fileName) {
     return [];
   }
 
+  // Convert CSV data to array
   $csv = array_map('str_getcsv', file($fileName));
+  // Set the first row with column names as array keys
   array_walk($csv, function(&$a) use ($csv) {
     $a = array_combine($csv[0], $a);
   });
+  // Remove the first column row from the array
   array_shift($csv);
 
   return $csv;
@@ -117,7 +122,10 @@ function getLinksList($csv, $people) {
   foreach ($csv as $row) {
     // Skip this link if it doesn't contain all the attributes we need.
     if (!array_key_exists("fromEmail", $row) ||
+        !array_key_exists("fromJobtitle", $row) ||
         !array_key_exists("toEmail", $row) ||
+        !array_key_exists("toJobtitle", $row) ||
+        !array_key_exists("sentiment", $row) ||
         !array_key_exists("messageType", $row)) {
           continue;
     }
@@ -147,6 +155,7 @@ function getLinksList($csv, $people) {
   return $links;
 }
 
+// Execute the main function
 handleRequest();
 
 ?>

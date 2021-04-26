@@ -26,7 +26,8 @@ function uploadCallbackError(data) {
  * @param {Event} e Object for the submit event.
  */
 function formSubmit(e) {
-  e.preventDefault(); // Prevent automatic form submission
+  // Prevent automatic form submission
+  e.preventDefault();
 
   let file = $("#csvFile")[0].files[0];
   let formData = new FormData();
