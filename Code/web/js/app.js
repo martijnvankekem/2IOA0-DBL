@@ -8,7 +8,7 @@ let visualisationData = null;
 let canvas;
 
 // Dimensions
-const margins = {left: 70, right: 5, bottom: 50};
+const margins = {left: 70, right: 150, bottom: 150};
 const textRotation = 45; // Rotation in degrees
 let width = document.documentElement.clientWidth - margins.left - margins.right;
 let height = document.documentElement.clientHeight - margins.bottom;
@@ -51,7 +51,7 @@ function uploadCallbackSuccess(data) {
   let jsonString = data.response;
   visualisationData = JSON.parse(jsonString);
 
-  createArcDiagram(canvas, visualisationData);
+  createAdjacencyMatrix(canvas, visualisationData);
 
   // Hide the spinner and upload container
   document.getElementById("uploadContainer").style.display = "none";
@@ -81,7 +81,7 @@ function onWindowResized() {
 
   // Redraw the image if it is already drawn
   if (visualisationData != null) {
-    createArcDiagram(canvas, visualisationData);
+    createAdjacencyMatrix(canvas, visualisationData);
   }
 }
 

@@ -9,8 +9,8 @@
 class ArcDiagram {
   /**
    * Constructor for ArcDiagram
-   * @param {Canvas.context} canvas The canvas to draw to
-   * @param {Array}          json   JSON array with data to visualize
+   * @param {Canvas} canvas The canvas to draw to
+   * @param {Array}  json   JSON array with data to visualize
    */
   constructor(canvas, json) {
     this.data = json;
@@ -111,8 +111,8 @@ class ArcDiagram {
 
 /**
  * Create an arc diagram visualization from an array
- * @param {Canvas.context} canvas The canvas to draw to
- * @param {Array}          data   JSON array with the data to visualize
+ * @param {Canvas} canvas The canvas to draw to
+ * @param {Array}  data   JSON array with the data to visualize
  */
 function createArcDiagram(canvas, data) {
   new ArcDiagram(canvas, data);
