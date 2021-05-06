@@ -1,6 +1,6 @@
 /**
-  * Adjacency Matrix visualization - DBL Visualization
-  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
+ * Adjacency Matrix visualization - DBL Visualization
+ * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
 /**
@@ -45,48 +45,48 @@ class AdjacencyMatrix {
   createMatrix(svg, matrix, emailCount) {
     // Create grid
     d3.select("svg").append("g")
-  		.attr("transform","translate(160,160)")
-  		.attr("id","adjacencyG")
-  		.selectAll("rect")
-  		.data(matrix)
-  		.enter()
-  		.append("rect")
-  		.attr("class","grid")
-  		.attr("width",10)
-  		.attr("height",10)
+      .attr("transform", "translate(160,160)")
+      .attr("id", "adjacencyG")
+      .selectAll("rect")
+      .data(matrix)
+      .enter()
+      .append("rect")
+      .attr("class", "grid")
+      .attr("width", 10)
+      .attr("height", 10)
       .attr("source", d => d.id.split("-")[0])
       .attr("target", d => d.id.split("-")[1])
-  		.attr("x", d=> d.x*10)
-  		.attr("y", d=> d.y*10)
-  		.style("fill-opacity", d=> Number(emailCount[d.id]).map(0, 50, 0.1, 1.0));
+      .attr("x", d => d.x * 10)
+      .attr("y", d => d.y * 10)
+      .style("fill-opacity", d => Number(emailCount[d.id]).map(0, 50, 0.1, 1.0));
 
     // Create text on x-axis
     d3.select("svg")
-  		.append("g")
-  		.attr("transform","translate(150,150)")
-  		.selectAll("text")
-  		.data(this.data.nodes)
-  		.enter()
-  		.append("text")
-  		.attr("y", (d,i) => i * 10 + 17.5)
+      .append("g")
+      .attr("transform", "translate(150,150)")
+      .selectAll("text")
+      .data(this.data.nodes)
+      .enter()
+      .append("text")
+      .attr("y", (d, i) => i * 10 + 17.5)
       .attr("col", "x")
-  		.text(d => d.email)
-  		.style("text-anchor","left")
-      .style("transform","rotate(-90deg)")
-  		.style("font-size","10px");
+      .text(d => d.email)
+      .style("text-anchor", "left")
+      .style("transform", "rotate(-90deg)")
+      .style("font-size", "10px");
 
     // Create text on y-axis
-  	d3.select("svg")
-  		.append("g").attr("transform","translate(150,150)")
-  		.selectAll("text")
-  		.data(this.data.nodes)
-  		.enter()
-  		.append("text")
-  		.attr("y",(d,i) => i * 10 + 17.5)
+    d3.select("svg")
+      .append("g").attr("transform", "translate(150,150)")
+      .selectAll("text")
+      .data(this.data.nodes)
+      .enter()
+      .append("text")
+      .attr("y", (d, i) => i * 10 + 17.5)
       .attr("col", "y")
-  		.text(d => d.email)
-  		.style("text-anchor","end")
-  		.style("font-size","10px");
+      .text(d => d.email)
+      .style("text-anchor", "end")
+      .style("font-size", "10px");
 
     // Create interactive parts
     this.createGridHighlights();
@@ -97,9 +97,15 @@ class AdjacencyMatrix {
    */
   createGridHighlights() {
     d3.selectAll("rect.grid").on("mousemove", d => {
-      d3.selectAll("rect").style("stroke-width", function(p) { return (p.x*10 == d.target.x.animVal.value || p.y*10 == d.target.y.animVal.value) ? "3px" : "1px"; });
-      d3.selectAll("text[col=\"x\"]").style("fill", function(p) { return (p.email == d.target.getAttribute("target")) ? "#ff0000" : "#000"; });
-      d3.selectAll("text[col=\"y\"]").style("fill", function(p) { return (p.email == d.target.getAttribute("source")) ? "#ff0000" : "#000"; });
+      d3.selectAll("rect").style("stroke-width", function(p) {
+        return (p.x * 10 == d.target.x.animVal.value || p.y * 10 == d.target.y.animVal.value) ? "3px" : "1px";
+      });
+      d3.selectAll("text[col=\"x\"]").style("fill", function(p) {
+        return (p.email == d.target.getAttribute("target")) ? "#ff0000" : "#000";
+      });
+      d3.selectAll("text[col=\"y\"]").style("fill", function(p) {
+        return (p.email == d.target.getAttribute("source")) ? "#ff0000" : "#000";
+      });
     });
   }
 
@@ -112,7 +118,7 @@ class AdjacencyMatrix {
     let dict = {};
 
     for (let link of data.links) {
-      let key = link.source+"-"+link.target;
+      let key = link.source + "-" + link.target;
       if (!(key in dict)) {
         // Create sender-recipient pair and set count to one.
         dict[key] = 1;
@@ -138,23 +144,28 @@ class AdjacencyMatrix {
    */
   createMatrixData(nodes, edges) {
     let edgeHash = {};
-		edges.forEach(edge => {
-			let id = edge.source + "-" + edge.target;
-			edgeHash[id] = edge;
-		});
+    edges.forEach(edge => {
+      let id = edge.source + "-" + edge.target;
+      edgeHash[id] = edge;
+    });
 
-		let matrix = [];
-		nodes.forEach((source, a) => {
-			nodes.forEach((target, b) => {
-				let grid = {id: source.email + "-" + target.email, x: b, y: a, weight: 0};
-				if (edgeHash[grid.id]) {
-					grid.weight = edgeHash[grid.id].sentiment;
-				}
-			  matrix.push(grid);
+    let matrix = [];
+    nodes.forEach((source, a) => {
+      nodes.forEach((target, b) => {
+        let grid = {
+          id: source.email + "-" + target.email,
+          x: b,
+          y: a,
+          weight: 0
+        };
+        if (edgeHash[grid.id]) {
+          grid.weight = edgeHash[grid.id].sentiment;
+        }
+        matrix.push(grid);
       });
-		});
+    });
 
-		return matrix;
+    return matrix;
   }
 }
 
@@ -175,4 +186,6 @@ function createAdjacencyMatrix(canvas, data) {
  * @param  {Number} d End range maximum.
  * @return {Number}   A number ranged between c and d.
  */
-Number.prototype.map=function(a,b,c,d){return c+(d-c)*((this-a)/(b-a))};
+Number.prototype.map = function(a, b, c, d) {
+  return c + (d - c) * ((this - a) / (b - a))
+};
