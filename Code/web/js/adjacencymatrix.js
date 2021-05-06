@@ -3,19 +3,16 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
-let test
-
 /**
  * Visualization - Adjacency Matrix
  */
 class AdjacencyMatrix {
   /**
-   * Constructor for AdjacencyMatrix
-   * @param {Canvas} canvas The canvas to draw to
-   * @param {Array}  json   JSON array with data to visualize
+   * Constructor for AdjacencyMatrix.
+   * @param {Canvas} canvas The canvas to draw to.
+   * @param {Array}  json   JSON array with data to visualize.
    */
   constructor(canvas, json) {
-    test = json;
     this.data = json;
     this.canvas = canvas;
     this.maxEmailCount = 1;
@@ -59,7 +56,7 @@ class AdjacencyMatrix {
       .attr("target", d => d.id.split("-")[1])
       .attr("sentiment", d => {
         if (typeof pairsData[d.id] != "undefined") {
-          // This pair exists, so get the color by average sentiment
+          // This pair exists, so get the average sentiment
           return "" + pairsData[d.id][0];
         } else {
           // No pair exists, so return empty
@@ -68,7 +65,7 @@ class AdjacencyMatrix {
       })
       .attr("total", d => {
         if (typeof pairsData[d.id] != "undefined") {
-          // This pair exists, so get the color by average sentiment
+          // This pair exists, so get the total number of e-mails
           return "" + pairsData[d.id][1];
         } else {
           // No pair exists, so return empty
@@ -132,7 +129,7 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Create and fill information container on hover
+   * Create and fill information container on hover.
    */
   createHoverContainer() {
     d3.selectAll("rect.grid").on("mouseover", d => {
@@ -167,7 +164,7 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Highlight grid and labels on hover
+   * Highlight grid and labels on hover.
    */
   createGridHighlights() {
     d3.selectAll("rect.grid").on("mousemove", d => {
@@ -184,9 +181,9 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Create a dictionary of all node combinations with the corresponding count
-   * @param  {Array}      data The retrieven JSON data
-   * @return {Dictionary}      The array with all nodes and their count
+   * Create a dictionary of all node combinations with the corresponding count.
+   * @param  {Array}      data The retrieven JSON data.
+   * @return {Dictionary}      The array with all nodes and their count.
    */
   createPairsData(data) {
     let dict = {};
@@ -223,7 +220,7 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Format the nodes into a matrix
+   * Format the nodes into a matrix.
    * @param  {Array} nodes Array containing the nodes.
    * @return {Array}       The array with formatted matrix data.
    */
@@ -245,16 +242,16 @@ class AdjacencyMatrix {
 }
 
 /**
- * Create an adjacency matrix visualization from an array
- * @param {Canvas} canvas The canvas to draw to
- * @param {Array}  data   JSON array with the data to visualize
+ * Create an adjacency matrix visualization from an array.
+ * @param {Canvas} canvas The canvas to draw to.
+ * @param {Array}  data   JSON array with the data to visualize.
  */
 function createAdjacencyMatrix(canvas, data) {
   new AdjacencyMatrix(canvas, data);
 }
 
 /**
- * Map a number in between a range to another range
+ * Map a number in between a range to another range.
  * @param  {Number} a Start range minimum.
  * @param  {Number} b Start range maximum.
  * @param  {Number} c End range minimum.

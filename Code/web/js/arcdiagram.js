@@ -8,9 +8,9 @@
  */
 class ArcDiagram {
   /**
-   * Constructor for ArcDiagram
-   * @param {Canvas} canvas The canvas to draw to
-   * @param {Array}  json   JSON array with data to visualize
+   * Constructor for ArcDiagram.
+   * @param {Canvas} canvas The canvas to draw to.
+   * @param {Array}  json   JSON array with data to visualize.
    */
   constructor(canvas, json) {
     this.data = json;
@@ -22,7 +22,6 @@ class ArcDiagram {
    * Parse JSON and map data.
    */
   mapJSONData() {
-    // let svg = this.createSVG();
     let canvas = this.canvas.getContext('2d');
     // Initialize all data
     let allNodes = this.data.nodes.map(d => d.email);
@@ -48,10 +47,10 @@ class ArcDiagram {
   }
 
   /**
-   * Create links between nodes
-   * @param  {Canvas.context} canvas Canvas to visualise to
-   * @param  {d3.scalePoint}  x      X-axis scale object from D3
-   * @param  {Array}          data   The JSON data of the visualization
+   * Create links between nodes.
+   * @param  {Canvas.context} canvas Canvas to visualise to.
+   * @param  {d3.scalePoint}  x      X-axis scale object from D3.
+   * @param  {Array}          data   The JSON data of the visualization.
    */
   createLinks(canvas, x, data) {
     for (let link of data.links) {
@@ -69,12 +68,12 @@ class ArcDiagram {
   }
 
   /**
-   * Create node objects
-   * @param  {Canvas.context}  canvas Canvas to visualise to
-   * @param  {d3.scalePoint}   x      X-axis scale object from D3
-   * @param  {d3.scaleLinear}  size   Node size object from D3
-   * @param  {d3.scaleOrdinal} color  Color pallette object from D3
-   * @param  {Array}           data   The JSON data of the visualization
+   * Create node objects.
+   * @param  {Canvas.context}  canvas Canvas to visualise to.
+   * @param  {d3.scalePoint}   x      X-axis scale object from D3.
+   * @param  {d3.scaleLinear}  size   Node size object from D3.
+   * @param  {d3.scaleOrdinal} color  Color pallette object from D3.
+   * @param  {Array}           data   The JSON data of the visualization.
    */
   createNodes(canvas, x, size, color, data) {
     for (let node of data.nodes) {
@@ -90,10 +89,10 @@ class ArcDiagram {
   }
 
   /**
-   * Create labels for all nodes
-   * @param  {Canvas.context} canvas Canvas to visualise to
-   * @param  {d3.scalePoint}  x      X-axis scale object from D3
-   * @param  {Array}          data   The JSON data of the visualization
+   * Create labels for all nodes.
+   * @param  {Canvas.context} canvas Canvas to visualise to.
+   * @param  {d3.scalePoint}  x      X-axis scale object from D3.
+   * @param  {Array}          data   The JSON data of the visualization.
    */
   createLabels(canvas, x, data) {
     for (let node of data.nodes) {
@@ -110,9 +109,9 @@ class ArcDiagram {
 }
 
 /**
- * Create an arc diagram visualization from an array
- * @param {Canvas} canvas The canvas to draw to
- * @param {Array}  data   JSON array with the data to visualize
+ * Create an arc diagram visualization from an array.
+ * @param {Canvas} canvas The canvas to draw to.
+ * @param {Array}  data   JSON array with the data to visualize.
  */
 function createArcDiagram(canvas, data) {
   new ArcDiagram(canvas, data);

@@ -18,7 +18,7 @@ let width = document.documentElement.clientWidth - margins.left - margins.right;
 let height = document.documentElement.clientHeight - margins.bottom;
 
 /**
- * User submits the upload form
+ * User submits the upload form.
  * @param {Event} e Object for the submit event.
  */
 function formSubmit(e) {
@@ -48,8 +48,8 @@ function formSubmit(e) {
 }
 
 /**
- * Callback when the file upload has succesfully fininshed
- * @param {XMLHttpRequest} data The submit request object
+ * Callback when the file upload has succesfully fininshed.
+ * @param {XMLHttpRequest} data The submit request object.
  */
 function uploadCallbackSuccess(data) {
   let jsonString = data.response;
@@ -63,8 +63,8 @@ function uploadCallbackSuccess(data) {
 }
 
 /**
- * Callback when the file upload has fininshed with an error
- * @param {XMLHttpRequest} data The submit request object
+ * Callback when the file upload has fininshed with an error.
+ * @param {XMLHttpRequest} data The submit request object.
  */
 function uploadCallbackError(data) {
   console.log("Error: ", data.response);
@@ -74,7 +74,7 @@ function uploadCallbackError(data) {
 }
 
 /**
- * When the window has been resized
+ * When the window has been resized.
  */
 function onWindowResized() {
   // Save the new dimensions
