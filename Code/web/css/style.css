@@ -78,61 +78,63 @@ div.visualisation svg:empty {
 }
 
 
+/* Header */
 .wrapper {
-
-    margin: 0 auto;
-    padding: 0 10px;
-    width: 940px;
-
+  margin: 0 auto;
+  padding: 0 10px;
+  width: 940px;
 }
-
 
 header {
-    height: 120px;
+  height: 120px;
 	background-color: #add8e6;
 	z-index: 1;
+}
 
-}
 header h1 {
-    float: left;
-    margin-top: 32px;
+  float: left;
+  margin-top: 32px;
 }
+
 header h1 .color {
-    color: #02b8dd;
+  color: #02b8dd;
 }
+
 header nav {
-    float: right;
+  float: right;
 }
+
+header nav ul {
+  margin: 0;
+}
+
 header nav ul li {
-    float: left;
-    display: inline-block;
-    margin-top: 50px;
+  float: left;
+  display: inline-block;
+  margin-top: 50px;
 }
+
 header nav ul li a {
-    color: #444;
-    text-transform: uppercase;
-    font-weight: bold;
-    margin-right: 20px;
+  color: #444;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-right: 20px;
 }
 
 button {
 	margin-top:-1em;
-    width: 9em;
+  width: 9em;
 	height: 3em;
-    border: none;
-    border-radius: 2rem;
-	
+  border: none;
+  border-radius: 2rem;
 	font-family: sans-serif;
 	font-size: 1rem;
-	
 	background: linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
 		linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
 	transition: background-size .6s ease;
-	
 }
 
 button:hover {
-
 	background-position: right, left;
 	background-size: 0% 100%, 100% 100%;
 }

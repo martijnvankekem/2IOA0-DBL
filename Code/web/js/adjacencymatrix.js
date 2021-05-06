@@ -34,15 +34,16 @@ class AdjacencyMatrix {
       .range(d3.schemeCategory10);
 
     this.createMatrix(svg, matrix, emailCount, colors);
-  } 
+  }
 
   /**
    * Create the visualisation itself.
-   * @param  {AdjacencyMatrixLayout} matrix     The matrix layout to visualise.
-   * @param  {AdjacencyMatrix}       matrixData The matrix data to visualise.
-   * @param  {d3.scaleOrdinal}       colors     The color scheme to use.
+   * @param {SVG}        svg        The SVG containing the visualisation
+   * @param {Array}      matrix     The matrix data to visualise.
+   * @param {Dictionary} emailCount Dictionary containing the amount of emails between users
    */
-  createMatrix(svg, matrix, emailCount, colors) {
+  createMatrix(svg, matrix, emailCount) {
+    // Create grid
     d3.select("svg").append("g")
   		.attr("transform","translate(160,160)")
   		.attr("id","adjacencyG")
@@ -53,10 +54,13 @@ class AdjacencyMatrix {
   		.attr("class","grid")
   		.attr("width",10)
   		.attr("height",10)
+      .attr("source", d => d.id.split("-")[0])
+      .attr("target", d => d.id.split("-")[1])
   		.attr("x", d=> d.x*10)
   		.attr("y", d=> d.y*10)
   		.style("fill-opacity", d=> Number(emailCount[d.id]).map(0, 50, 0.1, 1.0));
 
+    // Create text on x-axis
     d3.select("svg")
   		.append("g")
   		.attr("transform","translate(150,150)")
@@ -65,11 +69,13 @@ class AdjacencyMatrix {
   		.enter()
   		.append("text")
   		.attr("y", (d,i) => i * 10 + 17.5)
+      .attr("col", "x")
   		.text(d => d.email)
   		.style("text-anchor","left")
       .style("transform","rotate(-90deg)")
   		.style("font-size","10px");
 
+    // Create text on y-axis
   	d3.select("svg")
   		.append("g").attr("transform","translate(150,150)")
   		.selectAll("text")
@@ -77,15 +83,24 @@ class AdjacencyMatrix {
   		.enter()
   		.append("text")
   		.attr("y",(d,i) => i * 10 + 17.5)
+      .attr("col", "y")
   		.text(d => d.email)
   		.style("text-anchor","end")
   		.style("font-size","10px");
 
-    d3.selectAll("rect.grid").on("mouseover", gridOver);
+    // Create interactive parts
+    this.createGridHighlights();
+  }
 
-  	function gridOver(d) {
-  		d3.selectAll("rect").style("stroke-width", function(p) { return (p.x == d.x || p.y == d.y) ? "3px" : "1px"; });
-  	};
+  /**
+   * Highlight grid and labels on hover
+   */
+  createGridHighlights() {
+    d3.selectAll("rect.grid").on("mousemove", d => {
+      d3.selectAll("rect").style("stroke-width", function(p) { return (p.x*10 == d.target.x.animVal.value || p.y*10 == d.target.y.animVal.value) ? "3px" : "1px"; });
+      d3.selectAll("text[col=\"x\"]").style("fill", function(p) { return (p.email == d.target.getAttribute("target")) ? "#ff0000" : "#000"; });
+      d3.selectAll("text[col=\"y\"]").style("fill", function(p) { return (p.email == d.target.getAttribute("source")) ? "#ff0000" : "#000"; });
+    });
   }
 
   /**
@@ -116,10 +131,10 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Create a AdjacencyMatrix object
-   * @param  {AdjacencyMatrixLayout} matrix    The matrix layout to visualise.
-   * @param  {Array}                 data      The JSON array data to visualise.
-   * @return {AdjacencyMatrix}                 The matrix data of the object created.
+   * Format the data to create a matrix
+   * @param  {Array} nodes Array containing the nodes.
+   * @param  {Array} edges Array containing the edges.
+   * @return {Array}       The array with formatted matrix data.
    */
   createMatrixData(nodes, edges) {
     let edgeHash = {};
