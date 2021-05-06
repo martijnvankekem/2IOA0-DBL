@@ -3,6 +3,8 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+let test
+
 /**
  * Visualization - Adjacency Matrix
  */
@@ -13,9 +15,12 @@ class AdjacencyMatrix {
    * @param {Array}  json   JSON array with data to visualize
    */
   constructor(canvas, json) {
+    test = json;
     this.data = json;
     this.canvas = canvas;
     this.maxEmailCount = 1;
+    this.minSentiment = 1;
+    this.maxSentiment = -1;
     this.mapJSONData();
   }
 
@@ -27,22 +32,18 @@ class AdjacencyMatrix {
     let svg = d3.select("svg");
 
     // Get all sent emails count
-    let emailCount = this.createEmailCountArray(this.data);
+    let pairsData = this.createPairsData(this.data);
 
-    // Node colors
-    let colors = d3.scaleOrdinal()
-      .range(d3.schemeCategory10);
-
-    this.createMatrix(svg, matrix, emailCount, colors);
+    this.createMatrix(svg, matrix, pairsData);
   }
 
   /**
    * Create the visualisation itself.
-   * @param {SVG}        svg        The SVG containing the visualisation
-   * @param {Array}      matrix     The matrix data to visualise.
-   * @param {Dictionary} emailCount Dictionary containing the amount of emails between users
+   * @param {SVG}                  svg        The SVG containing the visualisation.
+   * @param {Array}                matrix     The matrix data to visualise.
+   * @param {Dictionary}           pairsData  Dictionary containing the data of each sender-recipient pair.
    */
-  createMatrix(svg, matrix, emailCount) {
+  createMatrix(svg, matrix, pairsData) {
     // Create grid
     d3.select("svg").append("g")
       .attr("transform", "translate(160,160)")
@@ -56,9 +57,46 @@ class AdjacencyMatrix {
       .attr("height", 10)
       .attr("source", d => d.id.split("-")[0])
       .attr("target", d => d.id.split("-")[1])
+      .attr("sentiment", d => {
+        if (typeof pairsData[d.id] != "undefined") {
+          // This pair exists, so get the color by average sentiment
+          return ""+pairsData[d.id][0];
+        } else {
+          // No pair exists, so return empty
+          return "";
+        }
+      })
+      .attr("total", d => {
+        if (typeof pairsData[d.id] != "undefined") {
+          // This pair exists, so get the color by average sentiment
+          return ""+pairsData[d.id][1];
+        } else {
+          // No pair exists, so return empty
+          return "";
+        }
+      })
       .attr("x", d => d.x * 10)
       .attr("y", d => d.y * 10)
-      .style("fill-opacity", d => Number(emailCount[d.id]).map(0, 50, 0.1, 1.0));
+      .style("fill", d => {
+        if (typeof pairsData[d.id] != "undefined") {
+          // This pair exists, so get the color by average sentiment
+          const mappedNumber = Number(pairsData[d.id][0]).map(-0.1, 0.1, 0, 1);
+          return d3.interpolatePlasma(mappedNumber);
+        } else {
+          // No pair exists, so show white square
+          return "#fff";
+        }
+
+      })
+      .style("fill-opacity", d => {
+        if (typeof pairsData[d.id] != "undefined") {
+          // This pair exists, so get the total number of e-mails
+          return Number(pairsData[d.id][1]).map(0, 50, 0.1, 1.0);
+        } else {
+          // No pair exists, so no e-mail traffic between users
+          return 0;
+        }
+      });
 
     // Create text on x-axis
     d3.select("svg")
@@ -90,6 +128,36 @@ class AdjacencyMatrix {
 
     // Create interactive parts
     this.createGridHighlights();
+    this.createHoverContainer();
+  }
+
+  /**
+   * Create and fill information container on hover
+   */
+  createHoverContainer() {
+    d3.selectAll("rect.grid").on("mouseover", d => {
+      document.getElementById("hoverContainer").style.display = "block";
+      document.getElementById("hoverContainer").style.left = d.x + 20 + "px";
+      document.getElementById("hoverContainer").style.top = d.y + 20 + "px";
+      document.getElementById("senderLabel").innerText = d.target.getAttribute("source");
+      document.getElementById("recipientLabel").innerText = d.target.getAttribute("target");
+
+      let sentiment = d.target.getAttribute("sentiment");
+      if (sentiment == "") {
+        document.getElementById("hover_notraffic").style.display = "block";
+        document.getElementById("hover_hastraffic").style.display = "none";
+      } else {
+        document.getElementById("hover_notraffic").style.display = "none";
+        document.getElementById("hover_hastraffic").style.display = "block";
+        document.getElementById("sentimentLabel").innerText = sentiment;
+        document.getElementById("totalLabel").innerText = d.target.getAttribute("total");
+      }
+
+    });
+
+    d3.selectAll("#adjacencyG").on("mouseleave", d => {
+      document.getElementById("hoverContainer").style.display = "none";
+    })
   }
 
   /**
@@ -114,22 +182,34 @@ class AdjacencyMatrix {
    * @param  {Array}      data The retrieven JSON data
    * @return {Dictionary}      The array with all nodes and their count
    */
-  createEmailCountArray(data) {
+  createPairsData(data) {
     let dict = {};
 
     for (let link of data.links) {
       let key = link.source + "-" + link.target;
       if (!(key in dict)) {
-        // Create sender-recipient pair and set count to one.
-        dict[key] = 1;
+        // Create sender-recipient pair and set current sentiment and total amount.
+        dict[key] = [Number(link.sentiment), 1];
       } else {
-        // Increase existing sender-recipient pair by one.
-        dict[key] += 1;
+        // Add curent sentiment to total and increase the amount of links
+        dict[key] = [dict[key][0] + Number(link.sentiment), dict[key][1] + 1];
 
-        // Save the highest value
-        if (this.maxEmailCount < dict[key]) {
-          this.maxEmailCount = dict[key];
+        // Save extreme value value
+        if (this.maxEmailCount < dict[key][1]) {
+          this.maxEmailCount = dict[key][1];
         }
+      }
+    }
+
+    // Calculate average sentiment for each sender-recipient pair.
+    for (let key in dict) {
+      dict[key][0] = dict[key][0] / dict[key][1];
+
+      if (this.minSentiment > dict[key][0]) {
+        this.minSentiment = dict[key][0];
+      }
+      if (this.maxSentiment < dict[key][0]) {
+        this.maxSentiment = dict[key][0];
       }
     }
 

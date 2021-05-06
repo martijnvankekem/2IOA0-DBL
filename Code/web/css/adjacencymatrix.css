@@ -1,9 +1,13 @@
+svg {
+  position: absolute;
+  z-index: 100;
+}
 .grid {
-    stroke: #9A8B7A;
+  stroke: #9A8B7A;
 	stroke-width: 1px; fill: #CF7D1C;
 }
 .arc {
-    stroke: #9A8B7A;
+  stroke: #9A8B7A;
 	fill: none;
 }
 .node {
@@ -22,4 +26,27 @@ circle.source {
 }
 circle.target {
 	fill: #41A368;
+}
+
+/* Hover container */
+.hoverContainer {
+  position: fixed;
+  z-index: 9999;
+  background: #add8e6;
+  padding: 20px;
+  display: none;
+  border-radius: 5px;
+}
+
+.hoverContainer h3 {
+  margin: 0 0 5px 0;
+}
+
+.hoverContainer p {
+  font-size: 14px;
+  margin: 5px 0 0 0;
+}
+
+.hoverContainer p#hover_notraffic {
+  display: none;
 }

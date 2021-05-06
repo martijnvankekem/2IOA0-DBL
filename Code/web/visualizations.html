@@ -37,6 +37,18 @@
     <canvas class="visualisation" id="canvas"></canvas>
     <div class="visualisation" id="visContainer">
       <svg class="vissvg" width="1900px" height="1900px"></svg>
+      <div id="hoverContainer" class="hoverContainer">
+        <div class="content">
+          <h3>Information<span class="color">.</span></h3>
+          <p>Sender: <span id="senderLabel"></span></p>
+          <p>Recipient: <span id="recipientLabel"></span></p>
+          <p id="hover_notraffic">There is no e-mail traffic between these nodes.</p>
+          <div id="hover_hastraffic">
+            <p>Average sentiment: <span id="sentimentLabel"></span></p>
+            <p>Total e-mails: <span id="totalLabel"></span></p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Loading spinner -->
