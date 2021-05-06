@@ -15,24 +15,26 @@ class AdjacencyMatrix {
   constructor(canvas, json) {
     this.data = json;
     this.canvas = canvas;
+    this.maxEmailCount = 1;
     this.mapJSONData();
-
-    console.log(this.data);
   }
 
   /**
    * Parse JSON and map data.
    */
   mapJSONData() {
-    const adjacencyMatrix = d3.adjacencyMatrixLayout();
-    const matrixData = this.createMatrixData(adjacencyMatrix, this.data);
+    let matrix = this.createMatrixData(this.data.nodes, this.data.links);
+    let svg = d3.select("svg");
+
+    // Get all sent emails count
+    let emailCount = this.createEmailCountArray(this.data);
+
     // Node colors
     let colors = d3.scaleOrdinal()
       .range(d3.schemeCategory10);
 
-
-    this.createMatrix(adjacencyMatrix, matrixData, colors);
-  }
+    this.createMatrix(svg, matrix, emailCount, colors);
+  } 
 
   /**
    * Create the visualisation itself.
@@ -40,30 +42,77 @@ class AdjacencyMatrix {
    * @param  {AdjacencyMatrix}       matrixData The matrix data to visualise.
    * @param  {d3.scaleOrdinal}       colors     The color scheme to use.
    */
-  createMatrix(matrix, matrixData, colors) {
-    d3.select('svg')
-      .append('g')
-        .attr('transform', 'translate(150,150)')
-        .attr('id', 'adjacencyG')
-        .selectAll('rect')
-        .data(matrixData)
-        .enter()
-        .append('rect')
-          .attr('width', d => d.width)
-          .attr('height', d => d.height)
-          .attr('x', d => d.x)
-          .attr('y', d => d.y)
-          .style('stroke', 'black')
-          .style('stroke-width', '1px')
-          .style('stroke-opacity', .1)
-          .style('fill', d => colors(d.source.jobtitle))
-          .style('fill-opacity', d => Number(d.sentiment).map(-1, 1, 0, 1));
+  createMatrix(svg, matrix, emailCount, colors) {
+    d3.select("svg").append("g")
+  		.attr("transform","translate(160,160)")
+  		.attr("id","adjacencyG")
+  		.selectAll("rect")
+  		.data(matrix)
+  		.enter()
+  		.append("rect")
+  		.attr("class","grid")
+  		.attr("width",10)
+  		.attr("height",10)
+  		.attr("x", d=> d.x*10)
+  		.attr("y", d=> d.y*10)
+  		.style("fill-opacity", d=> Number(emailCount[d.id]).map(0, 50, 0.1, 1.0));
 
-    d3.select('#adjacencyG')
-    .call(matrix.xAxis);
+    d3.select("svg")
+  		.append("g")
+  		.attr("transform","translate(150,150)")
+  		.selectAll("text")
+  		.data(this.data.nodes)
+  		.enter()
+  		.append("text")
+  		.attr("y", (d,i) => i * 10 + 17.5)
+  		.text(d => d.email)
+  		.style("text-anchor","left")
+      .style("transform","rotate(-90deg)")
+  		.style("font-size","10px");
 
-    d3.select('#adjacencyG')
-      .call(matrix.yAxis);
+  	d3.select("svg")
+  		.append("g").attr("transform","translate(150,150)")
+  		.selectAll("text")
+  		.data(this.data.nodes)
+  		.enter()
+  		.append("text")
+  		.attr("y",(d,i) => i * 10 + 17.5)
+  		.text(d => d.email)
+  		.style("text-anchor","end")
+  		.style("font-size","10px");
+
+    d3.selectAll("rect.grid").on("mouseover", gridOver);
+
+  	function gridOver(d) {
+  		d3.selectAll("rect").style("stroke-width", function(p) { return (p.x == d.x || p.y == d.y) ? "3px" : "1px"; });
+  	};
+  }
+
+  /**
+   * Create a dictionary of all node combinations with the corresponding count
+   * @param  {Array}      data The retrieven JSON data
+   * @return {Dictionary}      The array with all nodes and their count
+   */
+  createEmailCountArray(data) {
+    let dict = {};
+
+    for (let link of data.links) {
+      let key = link.source+"-"+link.target;
+      if (!(key in dict)) {
+        // Create sender-recipient pair and set count to one.
+        dict[key] = 1;
+      } else {
+        // Increase existing sender-recipient pair by one.
+        dict[key] += 1;
+
+        // Save the highest value
+        if (this.maxEmailCount < dict[key]) {
+          this.maxEmailCount = dict[key];
+        }
+      }
+    }
+
+    return dict;
   }
 
   /**
@@ -72,15 +121,25 @@ class AdjacencyMatrix {
    * @param  {Array}                 data      The JSON array data to visualise.
    * @return {AdjacencyMatrix}                 The matrix data of the object created.
    */
-  createMatrixData(matrix, data) {
-    matrix
-      .size([1700, 1700])
-      .nodes(data.nodes)
-      .links(data.links)
-      .directed(false)
-      .nodeID(d => d.email);
+  createMatrixData(nodes, edges) {
+    let edgeHash = {};
+		edges.forEach(edge => {
+			let id = edge.source + "-" + edge.target;
+			edgeHash[id] = edge;
+		});
 
-    return matrix();
+		let matrix = [];
+		nodes.forEach((source, a) => {
+			nodes.forEach((target, b) => {
+				let grid = {id: source.email + "-" + target.email, x: b, y: a, weight: 0};
+				if (edgeHash[grid.id]) {
+					grid.weight = edgeHash[grid.id].sentiment;
+				}
+			  matrix.push(grid);
+      });
+		});
+
+		return matrix;
   }
 }
 
