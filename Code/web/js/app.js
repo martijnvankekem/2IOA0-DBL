@@ -1,6 +1,6 @@
 /**
-  * Main application - DBL Visualisation
-  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
+ * Main application - DBL Visualisation
+ * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
 let formElement;
@@ -8,7 +8,11 @@ let visualisationData = null;
 let canvas;
 
 // Dimensions
-const margins = {left: 70, right: 150, bottom: 150};
+const margins = {
+  left: 70,
+  right: 150,
+  bottom: 150
+};
 const textRotation = 45; // Rotation in degrees
 let width = document.documentElement.clientWidth - margins.left - margins.right;
 let height = document.documentElement.clientHeight - margins.bottom;
@@ -31,7 +35,7 @@ function formSubmit(e) {
   let xhr = new XMLHttpRequest();
   xhr.open('POST', 'php/uploadFile.php', true);
 
-  xhr.onload = function () {
+  xhr.onload = function() {
     if (xhr.status == 200) {
       uploadCallbackSuccess(xhr);
     } else {
@@ -66,7 +70,7 @@ function uploadCallbackError(data) {
   console.log("Error: ", data.response);
 
   // Hide the spinner
-   document.getElementById("spinner").style.display = "none";
+  document.getElementById("spinner").style.display = "none";
 }
 
 /**
@@ -74,7 +78,7 @@ function uploadCallbackError(data) {
  */
 function onWindowResized() {
   // Save the new dimensions
-  canvas.width  = document.documentElement.clientWidth;
+  canvas.width = document.documentElement.clientWidth;
   width = document.documentElement.clientWidth - margins.left - margins.right;
   canvas.height = document.documentElement.clientHeight;
   height = document.documentElement.clientHeight - margins.bottom;

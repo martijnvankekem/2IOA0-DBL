@@ -1,6 +1,6 @@
 /**
-  * Arc diagram visualization - DBL Visualization
-  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
+ * Arc diagram visualization - DBL Visualization
+ * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
 /**
@@ -39,7 +39,7 @@ class ArcDiagram {
       .range([1, 5]);
     // X-axis scale
     let xscale = d3.scalePoint()
-      .range([margins.left, width+margins.left])
+      .range([margins.left, width + margins.left])
       .domain(allNodes)
 
     this.createLinks(canvas, xscale, this.data);
@@ -60,8 +60,8 @@ class ArcDiagram {
 
       // Radius is |start-end|/2, so start-x is start + |start-end|/2
       canvas.beginPath();
-      let startPoint = (start-end > 0) ? end : start;
-      canvas.arc(startPoint + (Math.abs(start-end) / 2), height - margins.bottom, Math.abs(start - end) / 2, Math.PI, 0);
+      let startPoint = (start - end > 0) ? end : start;
+      canvas.arc(startPoint + (Math.abs(start - end) / 2), height - margins.bottom, Math.abs(start - end) / 2, Math.PI, 0);
       canvas.strokeStyle = "gray";
       canvas.lineWidth = "0.5"
       canvas.stroke();
@@ -100,7 +100,7 @@ class ArcDiagram {
       let nodeX = x(node.email);
       canvas.save();
       canvas.translate(nodeX, height - margins.bottom + 10);
-      canvas.rotate(-(Math.PI/180)*textRotation);
+      canvas.rotate(-(Math.PI / 180) * textRotation);
       canvas.font = "8px Arial";
       canvas.textAlign = "right";
       canvas.fillText(node.email, 0, 0);
