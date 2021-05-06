@@ -32,6 +32,19 @@ class AdjacencyMatrix {
     let pairsData = this.createPairsData(this.data);
 
     this.createMatrix(svg, matrix, pairsData);
+    this.setMatrixSize();
+  }
+  
+  /**
+   * Set the size of the matrix based on its contents
+   */
+  setMatrixSize() {
+    let svg = document.getElementById("vissvg");
+    // Get the bounds of the SVG content
+    let bbox = svg.getBBox();
+    // Update the width and height using the size of the contents
+    svg.setAttribute("width", bbox.x + bbox.width + bbox.x);
+    svg.setAttribute("height", bbox.y + bbox.height + bbox.y);
   }
 
   /**
@@ -134,9 +147,13 @@ class AdjacencyMatrix {
   createHoverContainer() {
     d3.selectAll("rect.grid").on("mouseover", d => {
       // Show hover container at mouse position
-      document.getElementById("hoverContainer").style.display = "block";
-      document.getElementById("hoverContainer").style.left = d.x + 20 + "px";
-      document.getElementById("hoverContainer").style.top = d.y + 20 + "px";
+      let hoverContainer = document.getElementById("hoverContainer");
+      hoverContainer.style.display = "block";
+      // Move container to left/top of cursor if we reach the end of the screen.
+      let xOffset = (d.x + hoverContainer.offsetWidth > width) ? (-hoverContainer.offsetWidth - 20) : 20;
+      let yOffset = (d.y + hoverContainer.offsetHeight > height) ? (-hoverContainer.offsetHeight - 20) : 20;
+      hoverContainer.style.left = d.x + xOffset + "px";
+      hoverContainer.style.top = d.y + yOffset + "px";
 
       // Set labels to correct values
       document.getElementById("senderLabel").innerText = d.target.getAttribute("source");
