@@ -2,30 +2,38 @@ svg {
   position: absolute;
   z-index: 100;
 }
+
 .grid {
   stroke: #9A8B7A;
-	stroke-width: 1px; fill: #CF7D1C;
+  stroke-width: 1px;
+  fill: #CF7D1C;
 }
+
 .arc {
   stroke: #9A8B7A;
-	fill: none;
+  fill: none;
 }
+
 .node {
-	fill: #EBD8C1;
-	stroke: #9A8B7A;
-	stroke-width: 1px;
+  fill: #EBD8C1;
+  stroke: #9A8B7A;
+  stroke-width: 1px;
 }
+
 circle.active {
-	fill: #FE9922;
+  fill: #FE9922;
 }
+
 path.active {
-	stroke: #FE9922;
+  stroke: #FE9922;
 }
+
 circle.source {
-	fill: #93C464;
+  fill: #93C464;
 }
+
 circle.target {
-	fill: #41A368;
+  fill: #41A368;
 }
 
 /* Hover container */

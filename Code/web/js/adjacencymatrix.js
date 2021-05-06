@@ -28,10 +28,10 @@ class AdjacencyMatrix {
    * Parse JSON and map data.
    */
   mapJSONData() {
-    let matrix = this.createMatrixData(this.data.nodes, this.data.links);
+    let matrix = this.createMatrixData(this.data.nodes);
     let svg = d3.select("svg");
 
-    // Get all sent emails count
+    // Get all information about each sender-recipient pair
     let pairsData = this.createPairsData(this.data);
 
     this.createMatrix(svg, matrix, pairsData);
@@ -39,9 +39,9 @@ class AdjacencyMatrix {
 
   /**
    * Create the visualisation itself.
-   * @param {SVG}                  svg        The SVG containing the visualisation.
-   * @param {Array}                matrix     The matrix data to visualise.
-   * @param {Dictionary}           pairsData  Dictionary containing the data of each sender-recipient pair.
+   * @param {SVG}        svg        The SVG containing the visualisation.
+   * @param {Array}      matrix     The matrix data to visualise.
+   * @param {Dictionary} pairsData  Dictionary containing the data of each sender-recipient pair.
    */
   createMatrix(svg, matrix, pairsData) {
     // Create grid
@@ -60,7 +60,7 @@ class AdjacencyMatrix {
       .attr("sentiment", d => {
         if (typeof pairsData[d.id] != "undefined") {
           // This pair exists, so get the color by average sentiment
-          return ""+pairsData[d.id][0];
+          return "" + pairsData[d.id][0];
         } else {
           // No pair exists, so return empty
           return "";
@@ -69,7 +69,7 @@ class AdjacencyMatrix {
       .attr("total", d => {
         if (typeof pairsData[d.id] != "undefined") {
           // This pair exists, so get the color by average sentiment
-          return ""+pairsData[d.id][1];
+          return "" + pairsData[d.id][1];
         } else {
           // No pair exists, so return empty
           return "";
@@ -136,17 +136,22 @@ class AdjacencyMatrix {
    */
   createHoverContainer() {
     d3.selectAll("rect.grid").on("mouseover", d => {
+      // Show hover container at mouse position
       document.getElementById("hoverContainer").style.display = "block";
       document.getElementById("hoverContainer").style.left = d.x + 20 + "px";
       document.getElementById("hoverContainer").style.top = d.y + 20 + "px";
+
+      // Set labels to correct values
       document.getElementById("senderLabel").innerText = d.target.getAttribute("source");
       document.getElementById("recipientLabel").innerText = d.target.getAttribute("target");
 
       let sentiment = d.target.getAttribute("sentiment");
       if (sentiment == "") {
+        // No e-mail traffic between sender-recipient pair, show message
         document.getElementById("hover_notraffic").style.display = "block";
         document.getElementById("hover_hastraffic").style.display = "none";
       } else {
+        // E-mail traffic exists, show avg sentiment and total e-mails.
         document.getElementById("hover_notraffic").style.display = "none";
         document.getElementById("hover_hastraffic").style.display = "block";
         document.getElementById("sentimentLabel").innerText = sentiment;
@@ -156,6 +161,7 @@ class AdjacencyMatrix {
     });
 
     d3.selectAll("#adjacencyG").on("mouseleave", d => {
+      // Hide hover container when mouse leaves visualisation.
       document.getElementById("hoverContainer").style.display = "none";
     })
   }
@@ -217,18 +223,11 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Format the data to create a matrix
+   * Format the nodes into a matrix
    * @param  {Array} nodes Array containing the nodes.
-   * @param  {Array} edges Array containing the edges.
    * @return {Array}       The array with formatted matrix data.
    */
-  createMatrixData(nodes, edges) {
-    let edgeHash = {};
-    edges.forEach(edge => {
-      let id = edge.source + "-" + edge.target;
-      edgeHash[id] = edge;
-    });
-
+  createMatrixData(nodes) {
     let matrix = [];
     nodes.forEach((source, a) => {
       nodes.forEach((target, b) => {
@@ -236,11 +235,7 @@ class AdjacencyMatrix {
           id: source.email + "-" + target.email,
           x: b,
           y: a,
-          weight: 0
         };
-        if (edgeHash[grid.id]) {
-          grid.weight = edgeHash[grid.id].sentiment;
-        }
         matrix.push(grid);
       });
     });
