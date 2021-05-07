@@ -9,12 +9,14 @@
 class AdjacencyMatrix {
   /**
    * Constructor for AdjacencyMatrix.
-   * @param {Canvas} canvas The canvas to draw to.
    * @param {Array}  json   JSON array with data to visualize.
    */
-  constructor(canvas, json) {
+  constructor(json, mainNodeAttribute, mainLinkAttribute) {
     this.data = json;
-    this.canvas = canvas;
+
+    this.mainNodeAttribute = mainNodeAttribute;
+    this.mainLinkAttribute = mainLinkAttribute;
+
     this.maxEmailCount = 1;
     this.minSentiment = 1;
     this.maxSentiment = -1;
@@ -118,7 +120,7 @@ class AdjacencyMatrix {
       .append("text")
       .attr("y", (d, i) => i * 10 + 17.5)
       .attr("col", "x")
-      .text(d => d.email)
+      .text(d => d[this.mainNodeAttribute])
       .style("text-anchor", "left")
       .style("transform", "rotate(-90deg)")
       .style("font-size", "10px");
@@ -132,7 +134,7 @@ class AdjacencyMatrix {
       .append("text")
       .attr("y", (d, i) => i * 10 + 17.5)
       .attr("col", "y")
-      .text(d => d.email)
+      .text(d => d[this.mainNodeAttribute])
       .style("text-anchor", "end")
       .style("font-size", "10px");
 
@@ -188,12 +190,6 @@ class AdjacencyMatrix {
       d3.selectAll("rect").style("stroke-width", function(p) {
         return (p.x * 10 == d.target.x.animVal.value || p.y * 10 == d.target.y.animVal.value) ? "3px" : "1px";
       });
-      d3.selectAll("text[col=\"x\"]").style("fill", function(p) {
-        return (p.email == d.target.getAttribute("target")) ? "#ff0000" : "#000";
-      });
-      d3.selectAll("text[col=\"y\"]").style("fill", function(p) {
-        return (p.email == d.target.getAttribute("source")) ? "#ff0000" : "#000";
-      });
     });
   }
 
@@ -209,10 +205,10 @@ class AdjacencyMatrix {
       let key = link.source + "-" + link.target;
       if (!(key in dict)) {
         // Create sender-recipient pair and set current sentiment and total amount.
-        dict[key] = [Number(link.sentiment), 1];
+        dict[key] = [Number(link[this.mainLinkAttribute]), 1];
       } else {
         // Add curent sentiment to total and increase the amount of links
-        dict[key] = [dict[key][0] + Number(link.sentiment), dict[key][1] + 1];
+        dict[key] = [dict[key][0] + Number(link[this.mainLinkAttribute]), dict[key][1] + 1];
 
         // Save extreme value value
         if (this.maxEmailCount < dict[key][1]) {
@@ -246,7 +242,7 @@ class AdjacencyMatrix {
     nodes.forEach((source, a) => {
       nodes.forEach((target, b) => {
         let grid = {
-          id: source.email + "-" + target.email,
+          id: source[this.mainNodeAttribute] + "-" + target[this.mainNodeAttribute],
           x: b,
           y: a,
         };
@@ -260,11 +256,10 @@ class AdjacencyMatrix {
 
 /**
  * Create an adjacency matrix visualization from an array.
- * @param {Canvas} canvas The canvas to draw to.
  * @param {Array}  data   JSON array with the data to visualize.
  */
-function createAdjacencyMatrix(canvas, data) {
-  new AdjacencyMatrix(canvas, data);
+function createAdjacencyMatrix(data, mainNodeAttribute, mainLinkAttribute) {
+  new AdjacencyMatrix(data, mainNodeAttribute, mainLinkAttribute);
 }
 
 /**

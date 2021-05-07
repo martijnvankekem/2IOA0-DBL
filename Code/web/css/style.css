@@ -19,6 +19,7 @@ body {
   left: 0;
   top: 0;
   z-index: 0;
+  background-color: rgba(0,0,0,0.1);
 }
 
 .uploadContainer .container {
@@ -41,19 +42,6 @@ body {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 0.8em;
-}
-
-.uploadContainer .container input[type="submit"] {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding: 10px 20px;
-  background-color: #2196f3;
-  border: none;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
-  outline: none;
 }
 
 /* Visualisation container */
@@ -118,8 +106,13 @@ header nav ul li a {
   margin-right: 20px;
 }
 
-button {
+header nav ul li a button {
   margin-top: -1em;
+}
+
+button, input[type="submit"] {
+  margin-top: 20px;
+  cursor: pointer;
   width: 9em;
   height: 3em;
   border: none;

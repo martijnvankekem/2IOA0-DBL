@@ -1,5 +1,5 @@
 <!--
-  Main page - DBL Visualization
+  Create a new visualisation - DBL Visualization
   Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
 -->
 
@@ -9,12 +9,13 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
-  <title>DBL Visualization</title>
+  <title>New visualisation - DBL</title>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/adjacencymatrix.css">
   <link rel="stylesheet" href="css/spinner.css">
+  <link rel="stylesheet" href="css/tabulator_simple.min.css">
 </head>
 
 <body>
@@ -22,17 +23,32 @@
   <!-- Upload Header -->
   <header>
     <div class="wrapper">
-      <h1>Visualisations<span class="color">.</span></h1>
+      <h1>Create<span class="color">.</span></h1>
       <nav>
         <ul>
           <li><a href="index.html"><button>Home</button></a></li>
-          <li><a href="visualizations.html"><button>Visualizations</button></a></li>
+          <li><a href="create.html"><button>Visualisations</button></a></li>
           <li><a href="backgroundinfo.html"><button>Background Info</button></a></li>
         </ul>
       </nav>
     </div>
   </header>
 
+  <!-- Loading spinner -->
+  <div class="spinner" id="spinner" style="display: none;">
+    <div class="container" txt="Loading...">
+      <div class="lds-dual-ring"></div>
+    </div>
+  </div>
+
+  <div class="wrapper" id="dataFormatter">
+    <div id="dataTable"></div>
+    <button onclick="visualise();">Visualise data</button>
+    <p>To merge multiple sets of nodes, make sure the attribute names match.<br><br>
+    For example: you have a node set (fromID, fromEmail) and a node set (toID, toEmail). Make sure to set the same attribute name (eg. id) for fromID and toID to merge these columns.
+    Do this for fromEmail, toEmail as well.<br><br>
+    <b>Important:</b> The primary attribute should be the first item in the table. The primary link attribute should be numeric.</p>
+  </div>
 
   <!-- Visualisations -->
   <canvas class="visualisation" id="canvas"></canvas>
@@ -52,37 +68,30 @@
     </div>
   </div>
 
-  <!-- Loading spinner -->
-  <div class="spinner" id="spinner" style="display: none;">
-    <div class="container" txt="Loading...">
-      <div class="lds-dual-ring"></div>
-    </div>
-  </div>
-
   <!-- Upload container -->
   <div class="uploadContainer" id="uploadContainer">
     <div class="container">
       <h1>Upload a file to begin.</h1>
-      <p>Required attributes: fromEmail, fromJobtitle, toEmail, toJobtitle, sentiment, messageType.</p>
+      <p>The uploaded file must be a .csv file, delimited by a comma. The first row should contain the column names.</p>
 
       <!-- Upload form -->
-      <form id="uploadForm" action="php/uploadFile.php" method="POST">
-        <input type="file" accept=".csv" id="csvFile" name="csvFile" required><br /><br />
+      <form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
+        <input type="file" accept=".csv" id="csvFile" name="csvFile" required><br />
         <input type="submit" id="submit" name="submit" value="Upload" />
       </form>
     </div>
   </div>
 
-
-  <!-- Javscript-->
+  <!-- Javascript -->
   <!-- Libraries -->
   <script src="https://d3js.org/d3.v6.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/tabulator.min.js"></script>  
   <!-- Custom code -->
-  <script src="js/app.js"></script>
+  <script src="js/create.js"></script>
   <script src="js/adjacencymatrix.js"></script>
 
-</body>
 
+</body>
 </html>
