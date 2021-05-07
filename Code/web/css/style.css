@@ -110,6 +110,10 @@ header nav ul li a button {
   margin-top: -1em;
 }
 
+button.cancelBtn {
+  margin-right: 20px;
+}
+
 button, input[type="submit"] {
   margin-top: 20px;
   cursor: pointer;
@@ -124,7 +128,8 @@ button, input[type="submit"] {
   transition: background-size .6s ease;
 }
 
-button:hover {
+button:hover,
+input[type="submit"]:hover {
   background-position: right, left;
   background-size: 0% 100%, 100% 100%;
 }

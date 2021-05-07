@@ -4,12 +4,14 @@
  */
 
 /**
- * Visualization - Adjacency Matrix
+ * Adjacency Matrix - Visualization Class
  */
 class AdjacencyMatrix {
   /**
    * Constructor for AdjacencyMatrix.
    * @param {Array}  json   JSON array with data to visualize.
+   * @param {String} mainNodeAttribute The main attribute for the nodes.
+   * @param {String} mainLinkAttribute The main attribute for the links.
    */
   constructor(json, mainNodeAttribute, mainLinkAttribute) {
     this.data = json;
@@ -28,12 +30,11 @@ class AdjacencyMatrix {
    */
   mapJSONData() {
     let matrix = this.createMatrixData(this.data.nodes);
-    let svg = d3.select("svg");
 
     // Get all information about each sender-recipient pair
     let pairsData = this.createPairsData(this.data);
 
-    this.createMatrix(svg, matrix, pairsData);
+    this.createMatrix(matrix, pairsData);
     this.setMatrixSize();
   }
   
@@ -51,11 +52,10 @@ class AdjacencyMatrix {
 
   /**
    * Create the visualisation itself.
-   * @param {SVG}        svg        The SVG containing the visualisation.
    * @param {Array}      matrix     The matrix data to visualise.
    * @param {Dictionary} pairsData  Dictionary containing the data of each sender-recipient pair.
    */
-  createMatrix(svg, matrix, pairsData) {
+  createMatrix(matrix, pairsData) {
     // Create grid
     d3.select("svg").append("g")
       .attr("transform", "translate(160,160)")
@@ -256,7 +256,9 @@ class AdjacencyMatrix {
 
 /**
  * Create an adjacency matrix visualization from an array.
- * @param {Array}  data   JSON array with the data to visualize.
+ * @param {Array} data              JSON array with the data to visualize.
+ * @param {String} mainNodeAttribute The main attribute for the nodes.
+ * @param {String} mainLinkAttribute The main attribute for the links.
  */
 function createAdjacencyMatrix(data, mainNodeAttribute, mainLinkAttribute) {
   new AdjacencyMatrix(data, mainNodeAttribute, mainLinkAttribute);

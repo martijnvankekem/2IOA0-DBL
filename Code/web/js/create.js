@@ -146,6 +146,14 @@ function visualise() {
 }
 
 /**
+ * Handler for the cancel button click
+ */
+function cancelClick() {
+  // Go to homepage.
+  window.location.href = "index.html";
+}
+
+/**
  * When the DOM content is loaded.
  */
 function onWindowLoaded() {
@@ -158,6 +166,7 @@ function onWindowLoaded() {
     layout: "fitColumns",
     movableRows: true,
     groupBy: "useas",
+    headerSort: false,
     groupValues: [["Source node attributes", "Target node attributes", "Link attributes", "Unused"]],
     columns: [
       { title: "Name", field: "name", width: 200 },
