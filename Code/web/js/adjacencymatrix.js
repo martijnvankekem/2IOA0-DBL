@@ -13,7 +13,7 @@ class AdjacencyMatrix {
    * @param {Array}  format            The visualisation format.
    */
   constructor(json, format) {
-    this.data = json;
+    this.data = this.filterData(json);
     this.format = format;
 
     this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
@@ -21,8 +21,8 @@ class AdjacencyMatrix {
     this.pairsData = [];
 
     this.maxEmailCount = 1;
-    this.minSentiment = 1;
-    this.maxSentiment = -1;
+    this.minLinkAttr = 1;
+    this.maxLinkAttr = -1;
     this.mapJSONData();
   }
 
@@ -69,10 +69,10 @@ class AdjacencyMatrix {
       .attr("width", 10)
       .attr("height", 10)
       .attr("data-id", d => d.id)
-      .attr("sentiment", d => {
+      .attr("linkAttr", d => {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the average sentiment
-          return "" + pairsData[d.id].sentiment;
+          return "" + pairsData[d.id].linkAttr;
         } else {
           // No pair exists, so return empty
           return "";
@@ -84,7 +84,7 @@ class AdjacencyMatrix {
       .style("fill", d => {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the color by average sentiment
-          const mappedNumber = Number(pairsData[d.id].sentiment).map(-0.1, 0.1, 0, 1);
+          const mappedNumber = Number(pairsData[d.id].linkAttr).map(-0.1, 0.1, 0, 1);
           return d3.interpolatePlasma(mappedNumber);
         } else {
           // No pair exists, so show white square
@@ -153,8 +153,8 @@ class AdjacencyMatrix {
       let id = this.pairsData[d.target.getAttribute("data-id")].id;
       this.createInfoList(id);
 
-      let sentiment = d.target.getAttribute("sentiment");
-      if (sentiment == "") {
+      let linkAttr = d.target.getAttribute("linkAttr");
+      if (linkAttr == "") {
         // No e-mail traffic between sender-recipient pair, show message
         document.getElementById("hover_notraffic").style.display = "block";
         document.getElementById("hover_hastraffic").style.display = "none";
@@ -162,7 +162,7 @@ class AdjacencyMatrix {
         // E-mail traffic exists, show avg sentiment and total e-mails.
         document.getElementById("hover_notraffic").style.display = "none";
         document.getElementById("hover_hastraffic").style.display = "block";
-        document.getElementById("sentimentLabel").innerText = sentiment;
+        document.getElementById("linkAttrLabel").innerText = linkAttr;
         document.getElementById("totalLabel").innerText = d.target.getAttribute("total");
       }
 
@@ -219,13 +219,14 @@ class AdjacencyMatrix {
   createPairsData(data) {
     for (let link of data.links) {
       let key = link.source + "-" + link.target;
+      if (!(key in this.pairsData)) continue;
       // Add curent sentiment to total and increase the amount of links
-      this.pairsData[key].sentiment += Number(link[this.mainLinkAttribute])
+      this.pairsData[key].linkAttr += Number(link[this.mainLinkAttribute])
       this.pairsData[key].total += 1;
 
       // Save extreme value value
-      if (this.maxEmailCount < this.pairsData[key].sentiment) {
-        this.maxEmailCount = this.pairsData[key].sentiment;
+      if (this.maxEmailCount < this.pairsData[key].linkAttr) {
+        this.maxEmailCount = this.pairsData[key].linkAttr;
       }
     }
 
@@ -234,17 +235,32 @@ class AdjacencyMatrix {
       // Skip if there are no links between nodes
       if (this.pairsData[key].total == 0) continue;
 
-      this.pairsData[key].sentiment = this.pairsData[key].sentiment / this.pairsData[key].total;
+      this.pairsData[key].linkAttr = this.pairsData[key].linkAttr / this.pairsData[key].total;
 
-      if (this.minSentiment > this.pairsData[key].sentiment) {
-        this.minSentiment = this.pairsData[key].sentiment;
+      if (this.minLinkAttr > this.pairsData[key].linkAttr) {
+        this.minLinkAttr = this.pairsData[key].linkAttr;
       }
-      if (this.maxSentiment < this.pairsData[key].sentiment) {
-        this.maxSentiment = this.pairsData[key].sentiment;
+      if (this.maxLinkAttr < this.pairsData[key].linkAttr) {
+        this.maxLinkAttr = this.pairsData[key].linkAttr;
       }
     }
 
     return this.pairsData;
+  }
+
+  /**
+   * Filter out invalid data from the dataset
+   * @param  {Array} nodes The array of nodes.
+   * @return {Array}       The filtered array of nodes.
+   */
+  filterData(data) {
+    for (let node of data.nodes) {
+      if (node == null) {
+        data.nodes.splice(data.nodes.indexOf(node), 1);
+      }
+    }
+
+    return data;
   }
 
   /**
@@ -284,7 +300,7 @@ class AdjacencyMatrix {
         // Add grid item to matrix
         let insertID = matrix.length;
         matrix[insertID] = grid;
-        this.pairsData[gridID] = {id: insertID, sentiment: 0, total: 0};
+        this.pairsData[gridID] = {id: insertID, linkAttr: 0, total: 0};
       });
     });
 
