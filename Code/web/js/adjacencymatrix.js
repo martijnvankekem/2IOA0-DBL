@@ -9,15 +9,16 @@
 class AdjacencyMatrix {
   /**
    * Constructor for AdjacencyMatrix.
-   * @param {Array}  json   JSON array with data to visualize.
-   * @param {String} mainNodeAttribute The main attribute for the nodes.
-   * @param {String} mainLinkAttribute The main attribute for the links.
+   * @param {Array}  json              JSON array with data to visualize.
+   * @param {Array}  format            The visualisation format.
    */
-  constructor(json, mainNodeAttribute, mainLinkAttribute) {
+  constructor(json, format) {
     this.data = json;
+    this.format = format;
 
-    this.mainNodeAttribute = mainNodeAttribute;
-    this.mainLinkAttribute = mainLinkAttribute;
+    this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
+    this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
+    this.pairsData = [];
 
     this.maxEmailCount = 1;
     this.minSentiment = 1;
@@ -29,12 +30,12 @@ class AdjacencyMatrix {
    * Parse JSON and map data.
    */
   mapJSONData() {
-    let matrix = this.createMatrixData(this.data.nodes);
+    this.matrix = this.createMatrixData(this.data.nodes);
 
     // Get all information about each sender-recipient pair
-    let pairsData = this.createPairsData(this.data);
+    this.pairsData = this.createPairsData(this.data);
 
-    this.createMatrix(matrix, pairsData);
+    this.createMatrix(this.matrix, this.pairsData);
     this.setMatrixSize();
   }
   
@@ -67,32 +68,23 @@ class AdjacencyMatrix {
       .attr("class", "grid")
       .attr("width", 10)
       .attr("height", 10)
-      .attr("source", d => d.id.split("-")[0])
-      .attr("target", d => d.id.split("-")[1])
+      .attr("data-id", d => d.id)
       .attr("sentiment", d => {
-        if (typeof pairsData[d.id] != "undefined") {
+        if (pairsData[d.id].total > 0) {
           // This pair exists, so get the average sentiment
-          return "" + pairsData[d.id][0];
+          return "" + pairsData[d.id].sentiment;
         } else {
           // No pair exists, so return empty
           return "";
         }
       })
-      .attr("total", d => {
-        if (typeof pairsData[d.id] != "undefined") {
-          // This pair exists, so get the total number of e-mails
-          return "" + pairsData[d.id][1];
-        } else {
-          // No pair exists, so return empty
-          return "";
-        }
-      })
+      .attr("total", d => pairsData[d.id].total)
       .attr("x", d => d.x * 10)
       .attr("y", d => d.y * 10)
       .style("fill", d => {
-        if (typeof pairsData[d.id] != "undefined") {
+        if (pairsData[d.id].total > 0) {
           // This pair exists, so get the color by average sentiment
-          const mappedNumber = Number(pairsData[d.id][0]).map(-0.1, 0.1, 0, 1);
+          const mappedNumber = Number(pairsData[d.id].sentiment).map(-0.1, 0.1, 0, 1);
           return d3.interpolatePlasma(mappedNumber);
         } else {
           // No pair exists, so show white square
@@ -101,9 +93,9 @@ class AdjacencyMatrix {
 
       })
       .style("fill-opacity", d => {
-        if (typeof pairsData[d.id] != "undefined") {
+        if (pairsData[d.id].total > 0) {
           // This pair exists, so get the total number of e-mails
-          return Number(pairsData[d.id][1]).map(0, 50, 0.1, 1.0);
+          return Number(pairsData[d.id].total).map(0, 50, 0.1, 1.0);
         } else {
           // No pair exists, so no e-mail traffic between users
           return 0;
@@ -158,8 +150,8 @@ class AdjacencyMatrix {
       hoverContainer.style.top = d.y + yOffset + "px";
 
       // Set labels to correct values
-      document.getElementById("senderLabel").innerText = d.target.getAttribute("source");
-      document.getElementById("recipientLabel").innerText = d.target.getAttribute("target");
+      let id = this.pairsData[d.target.getAttribute("data-id")].id;
+      this.createInfoList(id);
 
       let sentiment = d.target.getAttribute("sentiment");
       if (sentiment == "") {
@@ -183,6 +175,32 @@ class AdjacencyMatrix {
   }
 
   /**
+   * Fill the info box with data on hover
+   * @param {Integer} id The index of the item in the matrix.
+   */
+  createInfoList(id) {
+    let sourceList = document.getElementById("sourceList");
+    let targetList = document.getElementById("targetList");
+    sourceList.innerHTML = "";
+    targetList.innerHTML = "";
+    
+    for (let item of Object.keys(this.matrix[id].attributes)) {
+      // Add attribute to source list
+      if (typeof this.matrix[id].attributes[item].source != "undefined") {
+        let sourceItem = document.createElement("li");
+        sourceItem.innerText = item + ": " + this.matrix[id].attributes[item].source;
+        sourceList.appendChild(sourceItem);  
+      }
+      // Add attribute to target list
+      if (typeof this.matrix[id].attributes[item].target != "undefined") {
+        let targetItem = document.createElement("li");
+        targetItem.innerText = item + ": " + this.matrix[id].attributes[item].target;
+        targetList.appendChild(targetItem);
+      }
+    }
+  }
+
+  /**
    * Highlight grid and labels on hover.
    */
   createGridHighlights() {
@@ -199,37 +217,34 @@ class AdjacencyMatrix {
    * @return {Dictionary}      The array with all nodes and their count.
    */
   createPairsData(data) {
-    let dict = {};
-
     for (let link of data.links) {
       let key = link.source + "-" + link.target;
-      if (!(key in dict)) {
-        // Create sender-recipient pair and set current sentiment and total amount.
-        dict[key] = [Number(link[this.mainLinkAttribute]), 1];
-      } else {
-        // Add curent sentiment to total and increase the amount of links
-        dict[key] = [dict[key][0] + Number(link[this.mainLinkAttribute]), dict[key][1] + 1];
+      // Add curent sentiment to total and increase the amount of links
+      this.pairsData[key].sentiment += Number(link[this.mainLinkAttribute])
+      this.pairsData[key].total += 1;
 
-        // Save extreme value value
-        if (this.maxEmailCount < dict[key][1]) {
-          this.maxEmailCount = dict[key][1];
-        }
+      // Save extreme value value
+      if (this.maxEmailCount < this.pairsData[key].sentiment) {
+        this.maxEmailCount = this.pairsData[key].sentiment;
       }
     }
 
     // Calculate average sentiment for each sender-recipient pair.
-    for (let key in dict) {
-      dict[key][0] = dict[key][0] / dict[key][1];
+    for (let key in this.pairsData) {
+      // Skip if there are no links between nodes
+      if (this.pairsData[key].total == 0) continue;
 
-      if (this.minSentiment > dict[key][0]) {
-        this.minSentiment = dict[key][0];
+      this.pairsData[key].sentiment = this.pairsData[key].sentiment / this.pairsData[key].total;
+
+      if (this.minSentiment > this.pairsData[key].sentiment) {
+        this.minSentiment = this.pairsData[key].sentiment;
       }
-      if (this.maxSentiment < dict[key][0]) {
-        this.maxSentiment = dict[key][0];
+      if (this.maxSentiment < this.pairsData[key].sentiment) {
+        this.maxSentiment = this.pairsData[key].sentiment;
       }
     }
 
-    return dict;
+    return this.pairsData;
   }
 
   /**
@@ -241,12 +256,35 @@ class AdjacencyMatrix {
     let matrix = [];
     nodes.forEach((source, a) => {
       nodes.forEach((target, b) => {
+        let gridID = source[this.mainNodeAttribute] + "-" + target[this.mainNodeAttribute];
         let grid = {
-          id: source[this.mainNodeAttribute] + "-" + target[this.mainNodeAttribute],
+          id: gridID,
+          source: source[this.mainNodeAttribute],
+          target: target[this.mainNodeAttribute],
+          attributes: [],
           x: b,
           y: a,
         };
-        matrix.push(grid);
+        // Insert source attributes intro matrix
+        for (let item of this.format.nodeGroups[0]) {
+          if (typeof grid.attributes[item.attribute] != "undefined") {
+            grid.attributes[item.attribute].source = source[item.attribute];
+          } else {
+            grid.attributes[item.attribute] = {source: source[item.attribute]};
+          }
+        }
+        // Insert target attributes intro matrix
+        for (let item of this.format.nodeGroups[1]) {
+          if (typeof grid.attributes[item.attribute] != "undefined") {
+            grid.attributes[item.attribute].target = target[item.attribute];
+          } else {
+            grid.attributes[item.attribute] = {target: target[item.attribute]};
+          }
+        }
+        // Add grid item to matrix
+        let insertID = matrix.length;
+        matrix[insertID] = grid;
+        this.pairsData[gridID] = {id: insertID, sentiment: 0, total: 0};
       });
     });
 
@@ -256,12 +294,11 @@ class AdjacencyMatrix {
 
 /**
  * Create an adjacency matrix visualization from an array.
- * @param {Array} data              JSON array with the data to visualize.
- * @param {String} mainNodeAttribute The main attribute for the nodes.
- * @param {String} mainLinkAttribute The main attribute for the links.
+ * @param {Array}  data              JSON array with the data to visualize.
+ * @param {Array}  format            The visualisation format.
  */
-function createAdjacencyMatrix(data, mainNodeAttribute, mainLinkAttribute) {
-  new AdjacencyMatrix(data, mainNodeAttribute, mainLinkAttribute);
+function createAdjacencyMatrix(data, format) {
+  new AdjacencyMatrix(data, format);
 }
 
 /**

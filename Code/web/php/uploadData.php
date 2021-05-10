@@ -24,8 +24,7 @@ function handleRequest() {
 
   // Create JSON array
   $jsonArray = array(
-    "mainNodeAttribute" => $formatting["nodeGroups"][0][0]["attribute"],
-    "mainLinkAttribute" => $formatting["linkAttributes"][0]["attribute"],
+    "format" => $formatting,
     "nodes" => $nodes,
     "links" => $links
   );
@@ -131,6 +130,8 @@ function convertFormatting($formatting) {
  */
 function getNodes($csv, $formatting) {
   $nodes = [];
+  $nodesHandled = [];
+  $mainNodeAttribute = $formatting["nodeGroups"][0][0]["attribute"];
 
   foreach ($csv as $row) {
 
@@ -143,13 +144,18 @@ function getNodes($csv, $formatting) {
           $node[$item["attribute"]] = $row[$item["name"]];
         }
       }
-      if (!in_array($node, $nodes)) {
-        $nodes[sizeof($nodes)] = $node;
+
+      if (!in_array($node[$mainNodeAttribute], $nodesHandled)) {
+        $nodes[$node[$mainNodeAttribute]] = $node;
+        $nodesHandled[sizeof($nodesHandled)] = $node[$mainNodeAttribute];
+      } else {
+        $nodes[$node[$mainNodeAttribute]] = array_merge($nodes[$node[$mainNodeAttribute]], $node);
       }
     }
 
   }
-
+  // Reset the array index
+  $nodes = array_values($nodes);
   return $nodes;
 }
 

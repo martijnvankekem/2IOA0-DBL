@@ -71,7 +71,7 @@ function uploadCallbackSuccess(data, uploadType) {
     populateTable(responseData);
   } else if (uploadType == 1) {
     document.getElementById("dataFormatter").style.display = "none";
-    createAdjacencyMatrix(responseData, responseData["mainNodeAttribute"], responseData["mainLinkAttribute"]);
+    createAdjacencyMatrix(responseData, responseData["format"]);
   }
 
   // Hide the spinner and upload container
