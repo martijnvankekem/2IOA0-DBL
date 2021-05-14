@@ -134,6 +134,15 @@ input[type="submit"]:hover {
   background-size: 0% 100%, 100% 100%;
 }
 
+
+.pic_example{
+  filter:grayscale(1);
+  dispay: table;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 33rem;
+}
+
 .intro {
   margin: 0 auto;
   padding: 0 10px;
