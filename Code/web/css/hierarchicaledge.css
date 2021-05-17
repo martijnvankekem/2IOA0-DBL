@@ -1,67 +1,43 @@
-svg {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-}
-
-.grid {
-  stroke: #9A8B7A;
-  stroke-width: 1px;
-  fill: #CF7D1C;
-}
-
-.arc {
-  stroke: #9A8B7A;
-  fill: none;
-}
-
 .node {
-  fill: #EBD8C1;
-  stroke: #9A8B7A;
-  stroke-width: 1px;
+  font: 300 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  fill: #bbb;
 }
 
-circle.active {
-  fill: #FE9922;
+.node:hover {
+  fill: #000;
 }
 
-path.active {
-  stroke: #FE9922;
+.link {
+  stroke: steelblue;
+  stroke-opacity: 0.4;
+  fill: none;
+  pointer-events: none;
 }
 
-circle.source {
-  fill: #93C464;
+.node:hover,
+.node--source,
+.node--target {
+  font-weight: 700;
 }
 
-circle.target {
-  fill: #41A368;
+.node--source {
+  fill: #2ca02c;
 }
 
-/* Hover container */
-.hoverContainer {
-  position: fixed;
-  z-index: 9999;
-  background: #add8e6;
-  padding: 20px;
-  display: none;
-  border-radius: 5px;
+.node--target {
+  fill: #d62728;
 }
 
-.hoverContainer h3 {
-  margin: 0 0 5px 0;
+.link--source,
+.link--target {
+  stroke-opacity: 1;
+  stroke-width: 2px;
 }
 
-.hoverContainer p {
-  font-size: 14px;
-  margin: 10px 0 0 0;
+.link--source {
+  stroke: #d62728;
 }
 
-.hoverContainer ul {
-  font-size: 14px;
-  margin: 0;
-}
-
-.hoverContainer p#hover_notraffic {
-  display: none;
+.link--target {
+  stroke: #2ca02c;
 }
