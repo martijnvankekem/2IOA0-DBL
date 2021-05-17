@@ -4,327 +4,147 @@
  */
 
 /**
- * Adjacency Matrix - Visualization Class
+ *  -Hierarchical Edge Diagram - Visualization Class
  */
-class AdjacencyMatrix {
+class hierarcicaledge {
+
   /**
    * Constructor for AdjacencyMatrix.
    * @param {Array}  json              JSON array with data to visualize.
    * @param {Array}  format            The visualisation format.
    */
-  constructor(json, format) {
-    this.data = this.filterData(json);
-    this.format = format;
 
-    this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
-    this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
-    this.pairsData = [];
+   constructor(json, format) {
+     this.data = this.filterData(json);
+     this.format = format;
 
-    this.maxEmailCount = 1;
-    this.minLinkAttr = 1;
-    this.maxLinkAttr = -1;
-    this.mapJSONData();
-  }
+     this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
+     this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
+     this.pairsData = [];
 
-  /**
-   * Parse JSON and map data.
-   */
-  mapJSONData() {
-    this.matrix = this.createMatrixData(this.data.nodes);
+     this.maxEmailCount = 1;
+     this.minLinkAttr = 1;
+     this.maxLinkAttr = -1;
+     this.mapJSONData();
+   }
+   
+  const root = tree(bilink(d3.hierarchy(data)
+    .sort((a, b) => d3.ascending(a.height, b.height) || d3.ascending(a.data.name, b.data.name))));
 
-    // Get all information about each sender-recipient pair
-    this.pairsData = this.createPairsData(this.data);
+    const svg = d3.create("svg")
+    .attr("viewBox", [-width / 2, -width / 2, width, width]);
 
-    this.createMatrix(this.matrix, this.pairsData);
-    this.setMatrixSize();
-  }
+    const node = svg.append("g")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 10)
+  .selectAll("g")
+  .data(root.leaves())
+  .join("g")
+    .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+  .append("text")
+    .attr("dy", "0.31em")
+    .attr("x", d => d.x < Math.PI ? 6 : -6)
+    .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+    .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+    .text(d => d.data.name)
+    .each(function(d) { d.text = this; })
+    .on("mouseover", overed)
+    .on("mouseout", outed)
+    .call(text => text.append("title").text(d => `${id(d)}
+${d.outgoing.length} outgoing
+${d.incoming.length} incoming`));
 
-  /**
-   * Set the size of the matrix based on its contents
-   */
-  setMatrixSize() {
-    let svg = document.getElementById("vissvg");
-    // Get the bounds of the SVG content
-    let bbox = svg.getBBox();
-    // Update the width and height using the size of the contents
-    svg.setAttribute("width", bbox.x + bbox.width + bbox.x);
-    svg.setAttribute("height", bbox.y + bbox.height + bbox.y);
-  }
+const link = svg.append("g")
+    .attr("stroke", colornone)
+    .attr("fill", "none")
+  .selectAll("path")
+  .data(root.leaves().flatMap(leaf => leaf.outgoing))
+  .join("path")
+    .style("mix-blend-mode", "multiply")
+    .attr("d", ([i, o]) => line(i.path(o)))
+    .each(function(d) { d.path = this; });
 
-  /**
-   * Create the visualisation itself.
-   * @param {Array}      matrix     The matrix data to visualise.
-   * @param {Dictionary} pairsData  Dictionary containing the data of each sender-recipient pair.
-   */
-  createMatrix(matrix, pairsData) {
-    // Create grid
-    d3.select("svg").append("g")
-      .attr("transform", "translate(160,160)")
-      .attr("id", "adjacencyG")
-      .selectAll("rect")
-      .data(matrix)
-      .enter()
-      .append("rect")
-      .attr("class", "grid")
-      .attr("width", 10)
-      .attr("height", 10)
-      .attr("data-id", d => d.id)
-      .attr("linkAttr", d => {
-        if (pairsData[d.id].total > 0) {
-          // This pair exists, so get the average sentiment
-          return "" + pairsData[d.id].linkAttr;
-        } else {
-          // No pair exists, so return empty
-          return "";
-        }
-      })
-      .attr("total", d => pairsData[d.id].total)
-      .attr("x", d => d.x * 10)
-      .attr("y", d => d.y * 10)
-      .style("fill", d => {
-        if (pairsData[d.id].total > 0) {
-          // This pair exists, so get the color by average sentiment
-          const mappedNumber = Number(pairsData[d.id].linkAttr).map(-0.1, 0.1, 0, 1);
-          return d3.interpolatePlasma(mappedNumber);
-        } else {
-          // No pair exists, so show white square
-          return "#fff";
-        }
+function overed(event, d) {
+  link.style("mix-blend-mode", null);
+  d3.select(this).attr("font-weight", "bold");
+  d3.selectAll(d.incoming.map(d => d.path)).attr("stroke", colorin).raise();
+  d3.selectAll(d.incoming.map(([d]) => d.text)).attr("fill", colorin).attr("font-weight", "bold");
+  d3.selectAll(d.outgoing.map(d => d.path)).attr("stroke", colorout).raise();
+  d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr("fill", colorout).attr("font-weight", "bold");
+}
 
-      })
-      .style("fill-opacity", d => {
-        if (pairsData[d.id].total > 0) {
-          // This pair exists, so get the total number of e-mails
-          return Number(pairsData[d.id].total).map(0, 50, 0.1, 1.0);
-        } else {
-          // No pair exists, so no e-mail traffic between users
-          return 0;
-        }
-      });
+function outed(event, d) {
+  link.style("mix-blend-mode", "multiply");
+  d3.select(this).attr("font-weight", null);
+  d3.selectAll(d.incoming.map(d => d.path)).attr("stroke", null);
+  d3.selectAll(d.incoming.map(([d]) => d.text)).attr("fill", null).attr("font-weight", null);
+  d3.selectAll(d.outgoing.map(d => d.path)).attr("stroke", null);
+  d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr("fill", null).attr("font-weight", null);
+}
 
-    // Create text on x-axis
-    d3.select("svg")
-      .append("g")
-      .attr("transform", "translate(150,150)")
-      .selectAll("text")
-      .data(this.data.nodes)
-      .enter()
-      .append("text")
-      .attr("y", (d, i) => i * 10 + 17.5)
-      .attr("col", "x")
-      .text(d => d[this.mainNodeAttribute])
-      .style("text-anchor", "left")
-      .style("transform", "rotate(-90deg)")
-      .style("font-size", "10px");
+return svg.node();
+}
 
-    // Create text on y-axis
-    d3.select("svg")
-      .append("g").attr("transform", "translate(150,150)")
-      .selectAll("text")
-      .data(this.data.nodes)
-      .enter()
-      .append("text")
-      .attr("y", (d, i) => i * 10 + 17.5)
-      .attr("col", "y")
-      .text(d => d[this.mainNodeAttribute])
-      .style("text-anchor", "end")
-      .style("font-size", "10px");
+data = Object {
+  name: "flare"
+  children: Array(10) [Object, Object, Object, Object, Object, Object, Object, Object, Object, Object]
+}
 
-    // Create interactive parts
-    this.createGridHighlights();
-    this.createHoverContainer();
-  }
+data = hierarchy(await FileAttachment("flare.json").json())
 
-  /**
-   * Create and fill information container on hover.
-   */
-  createHoverContainer() {
-    d3.selectAll("rect.grid").on("mouseover", d => {
-      // Show hover container at mouse position
-      let hoverContainer = document.getElementById("hoverContainer");
-      hoverContainer.style.display = "block";
-      // Move container to left/top of cursor if we reach the end of the screen.
-      let xOffset = (d.x + hoverContainer.offsetWidth > width) ? (-hoverContainer.offsetWidth - 20) : 20;
-      let yOffset = (d.y + hoverContainer.offsetHeight > height) ? (-hoverContainer.offsetHeight - 20) : 20;
-      hoverContainer.style.left = d.x + xOffset + "px";
-      hoverContainer.style.top = d.y + yOffset + "px";
-
-      // Set labels to correct values
-      let id = this.pairsData[d.target.getAttribute("data-id")].id;
-      this.createInfoList(id);
-
-      let linkAttr = d.target.getAttribute("linkAttr");
-      if (linkAttr == "") {
-        // No e-mail traffic between sender-recipient pair, show message
-        document.getElementById("hover_notraffic").style.display = "block";
-        document.getElementById("hover_hastraffic").style.display = "none";
-      } else {
-        // E-mail traffic exists, show avg sentiment and total e-mails.
-        document.getElementById("hover_notraffic").style.display = "none";
-        document.getElementById("hover_hastraffic").style.display = "block";
-        document.getElementById("linkAttrLabel").innerText = linkAttr;
-        document.getElementById("totalLabel").innerText = d.target.getAttribute("total");
-      }
-
-    });
-
-    d3.selectAll("#adjacencyG").on("mouseleave", d => {
-      // Hide hover container when mouse leaves visualisation.
-      document.getElementById("hoverContainer").style.display = "none";
-    })
-  }
-
-  /**
-   * Fill the info box with data on hover
-   * @param {Integer} id The index of the item in the matrix.
-   */
-  createInfoList(id) {
-    let sourceList = document.getElementById("sourceList");
-    let targetList = document.getElementById("targetList");
-    sourceList.innerHTML = "";
-    targetList.innerHTML = "";
-
-    for (let item of Object.keys(this.matrix[id].attributes)) {
-      // Add attribute to source list
-      if (typeof this.matrix[id].attributes[item].source != "undefined") {
-        let sourceItem = document.createElement("li");
-        sourceItem.innerText = item + ": " + this.matrix[id].attributes[item].source;
-        sourceList.appendChild(sourceItem);
-      }
-      // Add attribute to target list
-      if (typeof this.matrix[id].attributes[item].target != "undefined") {
-        let targetItem = document.createElement("li");
-        targetItem.innerText = item + ": " + this.matrix[id].attributes[item].target;
-        targetList.appendChild(targetItem);
-      }
+function hierarchy(data, delimiter = ".") {
+  let root;
+  const map = new Map;
+  data.forEach(function find(data) {
+    const {name} = data;
+    if (map.has(name)) return map.get(name);
+    const i = name.lastIndexOf(delimiter);
+    map.set(name, data);
+    if (i >= 0) {
+      find({name: name.substring(0, i), children: []}).children.push(data);
+      data.name = name.substring(i + 1);
+    } else {
+      root = data;
     }
-  }
-
-  /**
-   * Highlight grid and labels on hover.
-   */
-  createGridHighlights() {
-    d3.selectAll("rect.grid").on("mousemove", d => {
-      d3.selectAll("rect").style("stroke-width", function(p) {
-        return (p.x * 10 == d.target.x.animVal.value || p.y * 10 == d.target.y.animVal.value) ? "3px" : "1px";
-      });
-    });
-  }
-
-  /**
-   * Create a dictionary of all node combinations with the corresponding count.
-   * @param  {Array}      data The retrieven JSON data.
-   * @return {Dictionary}      The array with all nodes and their count.
-   */
-  createPairsData(data) {
-    for (let link of data.links) {
-      let key = link.source + "-" + link.target;
-      if (!(key in this.pairsData)) continue;
-      // Add curent sentiment to total and increase the amount of links
-      this.pairsData[key].linkAttr += Number(link[this.mainLinkAttribute])
-      this.pairsData[key].total += 1;
-
-      // Save extreme value value
-      if (this.maxEmailCount < this.pairsData[key].linkAttr) {
-        this.maxEmailCount = this.pairsData[key].linkAttr;
-      }
-    }
-
-    // Calculate average sentiment for each sender-recipient pair.
-    for (let key in this.pairsData) {
-      // Skip if there are no links between nodes
-      if (this.pairsData[key].total == 0) continue;
-
-      this.pairsData[key].linkAttr = this.pairsData[key].linkAttr / this.pairsData[key].total;
-
-      if (this.minLinkAttr > this.pairsData[key].linkAttr) {
-        this.minLinkAttr = this.pairsData[key].linkAttr;
-      }
-      if (this.maxLinkAttr < this.pairsData[key].linkAttr) {
-        this.maxLinkAttr = this.pairsData[key].linkAttr;
-      }
-    }
-
-    return this.pairsData;
-  }
-
-  /**
-   * Filter out invalid data from the dataset
-   * @param  {Array} nodes The array of nodes.
-   * @return {Array}       The filtered array of nodes.
-   */
-  filterData(data) {
-    for (let node of data.nodes) {
-      if (node == null) {
-        data.nodes.splice(data.nodes.indexOf(node), 1);
-      }
-    }
-
     return data;
-  }
-
-  /**
-   * Format the nodes into a matrix.
-   * @param  {Array} nodes Array containing the nodes.
-   * @return {Array}       The array with formatted matrix data.
-   */
-  createMatrixData(nodes) {
-    let matrix = [];
-    nodes.forEach((source, a) => {
-      nodes.forEach((target, b) => {
-        let gridID = source[this.mainNodeAttribute] + "-" + target[this.mainNodeAttribute];
-        let grid = {
-          id: gridID,
-          source: source[this.mainNodeAttribute],
-          target: target[this.mainNodeAttribute],
-          attributes: [],
-          x: b,
-          y: a,
-        };
-        // Insert source attributes intro matrix
-        for (let item of this.format.nodeGroups[0]) {
-          if (typeof grid.attributes[item.attribute] != "undefined") {
-            grid.attributes[item.attribute].source = source[item.attribute];
-          } else {
-            grid.attributes[item.attribute] = {source: source[item.attribute]};
-          }
-        }
-        // Insert target attributes intro matrix
-        for (let item of this.format.nodeGroups[1]) {
-          if (typeof grid.attributes[item.attribute] != "undefined") {
-            grid.attributes[item.attribute].target = target[item.attribute];
-          } else {
-            grid.attributes[item.attribute] = {target: target[item.attribute]};
-          }
-        }
-        // Add grid item to matrix
-        let insertID = matrix.length;
-        matrix[insertID] = grid;
-        this.pairsData[gridID] = {id: insertID, linkAttr: 0, total: 0};
-      });
-    });
-
-    return matrix;
-  }
+  });
+  return root;
 }
 
-/**
- * Create an adjacency matrix visualization from an array.
- * @param {Array}  data              JSON array with the data to visualize.
- * @param {Array}  format            The visualisation format.
- */
-function createAdjacencyMatrix(data, format) {
-  new AdjacencyMatrix(data, format);
+bilink = ƒ(root)
+
+function bilink(root) {
+  const map = new Map(root.leaves().map(d => [id(d), d]));
+  for (const d of root.leaves()) d.incoming = [], d.outgoing = d.data.imports.map(i => [d, map.get(i)]);
+  for (const d of root.leaves()) for (const o of d.outgoing) o[1].incoming.push(o);
+  return root;
 }
 
-/**
- * Map a number in between a range to another range.
- * @param  {Number} a Start range minimum.
- * @param  {Number} b Start range maximum.
- * @param  {Number} c End range minimum.
- * @param  {Number} d End range maximum.
- * @return {Number}   A number ranged between c and d.
- */
-Number.prototype.map = function(a, b, c, d) {
-  return c + (d - c) * ((this - a) / (b - a))
-};
+id = ƒ(node)
+
+function id(node) {
+  return `${node.parent ? id(node.parent) + "." : ""}${node.data.name}`;
+}
+
+colorin = "#00f"
+colorout = "#f00"
+colornone = "#ccc"
+width = 954
+radius = 477
+radius = width / 2
+
+line = ƒ(a)
+
+line = d3.lineRadial()
+    .curve(d3.curveBundle.beta(0.85))
+    .radius(d => d.y)
+    .angle(d => d.x)
+
+tree = ƒ(i)
+
+tree = d3.cluster()
+    .size([2 * Math.PI, radius - 100])
+
+d3 = Object {format: ƒ(t), formatPrefix: ƒ(t, n), timeFormat: ƒ(t), timeParse: ƒ(t), utcFormat: ƒ(t), utcParse: ƒ(t), Adder: class, Delaunay: class, FormatSpecifier: ƒ(t), InternMap: class, InternSet: class, Voronoi: class, active: ƒ(t, n), arc: ƒ(), area: ƒ(t, n, e), areaRadial: ƒ(), ascending: ƒ(t, n), autoType: ƒ(t), axisBottom: ƒ(t), axisLeft: ƒ(t), …}
+
+d3 = require("d3@6")

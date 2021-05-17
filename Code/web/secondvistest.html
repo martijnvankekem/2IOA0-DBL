@@ -41,6 +41,7 @@
     </div>
   </div>
 
+<!--
   <div class="wrapper" id="dataFormatter">
     <p>To merge multiple sets of nodes, make sure the attribute names match.<br><br>
     For example: you have a node set (fromID, fromEmail) and a node set (toID, toEmail). Make sure to set the same attribute name (eg. id) for fromID and toID to merge these columns.
@@ -49,6 +50,7 @@
     <div id="dataTable"></div>
     <button onclick="visualise();">Visualise data</button>
   </div>
+  -->
 
   <!-- Visualisations -->
   <canvas class="visualisation" id="canvas"></canvas>
@@ -72,20 +74,23 @@
     </div>
   </div>
 
+
   <!-- Upload container -->
-  <div class="uploadContainer" id="uploadContainer">
+  <!--  <div class="uploadContainer" id="uploadContainer">
     <div class="container">
       <h1>Upload a file to begin.</h1>
       <p>The uploaded file must be a .csv file, delimited by a comma. The first row should contain the column names.</p>
 
       <!-- Upload form -->
-      <form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
+      <!--<form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
         <input type="file" accept=".csv" id="csvFile" name="csvFile" required><br />
         <button class="cancelBtn" onclick="cancelClick();">Cancel</button>
         <input type="submit" id="submit" name="submit" value="Upload" />
       </form>
     </div>
-  </div>
+  </div> -->
+
+
 
   <!-- Javascript -->
   <!-- Libraries -->
