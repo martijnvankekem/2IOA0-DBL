@@ -75,15 +75,23 @@
   <!-- Upload container -->
   <div class="uploadContainer" id="uploadContainer">
     <div class="container">
-      <h1>Upload a file to begin.</h1>
-      <p>The uploaded file must be a .csv file, delimited by a comma. The first row should contain the column names.</p>
+      <div class="fileUpload" id="fileUpload">
+        <h1>Upload a file to begin.</h1>
+        <p>The uploaded file must be a .csv file, delimited by a comma. The first row should contain the column names.</p>
 
-      <!-- Upload form -->
-      <form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
-        <input type="file" accept=".csv" id="csvFile" name="csvFile" required><br />
-        <button class="cancelBtn" onclick="cancelClick();">Cancel</button>
-        <input type="submit" id="submit" name="submit" value="Upload" />
-      </form>
+        <!-- Upload form -->
+        <form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
+          <input type="file" accept=".csv" id="csvFile" name="csvFile" required><br />
+          <button class="rightMargin" onclick="cancelClick();">Cancel</button>
+          <input type="submit" id="submit" name="submit" value="Upload" />
+        </form>
+      </div>
+      <div class="selectVis" id="visSelect">
+        <h1>Choose a visualisation type.</h1>
+        <p>Select the type of visualisation you would like to generate.</p>
+        <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
+        <button onclick="selectVis(1);">Hierarchical Edge</button>
+      </div>        
     </div>
   </div>
 
@@ -96,6 +104,7 @@
   <!-- Custom code -->
   <script src="js/create.js"></script>
   <script src="js/adjacencymatrix.js"></script>
+  <script src="js/hierarchicaledge.js"></script>
 
 
 </body>

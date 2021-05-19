@@ -33,6 +33,17 @@ body {
   background-color: #fff;
 }
 
+.uploadContainer .container .fileUpload {
+  display: none;
+}
+
+.uploadContainer .container .fileUpload.visible {
+  display: block;
+}
+.uploadContainer .container .selectVis.hidden {
+  display: none;
+}
+
 .uploadContainer .container h1 {
   font-family: "Roboto", sans-serif;
   margin-bottom: 10px;
@@ -110,14 +121,15 @@ header nav ul li a button {
   margin-top: -1em;
 }
 
-button.cancelBtn {
-  margin-right: 20px;
+button.rightMargin {
+  margin-right: 10px;
 }
 
 button, input[type="submit"] {
   margin-top: 20px;
+  padding: 0 20px;
   cursor: pointer;
-  width: 9em;
+  min-width: 9em;
   height: 3em;
   border: none;
   border-radius: 2rem;
@@ -139,13 +151,13 @@ input[type="submit"]:hover {
   max-height: 200px;
 }
 
-pic_example.pic1 {
+.pic_example .pic1 {
   max-height: 200px;
 }
 
-pic_example.pic2 {
+.pic_example .pic2 {
   display: inline-block;
-  float:right;
+  float: right;
   margin-right: 500px;
   height: 200px;
   width: 200px;

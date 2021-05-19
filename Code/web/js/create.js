@@ -6,6 +6,7 @@
 let formElement;
 let visualisationData = null;
 
+let visType = 0;
 let formData;
 let uploadTable;
 
@@ -72,8 +73,12 @@ function uploadCallbackSuccess(data, uploadType) {
   } else if (uploadType == 1) {
     console.log(responseData);
     document.getElementById("dataFormatter").style.display = "none";
-    createAdjacencyMatrix(responseData, responseData["format"]);
-    // createHierarchicalEdge(responseData, responseData["format"]);
+
+    if (visType == 0) {
+      createAdjacencyMatrix(responseData, responseData["format"]);
+    } else if (visType == 1) {
+      createHierarchicalEdge(responseData, responseData["format"]);
+    }
   }
 
   // Hide the spinner and upload container
@@ -144,15 +149,27 @@ function visualise() {
   let jsonString = JSON.stringify(groupData);
   formData.append("format", jsonString);
   // Send data to the backend
-  sendUploadRequest('php/createAdjacencyData.php', 1, formData);
+  let scriptURL = (visType == 0) ? 'php/createAdjacencyData.php' : 'php/createHierarchicalEdgeData.php';
+  sendUploadRequest(scriptURL, 1, formData);
 }
 
 /**
  * Handler for the cancel button click
  */
 function cancelClick() {
-  // Go to homepage.
-  window.location.href = "index.html";
+  // Go to visualisation select window.
+  document.getElementById("fileUpload").classList.remove("visible");
+  document.getElementById("visSelect").classList.remove("hidden");
+}
+
+/**
+ * Handle visualisation type button click
+ * @param {Integer} visType_ The type of visualisation to generate.
+ */
+function selectVis(visType_) {
+  visType = visType_;
+  document.getElementById("fileUpload").classList.add("visible");
+  document.getElementById("visSelect").classList.add("hidden");
 }
 
 /**
