@@ -19,7 +19,7 @@ body {
   left: 0;
   top: 0;
   z-index: 0;
-  background-color: rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .uploadContainer .container {
@@ -134,13 +134,21 @@ input[type="submit"]:hover {
   background-size: 0% 100%, 100% 100%;
 }
 
+.pic_example {
+  filter: grayscale(1);
+  max-height: 200px;
+}
 
-.pic_example{
-  filter:grayscale(1);
-  dispay: table;
-  justify-content: center;
-  align-items: flex-start;
-  padding-left: 33rem;
+pic_example.pic1 {
+  max-height: 200px;
+}
+
+pic_example.pic2 {
+  display: inline-block;
+  float:right;
+  margin-right: 500px;
+  height: 200px;
+  width: 200px;
 }
 
 .intro {
@@ -148,11 +156,11 @@ input[type="submit"]:hover {
   padding: 0 10px;
   height: 150px;
   width: 940px;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 2rem;
 }
 
-h1.intro{
+h1.intro {
   height: 120px;
   background-color: #add8e6;
   z-index: 1;
@@ -163,6 +171,6 @@ h1.intro{
   padding: 0 10px;
   height: 200px;
   width: 940px;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 2rem;
 }
