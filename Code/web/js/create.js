@@ -70,8 +70,10 @@ function uploadCallbackSuccess(data, uploadType) {
   if (uploadType == 0) {
     populateTable(responseData);
   } else if (uploadType == 1) {
+    console.log(responseData);
     document.getElementById("dataFormatter").style.display = "none";
     createAdjacencyMatrix(responseData, responseData["format"]);
+    // createHierarchicalEdge(responseData, responseData["format"]);
   }
 
   // Hide the spinner and upload container
@@ -142,7 +144,7 @@ function visualise() {
   let jsonString = JSON.stringify(groupData);
   formData.append("format", jsonString);
   // Send data to the backend
-  sendUploadRequest('php/uploadData.php', 1, formData);
+  sendUploadRequest('php/createAdjacencyData.php', 1, formData);
 }
 
 /**

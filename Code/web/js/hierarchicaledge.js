@@ -1,97 +1,80 @@
 /**
- * Adjacency Matrix visualization - DBL Visualization
+ * Hierarchical Edge Diagram visualization - DBL Visualization
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
 /**
- *  -Hierarchical Edge Diagram - Visualization Class
+ * Hierarchical Edge Diagram - Visualization Class
  */
-class hierarcicaledge {
+class HierarchicalEdge {
+  /**
+   * Constructor for HierarcicalEdge.
+   * @param {Array}  json              JSON array with data to visualize.
+   * @param {Array}  format            The visualisation format.
+   */
+  constructor(json, format) {
+    this.data = json;
+    this.format = format;
 
-  var diameter = 960,
-      radius = diameter / 2,
-      innerRadius = radius - 120;
+    this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
 
-  var cluster = d3.cluster()
-      .size([360, innerRadius]);
+    this.diameter = 960;
+    this.radius = this.diameter / 2
+    this.innerRadius = this.radius - 120;
 
-  var line = d3.radialLine()
-      .curve(d3.curveBundle.beta(0.5))
-      .radius(function(d) { return d.y; })
-      .angle(function(d) { return d.x / 180 * Math.PI; });
+    this.mapJSONData();
+  }
 
-  var svg = d3.select("body").append("svg")
-      .attr("width", diameter)
-      .attr("height", diameter)
-    .append("g")
-      .attr("transform", "translate(" + radius + "," + radius + ")");
+  /**
+   * Parse JSON and map data.
+   */
+  mapJSONData() {
+    let cluster = d3.cluster()
+      .size([360, this.innerRadius]);
+      
+    this.createMatrix(cluster);
+  }
 
-  var link = svg.append("g").selectAll(".link"),
-      node = svg.append("g").selectAll(".node");
+  createMatrix(cluster) {
+    let line = d3.lineRadial()
+      .curve(d3.curveBundle.beta(0.85))
+      .radius(d => d.y)
+      .angle(d => (d.x / 180 * Math.PI));
 
-  d3.csv("enron.csv", function(error, credits) {
-    if (error) throw error;
+    let svg = d3.select("svg")
+      .attr("width", this.diameter)
+      .attr("height", this.diameter)
+      .append("g")
+      .attr("transform", "translate(" + this.radius + "," + this.radius + ")");
+      
+    let link = svg.append("g").selectAll(".link");
+    let node = svg.append("g").selectAll(".node");
 
-    var classes = creditsToClasses( credits );
+    // let nodes = cluster.nodes(this.packageHierarchy(this.data.nodes));
+    // let links = this.packageImports(nodes);
 
-    var root = packageHierarchy(classes)
-        .sum(function(d) { return d.size; });
-
-    cluster(root);
-
-    link = link
-      .data(packageImports(root.leaves()))
-      .enter().append("path")
-        .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
-        .attr("class", "link")
-        .attr("d", line);
+    // link = link
+    //   .data(bundle(links))
+    //   .enter().append("path")
+    //   .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
+    //   .attr("class", "link")
+    //   .attr("d", line);
 
     node = node
-      .data(root.leaves())
+      .data(this.data.nodes)
       .enter().append("text")
         .attr("class", "node")
-        .attr("dy", "0.31em")
+        .attr("dy", ".31em")
         .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
-        .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-        .text(function(d) {
-  		if( d.data.key != "FULL NAME")
-  			return d.data.key;
-  	  })
-        .on("mouseover", mouseovered)
-        .on("mouseout", mouseouted);
-  });
-
-  function mouseovered(d) {
-    node
-        .each(function(n) { n.target = n.source = false; });
-
-    link
-        .classed("link--target", function(l) { if (l.target === d) return l.source.source = true; })
-        .classed("link--source", function(l) { if (l.source === d) return l.target.target = true; })
-      .filter(function(l) { return l.target === d || l.source === d; })
-        .raise();
-
-    node
-        .classed("node--target", function(n) { return n.target; })
-        .classed("node--source", function(n) { return n.source; });
+        .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+        .text(function(d) { return d.key; });
   }
 
-  function mouseouted(d) {
-    link
-        .classed("link--target", false)
-        .classed("link--source", false);
-
-    node
-        .classed("node--target", false)
-        .classed("node--source", false);
-  }
-
-  // Lazily construct the package hierarchy from class names.
-  function packageHierarchy(classes) {
-    var map = {};
-
+  packageHierarchy(classes) {
+    let map = {};
+  
     function find(name, data) {
-      var node = map[name], i;
+      let node = map[name], i;
       if (!node) {
         node = map[name] = data || {name: name, children: []};
         if (name.length) {
@@ -102,68 +85,40 @@ class hierarcicaledge {
       }
       return node;
     }
+  
+    for (let item in classes) {
+      console.log(item);
+      find(item[this.mainNodeAttribute], item);
+    }
 
-    classes.forEach(function(d) {
-  	if( typeof d.name != 'undefined')
-  		find(d.name, d);
-    });
-
-    return d3.hierarchy(map[""]);
+    return map[""];
   }
 
-  // Return a list of imports for the given array of nodes.
-  function packageImports(nodes) {
-    var map = {},
-        imports = [];
-
+  packageImports(nodes) {
+    let map = {};
+    let links = [];
+  
     // Compute a map from name to node.
     nodes.forEach(function(d) {
-      map[d.data.name] = d;
+      map[d[mainNodeAttribute]] = d;
     });
-
+  
     // For each import, construct a link from the source to target node.
     nodes.forEach(function(d) {
-      if (d.data.imports)
-  		d.data.imports.forEach(function(i) {
-  			var input = map[d.data.name];
-  			var mapi = map[i];
-  			if( typeof mapi != 'undefined'){
-  				var path = input.path(mapi);
-  				imports.push(path);
-  			}
-  		});
+      if (d.links) d.links.forEach(function(i) {
+        links.push({source: map[d[mainNodeAttribute]], target: map[i]});
+      });
     });
-
-    return imports;
+  
+    return links;
   }
+}
 
-  function creditsToClasses( credits){
-   var classArray = [];
-
-   for( var column =0; column < credits.columns.length; column++){
-  	 var classObj = {};
-  	 classObj.name =  credits.columns[column];
-  	 classObj.size = 1;
-  	 classObj.imports=[];
-  	 classArray.push(classObj);
-   }
-   for(var row =1; row < credits.length; row++){
-   	var classObj = {};
-  	var contributor = credits[row];
-  	classObj.name = contributor["FULL NAME"];
-  	classObj.imports=[];
-
-  	var size =1;
-  	for( var column = 0; column < credits.columns.length;column++){
-  		if( contributor[credits.columns[column]]==1){
-  			classObj.imports.push(credits.columns[column]) ;
-  			size++;
-  		}
-  	}
-  	classObj.size = size;
-
-  	classArray.push(classObj);
-
-   }
-   return classArray;
-  }
+/**
+ * Create an hierarchical edge visualization from an array.
+ * @param {Array}  data              JSON array with the data to visualize.
+ * @param {Array}  format            The visualisation format.
+ */
+ function createHierarchicalEdge(data, format) {
+  new HierarchicalEdge(data, format);
+}
