@@ -85,8 +85,9 @@ class AdjacencyMatrix {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the color by average sentiment
           return d3.scaleLinear()
-            .domain([-0.01, 0.01])
-            .range(["rgb(245, 66, 66)", "rgb(43, 227, 86)"])(Number(pairsData[d.id].linkAttr));
+            .domain([-0.01, 0.00, 0.01])
+            .clamp(true)
+            .range(["#f55442", "#f5ad42", "#5ec744"])(Number(pairsData[d.id].linkAttr));
         } else {
           // No pair exists, so show white square
           return "#fff";
