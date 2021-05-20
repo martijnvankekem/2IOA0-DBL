@@ -71,7 +71,6 @@ function uploadCallbackSuccess(data, uploadType) {
   if (uploadType == 0) {
     populateTable(responseData);
   } else if (uploadType == 1) {
-    console.log(responseData);
     document.getElementById("dataFormatter").style.display = "none";
 
     if (visType == 0) {
