@@ -46,12 +46,11 @@ body {
 
 .uploadContainer .container h1 {
   font-family: "Roboto", sans-serif;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
 .uploadContainer .container p {
   margin-top: 0;
-  margin-bottom: 20px;
   font-size: 0.8em;
 }
 
@@ -68,6 +67,8 @@ canvas.visualisation {
 div.visualisation {
   z-index: -1;
   display: inline-block;
+  overflow-x: auto;
+  width: 100%;
 }
 
 div.visualisation svg:empty {
@@ -105,7 +106,6 @@ header nav ul {
 }
 
 header nav ul li {
-  float: left;
   display: inline-block;
   margin-top: 50px;
 }
@@ -125,8 +125,19 @@ button.rightMargin {
   margin-right: 10px;
 }
 
-button, input[type="submit"] {
+.uploadContainer a {
+  text-decoration: none;
+  color: #86c5da;
   margin-top: 20px;
+  display: block;
+}
+
+.uploadContainer a:hover {
+  color: #6a9dad;
+}
+
+button, input[type="submit"] {
+  margin-top: 10px;
   padding: 0 20px;
   cursor: pointer;
   min-width: 9em;
@@ -157,32 +168,21 @@ input[type="submit"]:hover {
 
 .pic_example .pic2 {
   display: inline-block;
-  float: right;
   margin-right: 500px;
   height: 200px;
   width: 200px;
 }
 
-.intro {
+.infobox {
   margin: 0 auto;
-  padding: 0 10px;
-  height: 150px;
+  padding: 10px 20px;
+  min-height: 150px;
   width: 940px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2rem;
+  margin-top: 20px;
+  background: rgba(204, 204, 204, 0.34);
+  border-radius: 15px;
 }
 
-h1.intro {
-  height: 120px;
-  background-color: #add8e6;
-  z-index: 1;
-}
-
-.background {
-  margin: 0 auto;
-  padding: 0 10px;
-  height: 200px;
-  width: 940px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2rem;
+.infobox h2 {
+  margin: 10px 0;
 }

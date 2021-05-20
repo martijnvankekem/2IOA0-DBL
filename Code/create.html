@@ -82,7 +82,7 @@
         <!-- Upload form -->
         <form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
           <input type="file" accept=".csv" id="csvFile" name="csvFile" required><br />
-          <button class="rightMargin" onclick="cancelClick();">Cancel</button>
+          <button class="rightMargin" onclick="cancelClick(1);">Cancel</button>
           <input type="submit" id="submit" name="submit" value="Upload" />
         </form>
       </div>
@@ -90,7 +90,8 @@
         <h1>Choose a visualisation type.</h1>
         <p>Select the type of visualisation you would like to generate.</p>
         <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
-        <button onclick="selectVis(1);">Hierarchical Edge</button>
+        <button onclick="selectVis(1);">Hierarchical Edge</button><br>
+        <a href="#" onclick="cancelClick(0);">Back to previous page</a>
       </div>        
     </div>
   </div>

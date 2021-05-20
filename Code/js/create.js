@@ -155,11 +155,17 @@ function visualise() {
 
 /**
  * Handler for the cancel button click
+ * @param {Integer} cancelType The type of cancel button to handle (0 = back to home, 1 = reshow vis type)
  */
-function cancelClick() {
-  // Go to visualisation select window.
-  document.getElementById("fileUpload").classList.remove("visible");
-  document.getElementById("visSelect").classList.remove("hidden");
+function cancelClick(cancelType) {
+  if (cancelType == 0) {
+    // Go to previous page in history.
+    window.history.back();
+  } else if (cancelType == 1) {
+    // Re-show visualization type window.
+    document.getElementById("fileUpload").classList.remove("visible");
+    document.getElementById("visSelect").classList.remove("hidden");  
+  }
 }
 
 /**
