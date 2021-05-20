@@ -1,4 +1,4 @@
-# Dataset Visualisation - 2IOA0-DBL
+# Dataset Visualization - 2IOA0-DBL
 This project was created with the intent to simplify the visualization of datasets.
 
 ### Browser support
