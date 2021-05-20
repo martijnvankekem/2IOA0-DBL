@@ -19,8 +19,8 @@ As explained above, the application is built to work with the Enron e-mail datas
 A user can however modify the attributes to create a custom visualization.
 
 For example, a user wants to create a visualization between the different job titles in the data set, instead of the e-mail addresses.
-This can be achieved by dragging the 'jobtitle' attribute for both the source node group, as the target node group, to the top.
+This can be achieved by dragging the 'jobtitle' attribute for both the source node group, and the target node group, to the top.
 
 **Important**: attributes you want to merge, must have the same value in the 'attribute' column. For example, 'fromJobtitle' and 'toJobtitle' must have a common attribute value, eg. 'jobtitle'.
 
-A user can also add other relevant attributes, which are otherwise unused. This will not change the visualization itself, however, it will add the attribute to the information box for further inspection later on.
+A user can also add other relevant attributes, which are otherwise unused. This will not change the appearance of the visualization, but it will add the attribute to the information box for further inspection later on.
