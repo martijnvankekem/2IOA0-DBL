@@ -31,6 +31,13 @@ A live example is available via the link below.
 
 [Open Example](https://projects.vankekem.com/dbl/)
 
+### Targets for this project
+- [x] Creating an adjacency matrix
+- [x] Be able to upload a custom dataset.
+- [x] Ability to work with any possible type of dataset.
+- [ ] Creating an hierarchical edge diagram.
+- [ ] Allowing interaction between the two visualizations.
+
 ### Authors
 This project is created and maintained by the following authors:
 * Heleen van Dongen
