@@ -297,7 +297,7 @@ class AdjacencyMatrix {
 
   /**
    * Filter out invalid data from the dataset
-   * @param  {Array} nodes The array of nodes.
+   * @param  {Array} json The array of json data.
    * @return {Array}       The filtered array of nodes.
    */
   filterData(json) {
