@@ -1,8 +1,7 @@
 svg {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
   z-index: 100;
+  padding: 20px;
 }
 
 .grid {
