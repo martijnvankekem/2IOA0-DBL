@@ -1,6 +1,10 @@
 # Dataset Visualisation - 2IOA0-DBL
 This project was created with the intent to simplify the visualization of datasets.
 
+### Browser support
+Currently, this application is fully tested on the latest version of Google Chrome.
+Other browsers are not thoroughly tested yet, and therefore full functionality is not guaranteed!
+
 ### How to visualize
 
 [Click here for instructions](HOWTO.md)
