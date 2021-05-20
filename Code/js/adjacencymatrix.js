@@ -84,8 +84,9 @@ class AdjacencyMatrix {
       .style("fill", d => {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the color by average sentiment
-          const mappedNumber = Number(pairsData[d.id].linkAttr).map(-0.1, 0.1, 0, 1);
-          return d3.interpolatePlasma(mappedNumber);
+          return d3.scaleLinear()
+            .domain([-0.01, 0.01])
+            .range(["rgb(245, 66, 66)", "rgb(43, 227, 86)"])(Number(pairsData[d.id].linkAttr));
         } else {
           // No pair exists, so show white square
           return "#fff";

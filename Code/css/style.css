@@ -127,13 +127,17 @@ button.rightMargin {
 
 .uploadContainer a {
   text-decoration: none;
-  color: #86c5da;
+  color: #70a7b8;
   margin-top: 20px;
   display: block;
 }
 
 .uploadContainer a:hover {
-  color: #6a9dad;
+  color: #86c5da;
+}
+
+input[type="file"] {
+  margin-bottom: 10px;
 }
 
 button, input[type="submit"] {
@@ -159,16 +163,28 @@ input[type="submit"]:hover {
 
 .pic_example {
   filter: grayscale(1);
-  max-height: 200px;
+  height: 200px;
+  display: inline-block;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.pic_example .pic1,
+.pic_example .pic2 {
+  display: inline-block;
 }
 
 .pic_example .pic1 {
+  margin-right: 100px;
+}
+
+.pic_example .pic1 img {
   max-height: 200px;
 }
 
-.pic_example .pic2 {
+.pic_example .pic2 img {
   display: inline-block;
-  margin-right: 500px;
   height: 200px;
   width: 200px;
 }

@@ -2,6 +2,7 @@ svg {
   display: block;
   z-index: 100;
   padding: 20px;
+  margin: 0 auto;
 }
 
 .grid {
