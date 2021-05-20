@@ -154,6 +154,8 @@ button, input[type="submit"] {
   font-size: 1rem;
   background: linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
     linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
+  border: 1px solid linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
+  linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
   transition: background-size .6s ease;
 }
 

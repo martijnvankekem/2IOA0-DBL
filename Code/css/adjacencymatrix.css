@@ -1,7 +1,6 @@
 svg {
   display: block;
   z-index: 100;
-  padding: 20px;
   margin: 0 auto;
 }
 
@@ -64,4 +63,23 @@ circle.target {
 
 .hoverContainer p#hover_notraffic {
   display: none;
+}
+
+.controlWindow {
+  display: none;
+  margin: 20px 0;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.buttonContainer {
+  display: block;
+  width: 293px;
+  margin: 0 auto;
+}
+
+.buttonContainer button {
+  margin: 0;
 }

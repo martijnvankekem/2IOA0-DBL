@@ -20,9 +20,13 @@ class AdjacencyMatrix {
     this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
     this.pairsData = [];
 
+    this.sizeData = [0, 0, 0, 0];
+
     this.maxEmailCount = 1;
     this.minLinkAttr = 1;
     this.maxLinkAttr = -1;
+
+    this.createControlWindow();
     this.mapJSONData();
   }
 
@@ -43,12 +47,50 @@ class AdjacencyMatrix {
    * Set the size of the matrix based on its contents
    */
   setMatrixSize() {
-    let svg = document.getElementById("vissvg");
+    this.svg = document.getElementById("vissvg");
     // Get the bounds of the SVG content
-    let bbox = svg.getBBox();
+    let bbox = this.svg.getBBox();
     // Update the width and height using the size of the contents
-    svg.setAttribute("width", bbox.x + bbox.width + bbox.x);
-    svg.setAttribute("height", bbox.y + bbox.height + bbox.y);
+    this.sizeData = [bbox.x + bbox.width + bbox.x, bbox.y + bbox.height + bbox.y];
+    
+    this.svg.setAttribute("width", this.sizeData[0]);
+    this.svg.setAttribute("height", this.sizeData[1]);
+    this.svg.setAttribute("viewBox", `0 0 ${this.sizeData[0]} ${this.sizeData[1]}`);
+  }
+
+  /**
+   * Change the current zoom scale of the visualization
+   * @param {Boolean} zoomIn Whether to zoom in or out (True = zoom in)
+   */
+  changeZoom(zoomIn) {
+    const zoomFactor = 0.95;
+
+    // Divide x and y by the zoom factor
+    if (zoomIn) {
+      this.sizeData[0] /= zoomFactor;
+      this.sizeData[1] /= zoomFactor;  
+    } else {
+      this.sizeData[0] *= zoomFactor;
+      this.sizeData[1] *= zoomFactor;  
+    }
+
+    this.svg.setAttribute("width", this.sizeData[0]);
+    this.svg.setAttribute("height", this.sizeData[1]);
+  }
+
+  /**
+   * Create elements for control window
+   */
+  createControlWindow() {
+    let controlWindow = document.getElementById("controlWindow");
+    let zoomIn = document.getElementById("button_zoomIn");
+    let zoomOut = document.getElementById("button_zoomOut");
+
+    zoomIn.addEventListener("click", () => this.changeZoom(true));
+    zoomOut.addEventListener("click", () => this.changeZoom(false));
+    
+    // Set control window to visible.
+    controlWindow.style.display = "block";
   }
 
   /**
