@@ -179,12 +179,22 @@ function selectVis(visType_) {
 }
 
 /**
+ * Handle an unexpected JavaScript error
+ */
+function onErrorOccurred() {
+  document.getElementById("errorOverlay").style.display = "block";
+}
+
+/**
  * When the DOM content is loaded.
  */
 function onWindowLoaded() {
   // Initialize upload form
   formElement = document.getElementById("uploadForm");
   formElement.onsubmit = formSubmit;
+
+  // Handle unexpected errors
+  window.addEventListener("error", onErrorOccurred);
 
   // Initialize uploaded data table
   uploadTable = new Tabulator("#dataTable", {

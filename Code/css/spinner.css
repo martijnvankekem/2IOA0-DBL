@@ -23,7 +23,9 @@
   animation: lds-dual-ring 1.2s linear infinite;
 }
 
+div.errorOverlay,
 div.spinner {
+  display: none;
   width: 100%;
   height: 100%;
   left: 0;
@@ -32,10 +34,12 @@ div.spinner {
   background-color: #313131;
 }
 
+div.errorOverlay,
 div.spinner {
   z-index: 998;
 }
 
+div.errorOverlay div.container,
 div.spinner div.container {
   position: absolute;
   width: 100%;
@@ -48,6 +52,7 @@ div.spinner div.container {
   height: 100px;
 }
 
+div.errorOverlay div.container:after,
 div.spinner div.container:after {
   content: attr(txt);
   bottom: 0px;
@@ -55,6 +60,17 @@ div.spinner div.container:after {
   left: 50%;
   transform: translateX(-50%);
   color: #fff;
+}
+
+div.errorOverlay div.container svg {
+  width: 50px;
+  height: 50px;
+  fill: #fff;
+}
+
+div.errorOverlay div.container div.title {
+  font-size: 20px;
+  margin-bottom: 10px;
 }
 
 @keyframes lds-dual-ring {

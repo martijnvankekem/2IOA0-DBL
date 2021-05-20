@@ -58,7 +58,7 @@ class AdjacencyMatrix {
    */
   createMatrix(matrix, pairsData) {
     // Create grid
-    d3.select("svg").append("g")
+    d3.select("#vissvg").append("g")
       .attr("transform", "translate(160,160)")
       .attr("id", "adjacencyG")
       .selectAll("rect")
@@ -105,7 +105,7 @@ class AdjacencyMatrix {
       });
 
     // Create text on x-axis
-    d3.select("svg")
+    d3.select("#vissvg")
       .append("g")
       .attr("transform", "translate(150,150)")
       .selectAll("text")
@@ -120,7 +120,7 @@ class AdjacencyMatrix {
       .style("font-size", "10px");
 
     // Create text on y-axis
-    d3.select("svg")
+    d3.select("#vissvg")
       .append("g").attr("transform", "translate(150,150)")
       .selectAll("text")
       .data(this.data.nodes)
