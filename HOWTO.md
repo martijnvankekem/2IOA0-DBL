@@ -1,11 +1,11 @@
 # How to visualize
 Currently, only one visualization type can be generated. Although the support for the Hierarchical Edge Diagram is built in the application, this is not functional yet.
 
-To create an adjacency matrix, visit the 'Visualisations' tab in the menu-bar, and click 'Adjacency Matrix' in the visualization type window.
+To create an adjacency matrix, visit the 'Visualizations' tab in the menu-bar, and click 'Adjacency Matrix' in the visualization type window.
 You can now upload a dataset to visualize. We recommend using the Enron e-mail dataset in the 'Relevant files' folder, as this is guaranteed to be a working example.
 
 The user now can re-order the columns in the CSV file to give them a specific meaning.
-All columns are ordered by default for the Enron e-mail dataset. When the user uses this dataset, they will only have to click 'Visualise data' to generate a visualization.
+All columns are ordered by default for the Enron e-mail dataset. When the user uses this dataset, they will only have to click 'Visualize data' to generate a visualization.
 
 However, the user also has the freedom to consider another attribute as the main attribute. Please read the information under 'Creating a custom visualization' below.
 
