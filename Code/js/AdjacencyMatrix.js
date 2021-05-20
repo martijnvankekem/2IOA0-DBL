@@ -344,7 +344,7 @@ class AdjacencyMatrix {
           x: b,
           y: a,
         };
-        // Insert source attributes intro matrix
+        // Insert source attributes into matrix
         for (let item of this.format.nodeGroups[0]) {
           if (typeof grid.attributes[item.attribute] != "undefined") {
             grid.attributes[item.attribute].source = source[item.attribute];
@@ -352,7 +352,7 @@ class AdjacencyMatrix {
             grid.attributes[item.attribute] = {source: source[item.attribute]};
           }
         }
-        // Insert target attributes intro matrix
+        // Insert target attributes into matrix
         for (let item of this.format.nodeGroups[1]) {
           if (typeof grid.attributes[item.attribute] != "undefined") {
             grid.attributes[item.attribute].target = target[item.attribute];
@@ -377,7 +377,7 @@ class AdjacencyMatrix {
  * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
-  matrix = new AdjacencyMatrix(data, format);
+  new AdjacencyMatrix(data, format);
 }
 
 /**
