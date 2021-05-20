@@ -1,5 +1,5 @@
 <!--
-  Create a new visualisation - DBL Visualization
+  Create a new visualization - DBL Visualization
   Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
 -->
 
@@ -9,7 +9,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
-  <title>New visualisation - DBL</title>
+  <title>New visualization - DBL</title>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
@@ -27,7 +27,7 @@
       <nav>
         <ul>
           <li><a href="index.html"><button>Home</button></a></li>
-          <li><a href="create.html"><button>Visualisations</button></a></li>
+          <li><a href="create.html"><button>Visualizations</button></a></li>
           <li><a href="backgroundinfo.html"><button>Background Info</button></a></li>
         </ul>
       </nav>
@@ -56,7 +56,7 @@
     Do this for fromEmail, toEmail as well.<br><br>
     <b>Important:</b> The primary attribute should be the first item in the table. The primary link attribute should be numeric.</p>
     <div id="dataTable"></div>
-    <button onclick="visualise();">Visualise data</button>
+    <button onclick="visualize();">Visualize data</button>
   </div>
 
   <!-- Control window -->
@@ -68,9 +68,8 @@
     </div>
   </div>
 
-  <!-- Visualisations -->
-  <canvas class="visualisation" id="canvas"></canvas>
-  <div class="visualisation" id="visContainer">
+  <!-- Visualizations -->
+  <div class="visualization" id="visContainer">
     <svg class="vissvg" id="vissvg"></svg>
     <div id="hoverContainer" class="hoverContainer">
       <div class="content">
@@ -105,8 +104,8 @@
         </form>
       </div>
       <div class="selectVis" id="visSelect">
-        <h1>Choose a visualisation type.</h1>
-        <p>Select the type of visualisation you would like to generate.</p>
+        <h1>Choose a visualization type.</h1>
+        <p>Select the type of visualization you would like to generate.</p>
         <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
         <button onclick="selectVis(1);">Hierarchical Edge</button><br>
         <a href="#" onclick="cancelClick(0);">Back to previous page</a>
