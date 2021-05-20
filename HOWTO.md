@@ -7,10 +7,12 @@ You can now upload a dataset to visualize. We recommend using the Enron e-mail d
 The user now can re-order the columns in the CSV file to give them a specific meaning.
 All columns are ordered by default for the Enron e-mail dataset. When the user uses this dataset, they will only have to click 'Visualize data' to generate a visualization.
 
-However, the user also has the freedom to consider another attribute as the main attribute. Please read the information under 'Creating a custom visualization' below.
+However, the user also has the freedom to consider another attribute as the main attribute. Please read the information under [Creating a custom visualization](#creating-a-custom-visualization) below for more information.
 
 After the visualization has been generated, the user can interact with it. By hovering over the matrix, the current row and column will highlight, and an information box will appear.
 The 'Average' number in the information box is the average of the main link attribute, which by default is the sentiment. Also, the total amount of links between two nodes is shown.
+
+To make the visualization larger or smaller, the user can use the buttons 'Zoom in' and 'Zoom out' at the top of the page.
 
 ### Creating a custom visualization
 As explained above, the application is built to work with the Enron e-mail dataset by default. This dataset is included in the 'Relevant files' folder, under the name ```enron-v1.csv```.
