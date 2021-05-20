@@ -44,24 +44,32 @@
   <!-- Error screen -->
   <div class="errorOverlay" id="errorOverlay">
     <div class="container">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <path
+          d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z" />
+      </svg>
       <div class="title">Something went wrong!</div>
-      <div class="text">This feature might not be implemented yet, or might not be working for a 100%.<br>Please try again later.</div>
+      <div class="text">This feature might not be implemented yet, or might not be working for a 100%.<br>Please try
+        again later.</div>
     </div>
   </div>
 
   <div class="wrapper" id="dataFormatter">
     <p>To merge multiple sets of nodes, make sure the attribute names match.<br><br>
-    For example: you have a node set (fromID, fromEmail) and a node set (toID, toEmail). Make sure to set the same attribute name (eg. id) for fromID and toID to merge these columns.
-    Do this for fromEmail, toEmail as well.<br><br>
-    <b>Important:</b> The primary attribute should be the first item in the table. The primary link attribute should be numeric.</p>
+      For example: you have a node set (fromID, fromEmail) and a node set (toID, toEmail). Make sure to set the same
+      attribute name (eg. id) for fromID and toID to merge these columns.
+      Do this for fromEmail, toEmail as well.<br><br>
+      <b>Important:</b> The primary attribute should be the first item in the table. The primary link attribute should
+      be numeric.
+    </p>
     <div id="dataTable"></div>
     <button onclick="visualize();">Visualize data</button>
   </div>
 
   <!-- Control window -->
   <div class="controlWindow" id="controlWindow">
-    <p class="helpText">The horizontal scroll bar is at the bottom of the visualization. You can also use SHIFT + Scroll.</p>
+    <p class="helpText">The horizontal scroll bar is at the bottom of the visualization. You can also use SHIFT +
+      Scroll.</p>
     <div class="buttonContainer">
       <button id="button_zoomIn">Zoom in</button>
       <button id="button_zoomOut">Zoom out</button>
@@ -94,7 +102,8 @@
     <div class="container">
       <div class="fileUpload" id="fileUpload">
         <h1>Upload a file to begin.</h1>
-        <p>The uploaded file must be a .csv file, delimited by a comma. The first row should contain the column names.</p>
+        <p>The uploaded file must be a .csv file, delimited by a comma. The first row should contain the column names.
+        </p>
 
         <!-- Upload form -->
         <form id="uploadForm" action="php/getColumnsFromCSV.php" method="POST">
@@ -109,7 +118,7 @@
         <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
         <button onclick="selectVis(1);">Hierarchical Edge</button><br>
         <a href="#" onclick="cancelClick(0);">Back to previous page</a>
-      </div>        
+      </div>
     </div>
   </div>
 
@@ -118,12 +127,14 @@
   <script src="https://d3js.org/d3.v6.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="js/tabulator.min.js"></script>  
+  <script src="js/tabulator.min.js"></script>
   <!-- Custom code -->
   <script src="js/create.js"></script>
-  <script src="js/adjacencymatrix.js"></script>
-  <script src="js/hierarchicaledge.js"></script>
+  <script src="js/AdjacencyMatrix.js"></script>
+  <script src="js/HierarchicalEdge.js"></script>
+  <script src="js/Filter.js"></script>
 
 
 </body>
+
 </html>

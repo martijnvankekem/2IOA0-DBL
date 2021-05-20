@@ -3,6 +3,8 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+let matrix; // TODO: REMOVE THIS!!!
+
 /**
  * Adjacency Matrix - Visualization Class
  */
@@ -13,14 +15,16 @@ class AdjacencyMatrix {
    * @param {Array}  format            The visualization format.
    */
   constructor(json, format) {
+    this.sizeData = [0, 0, 0, 0];
+    this.filters = [];
+
+    this.jsonData = json;
     this.data = this.filterData(json);
     this.format = format;
 
     this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
     this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
     this.pairsData = [];
-
-    this.sizeData = [0, 0, 0, 0];
 
     this.maxEmailCount = 1;
     this.minLinkAttr = 1;
@@ -48,6 +52,7 @@ class AdjacencyMatrix {
    */
   setMatrixSize() {
     this.svg = document.getElementById("vissvg");
+
     // Get the bounds of the SVG content
     let bbox = this.svg.getBBox();
     // Update the width and height using the size of the contents
@@ -297,10 +302,24 @@ class AdjacencyMatrix {
    * @param  {Array} nodes The array of nodes.
    * @return {Array}       The filtered array of nodes.
    */
-  filterData(data) {
-    for (let node of data.nodes) {
+  filterData(json) {
+    let data = json;
+
+    // Remove nodes that don't match the filter.
+    for (let i = data.nodes.length - 1; i >= 0; i--) {
+      let node = data.nodes[i];
+      
+      // Node is null, so remove it and continue.
       if (node == null) {
         data.nodes.splice(data.nodes.indexOf(node), 1);
+        continue;
+      }
+
+      // Check if node matches the filter.
+      for (let filter of this.filters) {
+        if (!filter.checkMatch(node[filter.attribute])) {
+          data.nodes.splice(data.nodes.indexOf(node), 1);
+        }
       }
     }
 
@@ -313,6 +332,8 @@ class AdjacencyMatrix {
    * @return {Array}       The array with formatted matrix data.
    */
   createMatrixData(nodes) {
+    document.getElementById("vissvg").innerHTML = ""; // Clear SVG data
+
     let matrix = [];
     nodes.forEach((source, a) => {
       nodes.forEach((target, b) => {
@@ -358,7 +379,7 @@ class AdjacencyMatrix {
  * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
-  new AdjacencyMatrix(data, format);
+  matrix = new AdjacencyMatrix(data, format);
 }
 
 /**
