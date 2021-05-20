@@ -1,10 +1,10 @@
 /**
- * Create a new visualisation - DBL Visualisation
+ * Create a new visualization - DBL visualization
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
 let formElement;
-let visualisationData = null;
+let visualizationData = null;
 
 let visType = 0;
 let formData;
@@ -16,8 +16,8 @@ const margins = {
   right: 150,
   bottom: 150
 };
-let width = document.documentElement.clientWidth - margins.left - margins.right;
-let height = document.documentElement.clientHeight - margins.bottom;
+const width = document.documentElement.clientWidth - margins.left - margins.right;
+const height = document.documentElement.clientHeight - margins.bottom;
 
 /**
  * User submits the upload form.
@@ -39,7 +39,7 @@ function formSubmit(e) {
 /**
  * Send the upload request to the backend script
  * @param {String}   url        The URL of the backend script
- * @param {Integer}  uploadType The type of upload (0 = column upload, 1 = visualise request).
+ * @param {Integer}  uploadType The type of upload (0 = column upload, 1 = visualize request).
  * @param {FormData} formData   The data to POST to the script.
  */
 function sendUploadRequest(url, uploadType, formData) {
@@ -62,7 +62,7 @@ function sendUploadRequest(url, uploadType, formData) {
 /**
  * Callback when the file upload has succesfully fininshed.
  * @param {XMLHttpRequest} data       The submit request object.
- * @param {Integer}        uploadType The type of upload (0 = column upload, 1 = visualise request).
+ * @param {Integer}        uploadType The type of upload (0 = column upload, 1 = visualize request).
  */
 function uploadCallbackSuccess(data, uploadType) {
   let jsonString = data.response;
@@ -139,9 +139,9 @@ function uploadCallbackError(data) {
 }
 
 /**
- * Visualise the attributes chosen
+ * visualize the attributes chosen
  */
-function visualise() {
+function visualize() {
   // Show spinner
   document.getElementById("spinner").style.display = "block";
   // Convert table to JSON
@@ -169,8 +169,8 @@ function cancelClick(cancelType) {
 }
 
 /**
- * Handle visualisation type button click
- * @param {Integer} visType_ The type of visualisation to generate.
+ * Handle visualization type button click
+ * @param {Integer} visType_ The type of visualization to generate.
  */
 function selectVis(visType_) {
   visType = visType_;

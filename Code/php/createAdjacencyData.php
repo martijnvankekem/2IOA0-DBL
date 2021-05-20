@@ -1,6 +1,6 @@
 <?php
 /**
-  * File upload script - DBL Visualization
+  * Convert CSV data for Adjacency Matrix visualization - DBL Visualization
   * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 

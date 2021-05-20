@@ -1,6 +1,6 @@
 <?php
 /**
-  * Column retriever script - DBL Visualization
+  * Get columns from CSV file - DBL Visualization
   * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 

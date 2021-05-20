@@ -10,7 +10,7 @@ class AdjacencyMatrix {
   /**
    * Constructor for AdjacencyMatrix.
    * @param {Array}  json              JSON array with data to visualize.
-   * @param {Array}  format            The visualisation format.
+   * @param {Array}  format            The visualization format.
    */
   constructor(json, format) {
     this.data = this.filterData(json);
@@ -94,8 +94,8 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Create the visualisation itself.
-   * @param {Array}      matrix     The matrix data to visualise.
+   * Create the visualization itself.
+   * @param {Array}      matrix     The matrix data to visualize.
    * @param {Dictionary} pairsData  Dictionary containing the data of each sender-recipient pair.
    */
   createMatrix(matrix, pairsData) {
@@ -213,7 +213,7 @@ class AdjacencyMatrix {
     });
 
     d3.selectAll("#adjacencyG").on("mouseleave", d => {
-      // Hide hover container when mouse leaves visualisation.
+      // Hide hover container when mouse leaves visualization.
       document.getElementById("hoverContainer").style.display = "none";
     })
   }
@@ -355,7 +355,7 @@ class AdjacencyMatrix {
 /**
  * Create an adjacency matrix visualization from an array.
  * @param {Array}  data              JSON array with the data to visualize.
- * @param {Array}  format            The visualisation format.
+ * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
   new AdjacencyMatrix(data, format);

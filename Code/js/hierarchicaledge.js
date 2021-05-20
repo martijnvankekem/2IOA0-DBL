@@ -10,7 +10,7 @@ class HierarchicalEdge {
   /**
    * Constructor for HierarcicalEdge.
    * @param {Array}  json              JSON array with data to visualize.
-   * @param {Array}  format            The visualisation format.
+   * @param {Array}  format            The visualization format.
    */
   constructor(json, format) {
     this.data = json;
@@ -117,7 +117,7 @@ class HierarchicalEdge {
 /**
  * Create an hierarchical edge visualization from an array.
  * @param {Array}  data              JSON array with the data to visualize.
- * @param {Array}  format            The visualisation format.
+ * @param {Array}  format            The visualization format.
  */
  function createHierarchicalEdge(data, format) {
   new HierarchicalEdge(data, format);
