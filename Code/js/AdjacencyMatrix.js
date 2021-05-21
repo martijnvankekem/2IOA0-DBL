@@ -63,7 +63,7 @@ class AdjacencyMatrix {
 
   /**
    * Change the current zoom scale of the visualization
-   * @param {Boolean} zoomIn Whether to zoom in or out (True = zoom in)
+   * @param {Boolean} zoomIn Whether to zoom in or out (true = zoom in, false = zoom out)
    */
   changeZoom(zoomIn) {
     const zoomFactor = 0.95;
