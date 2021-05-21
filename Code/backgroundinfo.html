@@ -32,14 +32,67 @@
   </header>
 
   <div class="infobox">
-    <h2>Example.</h2>
-    <p>In a world where the collection of online data is increasing exponentially, the need to make sense of this
-      growing pool of data is becoming more and more essential. In addition, the constant evolution of this world
-      through time makes it that static representations of data at one single point in time have large limitations for
-      our understanding of the dynamics of the data (1).
-      Dynamic graph visualizations attempt to map this evolution of relationships between entities in the data in a
-      clearly understandable, scalable and effective manner. In contrast to the static graph, the dynamic graph has the
-      ability to change the structure of the vertices and edges over time (1).
+    <h2>Abstract<span class="color">.</span></h2>
+    <p>In a world where the collection of online data is increasing exponentially, the
+      need to make sense of this growing pool of data is becoming more and more essential.
+      In addition, the constant evolution of this world through time makes it that static
+      representations of data at one single point in time have large limitations for our
+      understanding of the dynamics of the data.
+      Dynamic graph visualizations attempt to map this evolution of relationships between
+      entities in the data in a clearly understandable, scalable and effective manner.
+      In contrast to the static graph, the dynamic graph has the ability to change the
+      structure of the vertices and edges over time.
+      This work provides two different ways to dynamically visualize data that is presented
+      in a .csv file. The visualizations are an adjacency matrix and a hierarchical edge bundling.
+    </p>
+  </div>
+
+  <div class="infobox">
+    <h2>Adjacency Matrix<span class="color">.</span></h2>
+    <p>The first visualization is the adjacency matrix. This is a matrix with rows and
+      columns that hold all the employees that are in the data, so all employees from Enron
+      that either sent or received at least one email. The individual elements of the matrix
+      contain the email traffic between these employees. The matrix will also show additional information, such as the amount of emails sent between two employees and the average sentiment of email traffic between two employees. The matrix is color
+      coded according to the sentiment and origin of an email. For a specific cell x, the row represents the sender and the column the receiver of the email that the element relates to. This data can be modified when loading in the data set. Users
+      can choose to set the job title as rows and columns as well, or include the ID of the
+      sender and receiver in the matrix.
+
+      All elements will have a specific color hue, relating to the average sentiment between
+      the two employees. Then, all the elements will also have a certain opacity which
+      displays the amount of emails sent between the two employees. The more opaque an element
+      is, the more emails have been sent between the two employees. In order for users to
+      efficiently use the matrix, additional information is shown when the mouse is hovered
+      over a particular node. When the user positions the mouse over a node, the sender
+      email, recipient email, average sentiment and amount of emails sent between the two
+      will be shown, as well as the ID of employees when selected. It will also highlight
+      the row and column that the node is in, so users can easily see what row and column
+      the node is in.
+    </p>
+  </div>
+
+  <div class="infobox">
+    <h2>Hierarchical Edge Bundling<span class="color">.</span></h2>
+    <p>The second data visualization on the website is an hierarchical edge diagram.
+      This visualization looks like a circle with all the employee email addresses at the
+      circle’s edge. The emails between employees are then shown by lines going from one
+      email address to another. It also makes use of hierarchical edge bundling. This bundles
+      adjacency edges together to decrease clutter that is usually observed in complex
+      networks like the Enron email dataset. By making use of the edge bundling, the edge
+      diagram will be less cluttered and users can more easily see who sent emails to whom.
+      The hierarchical edge diagram is a good visualization for large datasets, as it is very
+      well organized with a clear overview of the data.
+
+      For the second visualization, a good graph type also needed to be chosen. Since the
+      first visualization already is a matrix-based visualization, the second one had to be
+      something different in order to maximize the amount of information users can get out of
+      the website, with both visualizations combined. This is why we chose to use a
+      hierarchical edge diagram as second visualization. The hierarchical edge diagram makes
+      use of edge bundling, which means that adjacency edges are bundled together. This
+      bundling is what makes the visualization so powerful in clear, simple visualizations.
+      This edge bundling greatly reduces clutter, since edges are bundled together for the
+      time they have the same path. By doing so, relations between nodes can be easily
+      spotted. When tested on users, they reported that the edge bundling greatly increases
+      the readability and usability of the visualization.
     </p>
   </div>
 
