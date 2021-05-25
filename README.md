@@ -16,13 +16,14 @@ Other browsers are not thoroughly tested yet, and therefore full functionality i
 ### Live example
 A live example is available via the link below.
 
-[Open Example](https://projects.vankekem.com/dbl/)
+[Open Example](https://projects.vankekem.com/dblinterim/)
 
 ### Targets for this project
 - [x] Creating an adjacency matrix
 - [x] Be able to upload a custom dataset.
 - [x] Ability to work with any possible type of dataset.
 - [ ] Creating an hierarchical edge diagram.
+- [ ] Filter visualized nodes based on attributes.
 - [ ] Allowing interaction between the two visualizations.
 
 ### Authors
