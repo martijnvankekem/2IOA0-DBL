@@ -23,6 +23,7 @@ A live example is available via the link below.
 - [x] Be able to upload a custom dataset.
 - [x] Ability to work with any possible type of dataset.
 - [ ] Creating an hierarchical edge diagram.
+- [ ] Filter visualized nodes based on attributes.
 - [ ] Allowing interaction between the two visualizations.
 
 ### Authors
