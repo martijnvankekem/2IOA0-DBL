@@ -11,12 +11,14 @@
     /**
      * Constructor for Filter.
      * @param {String} filterAttribute The attribute name to filter.
-     * @param {String} filterValue     The attribute filter value.
+     * @param {Array}  filterValues    The attribute filter values.
+     * @param {String} filterKind      The attribute filter kind.
      * @param {String} filterOperand   The type of comparison to execute (default = equals).
      */
-    constructor(filterAttribute, filterValue, filterOperand = "equals") {
+    constructor(filterAttribute, filterValues, filterKind, filterOperand = "equals") {
         this.attribute = filterAttribute;
-        this.value = filterValue;
+        this.values = filterValues;
+        this.kind = filterKind;
         this.operand = filterOperand;
     }
 
@@ -28,7 +30,7 @@
     checkMatch(attributeValue) {
         switch (this.operand) {
             case "equals":
-                return this.value == attributeValue;
+                return this.values.includes(attributeValue);
             default:
                 return false;
         }

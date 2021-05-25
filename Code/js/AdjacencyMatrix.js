@@ -3,6 +3,8 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+let test;
+
 /**
  * Adjacency Matrix - Visualization Class
  */
@@ -24,6 +26,9 @@ class AdjacencyMatrix {
     this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
     this.pairsData = [];
 
+    this.filterLists = [];
+    this.prepareFilters();
+
     this.maxEmailCount = 1;
     this.minLinkAttr = 1;
     this.maxLinkAttr = -1;
@@ -36,7 +41,7 @@ class AdjacencyMatrix {
    * Parse JSON and map data.
    */
   mapJSONData() {
-    this.matrix = this.createMatrixData(this.data.nodes);
+    this.matrix = this.createMatrixData(this.data.nodes[0], this.data.nodes[1]);
 
     // Get all information about each sender-recipient pair
     this.pairsData = this.createPairsData(this.data);
@@ -45,6 +50,85 @@ class AdjacencyMatrix {
     this.setMatrixSize();
   }
   
+  prepareFilters() {
+    this.attributeValues = this.getAttributeValues(this.jsonData);
+
+    let filterContainer = document.getElementById("filterContainer");
+
+    // Do for every filterable attribute
+    for (let attribute of Object.keys(this.attributeValues)) {
+      // Create a container
+      let newContainer = document.createElement("div");
+      newContainer.classList.add("filter");
+
+      // Create a label
+      let newLabel = document.createElement("label");
+      newLabel.setAttribute("for", "select_"+attribute);
+      newLabel.innerHTML = attribute;
+
+      // Create a dropdown box
+      let newSelect = document.createElement("select");
+      newSelect.setAttribute("id", "select_"+attribute);
+      newSelect.setAttribute("data-attribute", attribute);
+      newSelect.setAttribute("multiple", "");
+      newSelect.setAttribute("size", 0);
+
+      // Create dropdown items
+      for (let item of this.attributeValues[attribute]) {
+        let newOption = document.createElement("option");
+        newOption.setAttribute("value", item);
+        newOption.innerHTML = item;
+        newSelect.appendChild(newOption);
+      }
+
+      // Add label and dropdown to container
+      newContainer.appendChild(newLabel);
+      newContainer.appendChild(newSelect);
+
+      // Add container to page
+      filterContainer.appendChild(newContainer);
+
+      // Add checkboxes to dropdown box
+      let selectBox = new vanillaSelectBox("#select_" + attribute);
+      selectBox.setValue('all');
+
+      // Add on-click handler
+      let self = this;
+      newSelect.addEventListener("change", (event) => {
+        self.updateFilter(attribute);
+      });
+
+    }
+  }
+
+  /**
+   * Update the filters
+   * @param {String} attribute The attribute name to change the filter for.
+   */
+  updateFilter(attribute) {
+    let selected = [];
+
+    // Get selected items
+    let collection = document.querySelectorAll("#select_" + attribute + " option");
+    collection.forEach(function(x){
+      if(x.selected){
+        selected.push(x.value);
+
+      }
+    });
+
+    // Update filter
+    for (let filter of this.filters) {
+      if (filter.attribute != attribute) continue;
+      filter.values = selected;
+      break;
+    }
+
+    // Redraw visualization
+    this.data = this.filterData(this.jsonData);
+    this.mapJSONData();
+  }
+
   /**
    * Set the size of the matrix based on its contents
    */
@@ -154,7 +238,7 @@ class AdjacencyMatrix {
       .append("g")
       .attr("transform", "translate(150,150)")
       .selectAll("text")
-      .data(this.data.nodes)
+      .data(this.data.nodes[1])
       .enter()
       .append("text")
       .attr("y", (d, i) => i * 10 + 17.5)
@@ -168,7 +252,7 @@ class AdjacencyMatrix {
     d3.select("#vissvg")
       .append("g").attr("transform", "translate(150,150)")
       .selectAll("text")
-      .data(this.data.nodes)
+      .data(this.data.nodes[0])
       .enter()
       .append("text")
       .attr("y", (d, i) => i * 10 + 17.5)
@@ -301,40 +385,112 @@ class AdjacencyMatrix {
    * @return {Array}       The filtered array of nodes.
    */
   filterData(json) {
-    let data = json;
+    // Make a clone of the array
+    let data = JSON.parse(JSON.stringify(json));
 
     // Remove nodes that don't match the filter.
-    for (let i = data.nodes.length - 1; i >= 0; i--) {
-      let node = data.nodes[i];
-      
-      // Node is null, so remove it and continue.
-      if (node == null) {
-        data.nodes.splice(data.nodes.indexOf(node), 1);
-        continue;
-      }
+    for (let nodeGroup = 0; nodeGroup < data.nodes.length; nodeGroup++) {
+      let group = data.nodes[nodeGroup];
+      // Do for both source as target
+      for (let i = group.length - 1; i >= 0; i--) {
+        let node = group[i];
+        
+        // Node is null, so remove it and continue.
+        if (node == null) {
+          group.splice(group.indexOf(node), 1);
+          continue;
+        }
+  
+        // Check if node matches the filter.
+        for (let filter of this.filters) {
+          // If filter is not meant for this node kind, skip.
+          if (nodeGroup == 0 && filter.kind == "target") continue;
+          if (nodeGroup == 1 && filter.kind == "source") continue;
 
-      // Check if node matches the filter.
-      for (let filter of this.filters) {
-        if (!filter.checkMatch(node[filter.attribute])) {
-          data.nodes.splice(data.nodes.indexOf(node), 1);
+          if (!filter.checkMatch(node[filter.attribute])) {
+            group.splice(group.indexOf(node), 1);
+          }
         }
       }
+  
     }
 
     return data;
   }
 
+  getAttributeValues(json) {
+    let values = {};
+    let attributeIndex = {};
+
+    // Create dictionary with empty arrays
+    for (let group of this.format.nodeGroups) {
+      for (let row of group) {
+        values[row.attribute] = [];
+      }
+    }
+
+    // Create filters
+    for (let attribute of Object.keys(values)) {
+      let inSource = false;
+      let inTarget = false;
+
+      // Check if attribute is in source
+      for (let item of this.format.nodeGroups[0]) {
+        console.log("Checking", item.attribute, attribute);
+        if (item.attribute == attribute) {
+          inSource = true;
+          break;
+        }
+      }
+
+      // Check if attribute is in target
+      for (let item of this.format.nodeGroups[1]) {
+        if (item.attribute == attribute) {
+          inTarget = true;
+          break;
+        }
+      }
+
+      let kind = "";
+      if (inSource && !inTarget) kind = "source";
+      else if (!inSource && inTarget) kind = "target";
+      else if (inSource && inTarget) kind = "both";
+
+      attributeIndex[attribute] = this.filters.length;
+      this.filters.push(new Filter(attribute, [], kind));
+    }
+
+    // Fill arrays with possible values
+    for (let nodeGroup of json.nodes) {
+      for (let node of nodeGroup) {
+        for (let attribute of Object.keys(values)) {
+          // If the current value of this attribute doesn't exist
+          if (!values[attribute].includes(node[attribute])) {
+            // Add possible value to dropdown
+            values[attribute].push(node[attribute]);
+            // Add possible value to filter
+            this.filters[attributeIndex[attribute]].values.push(node[attribute]);
+          }
+        }  
+      }
+    }
+
+
+    return values;
+  }
+
   /**
    * Format the nodes into a matrix.
-   * @param  {Array} nodes Array containing the nodes.
+   * @param  {Array} sourceNodes Array containing the source nodes.
+   * @param  {Array} targetNodes Array containing the target nodes.
    * @return {Array}       The array with formatted matrix data.
    */
-  createMatrixData(nodes) {
+  createMatrixData(sourceNodes, targetNodes) {
     document.getElementById("vissvg").innerHTML = ""; // Clear SVG data
 
     let matrix = [];
-    nodes.forEach((source, a) => {
-      nodes.forEach((target, b) => {
+    sourceNodes.forEach((source, a) => {
+      targetNodes.forEach((target, b) => {
         let gridID = source[this.mainNodeAttribute] + "-" + target[this.mainNodeAttribute];
         let grid = {
           id: gridID,
@@ -377,7 +533,7 @@ class AdjacencyMatrix {
  * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
-  new AdjacencyMatrix(data, format);
+  test = new AdjacencyMatrix(data, format);
 }
 
 /**

@@ -129,14 +129,18 @@ function convertFormatting($formatting) {
  * @return Array             List of unique email-addresses and job titles
  */
 function getNodes($csv, $formatting) {
-  $nodes = [];
-  $nodesHandled = [];
+  $sourceNodes = [];
+  $targetNodes = [];
+  $sourceNodesHandled = [];
+  $targetNodesHandled = [];
   $mainNodeAttribute = $formatting["nodeGroups"][0][0]["attribute"];
 
   foreach ($csv as $row) {
 
-    foreach ($formatting["nodeGroups"] as $nodeGroup) {
-      $node = array();
+    for ($i = 0; $i < sizeof($formatting["nodeGroups"]); $i++) {
+      $nodeGroup = $formatting["nodeGroups"][$i];
+      $node = array("kind" => ($i == 0) ? "source" : "target");
+
       foreach ($nodeGroup as $item) {
         if (!array_key_exists($item["name"], $row)) {
           continue 2; // attribute doesn't exist, so check next node group
@@ -144,10 +148,13 @@ function getNodes($csv, $formatting) {
           $node[$item["attribute"]] = $row[$item["name"]];
         }
       }
-
-      if (!in_array($node[$mainNodeAttribute], $nodesHandled)) {
-        $nodes[$node[$mainNodeAttribute]] = $node;
-        $nodesHandled[sizeof($nodesHandled)] = $node[$mainNodeAttribute];
+      // TODO: add check for source/target
+      if (!in_array($node[$mainNodeAttribute], $sourceNodesHandled) && ($node["kind"] == "source")) {
+        $sourceNodes[$node[$mainNodeAttribute]] = $node;
+        $sourceNodesHandled[sizeof($sourceNodesHandled)] = $node[$mainNodeAttribute];
+      } else if (!in_array($node[$mainNodeAttribute], $targetNodesHandled) && ($node["kind"] == "target")) {
+        $targetNodes[$node[$mainNodeAttribute]] = $node;
+        $targetNodesHandled[sizeof($targetNodesHandled)] = $node[$mainNodeAttribute];
       } else {
         $nodes[$node[$mainNodeAttribute]] = array_merge($nodes[$node[$mainNodeAttribute]], $node);
       }
@@ -155,8 +162,9 @@ function getNodes($csv, $formatting) {
 
   }
   // Reset the array index
-  $nodes = array_values($nodes);
-  return $nodes;
+  $sourceNodes = array_values($sourceNodes);
+  $targetNodes = array_values($targetNodes);
+  return array($sourceNodes, $targetNodes);
 }
 
 /**

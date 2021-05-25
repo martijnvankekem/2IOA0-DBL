@@ -13,7 +13,8 @@ body {
 }
 
 /* Upload form */
-.uploadContainer {
+.popupContainer {
+  display: none;
   width: 100%;
   height: 100%;
   position: fixed;
@@ -23,7 +24,7 @@ body {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.uploadContainer .container {
+.popupContainer .container {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -35,23 +36,23 @@ body {
   background-color: #fff;
 }
 
-.uploadContainer .container .fileUpload {
+.popupContainer .container .fileUpload {
   display: none;
 }
 
-.uploadContainer .container .fileUpload.visible {
+.popupContainer .container .fileUpload.visible {
   display: block;
 }
-.uploadContainer .container .selectVis.hidden {
+.popupContainer .container .selectVis.hidden {
   display: none;
 }
 
-.uploadContainer .container h1 {
+.popupContainer .container h1 {
   font-family: "Roboto", sans-serif;
   margin: 10px 0;
 }
 
-.uploadContainer .container p {
+.popupContainer .container p {
   margin-top: 0;
   font-size: 0.8em;
 }
@@ -92,7 +93,8 @@ header {
 
 header h1 {
   float: left;
-  margin-top: 32px;
+  line-height: 120px;
+  margin: 0;
 }
 
 .color {
@@ -109,7 +111,7 @@ header nav ul {
 
 header nav ul li {
   display: inline-block;
-  margin-top: 50px;
+  line-height: 120px;
 }
 
 header nav ul li a {
@@ -127,14 +129,14 @@ button.rightMargin {
   margin-right: 10px;
 }
 
-.uploadContainer a {
+.popupContainer a {
   text-decoration: none;
   color: #70a7b8;
   margin-top: 20px;
   display: block;
 }
 
-.uploadContainer a:hover {
+.popupContainer a:hover {
   color: #86c5da;
 }
 
@@ -142,7 +144,7 @@ input[type="file"] {
   margin-bottom: 10px;
 }
 
-button, input[type="submit"] {
+button:not([style]), input[type="submit"] {
   margin-top: 10px;
   padding: 0 20px;
   cursor: pointer;
@@ -205,4 +207,33 @@ input[type="submit"]:hover {
 
 .infobox h2 {
   margin: 10px 0;
+}
+
+.controlContainer {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.controlContainer h3 {
+  margin-top: 0;
+}
+
+.controlContainer.zoom button {
+  min-width: 75px;
+  margin: 0;
+}
+
+.controlContainer:not(:last-child) {
+  margin-right: 50px;
+}
+
+.filters .filter {
+  margin-top: 10px;
+}
+
+.filters .filter label {
+  display: inline-block;
+  margin-right: 10px;
+  text-align: right;
+  width: 53px;
 }

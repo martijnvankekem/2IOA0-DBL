@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="css/adjacencymatrix.css">
   <link rel="stylesheet" href="css/spinner.css">
   <link rel="stylesheet" href="css/tabulator_simple.min.css">
+  <link rel="stylesheet" href="css/vanillaSelectBox.css">
 </head>
 
 <body>
@@ -68,12 +69,22 @@
 
   <!-- Control window -->
   <div class="controlWindow" id="controlWindow">
+    <div class="zoom controlContainer">
+      <h3>Zoom</h3>
+      <div class="buttonContainer">
+        <button id="button_zoomIn">+</button>
+        <button id="button_zoomOut">-</button>
+      </div>
+    </div>
+
+    <div class="filters controlContainer">
+      <h3>Filters</h3>
+      <div id="filterContainer"></div>
+    </div>
+
     <p class="helpText">The horizontal scroll bar is at the bottom of the visualization. You can also use SHIFT +
       Scroll.</p>
-    <div class="buttonContainer">
-      <button id="button_zoomIn">Zoom in</button>
-      <button id="button_zoomOut">Zoom out</button>
-    </div>
+    
   </div>
 
   <!-- Visualizations -->
@@ -98,7 +109,7 @@
   </div>
 
   <!-- Upload container -->
-  <div class="uploadContainer" id="uploadContainer">
+  <div class="popupContainer" id="uploadContainer" style="display: block;">
     <div class="container">
       <div class="fileUpload" id="fileUpload">
         <h1>Upload a file to begin.</h1>
@@ -133,6 +144,7 @@
   <script src="js/AdjacencyMatrix.js"></script>
   <script src="js/HierarchicalEdge.js"></script>
   <script src="js/Filter.js"></script>
+  <script src="js/vanillaSelectBox.js"></script>
 
 
 </body>
