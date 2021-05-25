@@ -15,7 +15,7 @@
      * @param {String} filterKind      The attribute filter kind.
      * @param {String} filterOperand   The type of comparison to execute (default = equals).
      */
-    constructor(filterAttribute, filterValues, filterKind, filterOperand = "equals") {
+    constructor(filterAttribute, filterValues, filterKind = "all", filterOperand = "equals") {
         this.attribute = filterAttribute;
         this.values = filterValues;
         this.kind = filterKind;
