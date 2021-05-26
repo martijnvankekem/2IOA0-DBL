@@ -33,7 +33,7 @@ function formSubmit(e) {
   formData = new FormData();
   formData.append('csvFile', file, file.name);
 
-  sendUploadRequest('php/getColumnsFromCSV.php', 0, 0, formData);
+  sendUploadRequest('php/getColumnsFromCSV.php', 0, visType, formData);
 }
 
 /**
@@ -75,7 +75,7 @@ function uploadCallbackSuccess(data, uploadType, visType_) {
 
   if (uploadType == 0) {
     // Retrieve column upload, so fill table
-    populateTable(responseData);
+    populateTable(responseData, visType_);
   } else if (uploadType == 1) {
     // Visualization request, so start visualizing
     // Hide column pick table
@@ -95,29 +95,37 @@ function uploadCallbackSuccess(data, uploadType, visType_) {
 
 /**
  * Populate the table with the data received.
- * @param {Array} data The array with JSON data.
+ * @param {Array}   data     The array with JSON data.
+ * @param {Integer} visType_ The type of visualization (0 = adjacency, 1 = hierarchical).
  */
-function populateTable(data) {
+function populateTable(data, visType_) {
   let moveEl;
+
+  // Set group names based on visualization type
+  if (visType_ == 0) {
+    uploadTable.setGroupValues([["Source node attributes", "Target node attributes", "Link attributes", "Unused"]]);
+  } else {
+    uploadTable.setGroupValues([["Node attributes", "Link attributes", "Unused"]]);
+  }
 
   // Set default location for enron dataset.
   for (let row of data) {
     switch (row["name"]) {
       case "fromEmail":
         row["attribute"] = "email";
-        row["useas"] = "Source node attributes";
+        row["useas"] = (visType_ == 0) ? "Source node attributes" : "Node attributes";
         break;
       case "fromJobtitle":
         row["attribute"] = "jobtitle";
-        row["useas"] = "Source node attributes";
+        row["useas"] = (visType_ == 0) ? "Source node attributes" : "Node attributes";
         break;
       case "toEmail":
         row["attribute"] = "email";
-        row["useas"] = "Target node attributes";
+        row["useas"] = (visType_ == 0) ? "Target node attributes" : "Node attributes";
         break;
       case "toJobtitle":
         row["attribute"] = "jobtitle";
-        row["useas"] = "Target node attributes";
+        row["useas"] = (visType_ == 0) ? "Target node attributes" : "Node attributes";
         break;
       case "sentiment":
         row["useas"] = "Link attributes";
