@@ -33,25 +33,26 @@ function formSubmit(e) {
   formData = new FormData();
   formData.append('csvFile', file, file.name);
 
-  sendUploadRequest('php/getColumnsFromCSV.php', 0, formData);
+  sendUploadRequest('php/getColumnsFromCSV.php', 0, 0, formData);
 }
 
 /**
  * Send the upload request to the backend script
  * @param {String}   url        The URL of the backend script
  * @param {Integer}  uploadType The type of upload (0 = column upload, 1 = visualize request).
+ * @param {Integer}  visType    The type of visualization (0 = adjacency, 1 = hierarchical).
  * @param {FormData} formData   The data to POST to the script.
  */
-function sendUploadRequest(url, uploadType, formData) {
+function sendUploadRequest(url, uploadType, visType, formData) {
   // Send upload request to server.
   let xhr = new XMLHttpRequest();
   xhr.open('POST', url, true);
 
   xhr.onload = function () {
     if (xhr.status == 200) {
-      uploadCallbackSuccess(xhr, uploadType);
+      uploadCallbackSuccess(xhr, uploadType, visType);
     } else {
-      uploadCallbackError(xhr, uploadType);
+      uploadCallbackError(xhr, uploadType, visType);
     }
   };
 
@@ -63,19 +64,26 @@ function sendUploadRequest(url, uploadType, formData) {
  * Callback when the file upload has succesfully fininshed.
  * @param {XMLHttpRequest} data       The submit request object.
  * @param {Integer}        uploadType The type of upload (0 = column upload, 1 = visualize request).
+ * @param {Integer}        visType_   The type of visualization (0 = adjacency, 1 = hierarchical).
  */
-function uploadCallbackSuccess(data, uploadType) {
+function uploadCallbackSuccess(data, uploadType, visType_) {
+  // Show spinner
+  document.getElementById("spinner").style.display = "block";
+
   let jsonString = data.response;
   responseData = JSON.parse(jsonString);
 
   if (uploadType == 0) {
+    // Retrieve column upload, so fill table
     populateTable(responseData);
   } else if (uploadType == 1) {
+    // Visualization request, so start visualizing
+    // Hide column pick table
     document.getElementById("dataFormatter").style.display = "none";
 
-    if (visType == 0) {
+    if (visType_ == 0) {
       createAdjacencyMatrix(responseData, responseData["format"]);
-    } else if (visType == 1) {
+    } else if (visType_ == 1) {
       createHierarchicalEdge(responseData, responseData["format"]);
     }
   }
@@ -127,10 +135,12 @@ function populateTable(data) {
 }
 
 /**
- * Callback when the file upload has fininshed with an error.
- * @param {XMLHttpRequest} data The submit request object.
+ * Callback when the file upload has finished with an error
+ * @param {XMLHttpRequest} data       The submit request object.
+ * @param {Integer}        uploadType The type of upload (0 = column upload, 1 = visualize request).
+ * @param {Integer}        visType_   The type of visualization (0 = adjacency, 1 = hierarchical).
  */
-function uploadCallbackError(data) {
+function uploadCallbackError(data, uploadType, visType_) {
   console.log("Error: ", data.response);
 
   // Hide the spinner
@@ -138,7 +148,7 @@ function uploadCallbackError(data) {
 }
 
 /**
- * visualize the attributes chosen
+ * Visualize the attributes chosen.
  */
 function visualize() {
   // Show spinner
@@ -148,8 +158,15 @@ function visualize() {
   let jsonString = JSON.stringify(groupData);
   formData.append("format", jsonString);
   // Send data to the backend
-  let scriptURL = (visType == 0) ? 'php/createAdjacencyData.php' : 'php/createHierarchicalEdgeData.php';
-  sendUploadRequest(scriptURL, 1, formData);
+  if (visType < 2) {
+    // Single visualization
+    let scriptURL = (visType == 0) ? 'php/createAdjacencyData.php' : 'php/createHierarchicalEdgeData.php';
+    sendUploadRequest(scriptURL, 1, visType, formData);
+  } else {
+    // Multiple visualizations together
+    sendUploadRequest('php/createAdjacencyData.php', 1, 0, formData);
+    sendUploadRequest('php/createHierarchicalEdgeData.php', 1, 1, formData);
+  }
 }
 
 /**

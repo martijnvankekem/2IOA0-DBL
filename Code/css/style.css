@@ -235,5 +235,5 @@ input[type="submit"]:hover {
   display: inline-block;
   margin-right: 10px;
   text-align: right;
-  width: 53px;
+  min-width: 80px;
 }

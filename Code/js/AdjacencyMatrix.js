@@ -3,8 +3,6 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
-let test;
-
 /**
  * Adjacency Matrix - Visualization Class
  */
@@ -133,7 +131,7 @@ class AdjacencyMatrix {
    * Set the size of the matrix based on its contents
    */
   setMatrixSize() {
-    this.svg = document.getElementById("vissvg");
+    this.svg = document.getElementById("vis_adjacancy");
 
     // Get the bounds of the SVG content
     let bbox = this.svg.getBBox();
@@ -187,7 +185,7 @@ class AdjacencyMatrix {
    */
   createMatrix(matrix, pairsData) {
     // Create grid
-    d3.select("#vissvg").append("g")
+    d3.select("#vis_adjacancy").append("g")
       .attr("transform", "translate(160,160)")
       .attr("id", "adjacencyG")
       .selectAll("rect")
@@ -234,7 +232,7 @@ class AdjacencyMatrix {
       });
 
     // Create text on x-axis
-    d3.select("#vissvg")
+    d3.select("#vis_adjacancy")
       .append("g")
       .attr("transform", "translate(150,150)")
       .selectAll("text")
@@ -249,7 +247,7 @@ class AdjacencyMatrix {
       .style("font-size", "10px");
 
     // Create text on y-axis
-    d3.select("#vissvg")
+    d3.select("#vis_adjacancy")
       .append("g").attr("transform", "translate(150,150)")
       .selectAll("text")
       .data(this.data.nodes[0])
@@ -418,6 +416,11 @@ class AdjacencyMatrix {
     return data;
   }
 
+  /**
+   * Get the unique values to enable filtering.
+   * @param   {Array} json The data array to retrieve the values from.
+   * @returns {Array}      The array of unique values to filter by.
+   */
   getAttributeValues(json) {
     let values = {};
     let attributeIndex = {};
@@ -436,7 +439,6 @@ class AdjacencyMatrix {
 
       // Check if attribute is in source
       for (let item of this.format.nodeGroups[0]) {
-        console.log("Checking", item.attribute, attribute);
         if (item.attribute == attribute) {
           inSource = true;
           break;
@@ -486,7 +488,7 @@ class AdjacencyMatrix {
    * @return {Array}       The array with formatted matrix data.
    */
   createMatrixData(sourceNodes, targetNodes) {
-    document.getElementById("vissvg").innerHTML = ""; // Clear SVG data
+    document.getElementById("vis_adjacancy").innerHTML = ""; // Clear SVG data
 
     let matrix = [];
     sourceNodes.forEach((source, a) => {
@@ -533,7 +535,8 @@ class AdjacencyMatrix {
  * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
-  test = new AdjacencyMatrix(data, format);
+  console.log("Creating adjacency with data ", data);
+  new AdjacencyMatrix(data, format);
 }
 
 /**

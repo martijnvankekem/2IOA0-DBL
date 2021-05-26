@@ -89,7 +89,8 @@
 
   <!-- Visualizations -->
   <div class="visualization" id="visContainer">
-    <svg class="vissvg" id="vissvg"></svg>
+    <svg class="vissvg" id="vis_adjacancy"></svg>
+    <svg class="vissvg" id="vis_hierarchical"></svg>
     <div id="hoverContainer" class="hoverContainer">
       <div class="content">
         <h3>Information<span class="color">.</span></h3>
@@ -128,6 +129,7 @@
         <p>Select the type of visualization you would like to generate.</p>
         <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
         <button onclick="selectVis(1);">Hierarchical Edge</button><br>
+        <button onclick="selectVis(2);">Both</button><br>
         <a href="#" onclick="cancelClick(0);">Back to previous page</a>
       </div>
     </div>

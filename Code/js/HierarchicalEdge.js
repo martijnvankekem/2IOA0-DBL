@@ -120,5 +120,6 @@ class HierarchicalEdge {
  * @param {Array}  format            The visualization format.
  */
  function createHierarchicalEdge(data, format) {
+  console.log("Creating hierarchical with data ", data);
   new HierarchicalEdge(data, format);
 }
