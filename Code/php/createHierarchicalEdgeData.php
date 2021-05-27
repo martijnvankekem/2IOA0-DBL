@@ -144,12 +144,19 @@ function getNodes($csv, $formatting) {
         if (!array_key_exists($item["name"], $row)) {
           continue 2; // attribute doesn't exist, so check next node group
         } else {
-          $node[$item["attribute"]] = $row[$item["name"]];
+          if ($item["attribute"] == $mainNodeAttribute) {
+            $node["name"] .= $row[$item["name"]];
+            $node[$mainNodeAttribute] = $row[$item["name"]];
+          } else {
+            $node["name"] = $row[$item["name"]] . "/" . $node["name"];
+          }
         }
       }
 
+      $node["name"] = "Main/".$node["name"];
+
       if (!in_array($node[$mainNodeAttribute], $nodesHandled)) {
-        $node["links"] = array();
+        $node["imports"] = array();
         $nodes[$node[$mainNodeAttribute]] = $node;
         $nodesHandled[sizeof($nodesHandled)] = $node[$mainNodeAttribute];
       } else {
@@ -174,8 +181,8 @@ function addLinks($csv, $nodes, $formatting) {
     $source = $row[$formatting["nodeGroups"][0][0]["name"]];
     $target = $row[$formatting["nodeGroups"][1][0]["name"]];
 
-    if (!in_array($target, $nodesArray[$source]["links"])) {
-      $nodesArray[$source]["links"][sizeof($nodesArray[$source]["links"])] = $target;
+    if (!in_array($nodesArray[$target]["name"], $nodesArray[$source]["imports"])) {
+      $nodesArray[$source]["imports"][sizeof($nodesArray[$source]["imports"])] = $nodesArray[$target]["name"];
     }
   }
 

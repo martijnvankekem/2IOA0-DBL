@@ -535,7 +535,6 @@ class AdjacencyMatrix {
  * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
-  console.log("Creating adjacency with data ", data);
   new AdjacencyMatrix(data, format);
 }
 
