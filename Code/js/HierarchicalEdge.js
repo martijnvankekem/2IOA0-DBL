@@ -3,6 +3,8 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+let test;
+
 /**
  * Hierarchical Edge Diagram - Visualization Class
  */
@@ -12,9 +14,11 @@ class HierarchicalEdge {
    * @param {Array}  json              JSON array with data to visualize.
    * @param {Array}  format            The visualization format.
    */
-  constructor(json, format) {
-    this.origData = JSON.parse(JSON.stringify(json));
+  constructor(json, format) {    
+    this.jsonData = JSON.parse(JSON.stringify(json));
     this.data = json;
+
+    console.log(this.data);
 
     this.format = format;
     this.colornone = "#ccc";
@@ -23,18 +27,40 @@ class HierarchicalEdge {
 
     this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
 
-    this.diameter = 960;
+    this.sizeData = [0, 0];
+    this.diameter = width - 500;
     this.radius = this.diameter / 2
-    this.innerRadius = this.radius - 120;
-    this.width = 2500;
+    this.innerRadius = this.radius;
+    this.width = width - 300;
 
+    this.createControlWindow();
     this.mapJSONData();
+  }
+
+  /**
+   * Create elements for control window
+   */
+   createControlWindow() {
+    let controlWindow = document.getElementById("controlWindow");
+    let zoomIn = document.getElementById("button_zoomIn");
+    let zoomOut = document.getElementById("button_zoomOut");
+
+    zoomIn.addEventListener("click", () => this.changeZoom(true));
+    zoomOut.addEventListener("click", () => this.changeZoom(false));
+
+    // Hide filter window for Hierarchical edge
+    document.getElementById("controlWindow_filter").style.display = "none";
+    
+    // Set control window to visible.
+    controlWindow.style.display = "block";
   }
 
   /**
    * Parse JSON and map data.
    */
   mapJSONData() {
+    document.getElementById("vis_hierarchical").innerHTML = ""; // Clear SVG data
+
     let data = this.hierarchy(this.data.nodes);
 
     let tree = d3.cluster()
@@ -46,6 +72,42 @@ class HierarchicalEdge {
       .angle(d => d.x)
 
     this.createVisualization(data, tree, line);
+    this.setVisSize();
+  }
+
+  /**
+   * Set the size of the matrix based on its contents
+   */
+   setVisSize() {
+    this.svg = document.getElementById("vis_hierarchical");
+
+    // Get the bounds of the SVG content
+    let bbox = this.svg.getBBox();
+    // Update the width and height using the size of the contents
+    this.sizeData = [this.width, this.width];
+
+    this.svg.setAttribute("width", this.sizeData[0]);
+    this.svg.setAttribute("height", this.sizeData[1]);
+  }
+
+  /**
+   * Change the current zoom scale of the visualization
+   * @param {Boolean} zoomIn Whether to zoom in or out (true = zoom in, false = zoom out)
+   */
+  changeZoom(zoomIn) {
+    const zoomFactor = 0.95;
+
+    // Divide x and y by the zoom factor
+    if (zoomIn) {
+      this.sizeData[0] /= zoomFactor;
+      this.sizeData[1] /= zoomFactor;
+    } else {
+      this.sizeData[0] *= zoomFactor;
+      this.sizeData[1] *= zoomFactor;
+    }
+
+    this.svg.setAttribute("width", this.sizeData[0]);
+    this.svg.setAttribute("height", this.sizeData[1]);
   }
 
   /**
@@ -55,7 +117,7 @@ class HierarchicalEdge {
    * @param   {d3.lineRadial} line The d3 line radial object.
    * @returns {svg.node}           The created node.
    */
-   createVisualization(data, tree, line) {
+  createVisualization(data, tree, line) {
     const root = tree(this.bilink(d3.hierarchy(data)
       .sort((a, b) => d3.ascending(a.height, b.height) || d3.ascending(a.data.name, b.data.name))));
 
@@ -64,35 +126,35 @@ class HierarchicalEdge {
 
     // Create the nodes.
     svg.append("g")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", 10)
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 14)
       .selectAll("g")
       .data(root.leaves())
       .join("g")
-        .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+      .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
       .append("text")
-        .attr("dy", "0.31em")
-        .attr("x", d => d.x < Math.PI ? 6 : -6)
-        .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
-        .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
-        .text(d => d.data.name)
-        .each(function(d) { d.text = this; })
-        .on("mouseover", overed)
-        .on("mouseout", outed)
-        .call(text => text.append("title").text(d => `${this.id(d)}
+      .attr("dy", "0.31em")
+      .attr("x", d => d.x < Math.PI ? 6 : -6)
+      .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+      .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+      .text(d => d.data.name)
+      .each(function (d) { d.text = this; })
+      .on("mouseover", overed)
+      .on("mouseout", outed)
+      .call(text => text.append("title").text(d => `${this.id(d)}
               ${d.outgoing.length} outgoing
               ${d.incoming.length} incoming`));
 
     // Create the links between each node.
     const link = svg.append("g")
-        .attr("stroke", this.colornone)
-        .attr("fill", "none")
+      .attr("stroke", this.colornone)
+      .attr("fill", "none")
       .selectAll("path")
       .data(root.leaves().flatMap(leaf => leaf.outgoing))
       .join("path")
-        .style("mix-blend-mode", "multiply")
-        .attr("d", ([i, o]) => line(i.path(o)))
-        .each(function(d) { d.path = this; }); 
+      .style("mix-blend-mode", "multiply")
+      .attr("d", ([i, o]) => line(i.path(o)))
+      .each(function (d) { d.path = this; });
 
     // Save class context for use in callback functions.
     let self = this;
@@ -149,7 +211,7 @@ class HierarchicalEdge {
   id(node) {
     return `${node.parent ? this.id(node.parent) + "/" : ""}${node.data.name}`;
   }
-  
+
   /**
    * Create the hierarchy from the given data.
    * @param   {Array}  data      The data to use.
@@ -161,24 +223,24 @@ class HierarchicalEdge {
     const map = new Map;
     // Do for each node
     data.forEach(function find(data) {
-      const {name} = data;
+      const { name } = data;
       if (map.has(name)) return map.get(name);
       // Get the node name (part after last delimiter)
       const i = name.lastIndexOf(delimiter);
       map.set(name, data);
       // Push each group to the root.
       if (i >= 0) {
-        find({name: name.substring(0, i), children: []}).children.push(data);
+        find({ name: name.substring(0, i), children: [] }).children.push(data);
         data.name = name.substring(i + 1);
       } else {
         root = data;
       }
       return data;
     });
-  
+
     return root;
   }
-  
+
 }
 
 /**
@@ -186,6 +248,6 @@ class HierarchicalEdge {
  * @param {Array}  data              JSON array with the data to visualize.
  * @param {Array}  format            The visualization format.
  */
- function createHierarchicalEdge(data, format) {
-  new HierarchicalEdge(data, format);
+function createHierarchicalEdge(data, format) {
+  test = new HierarchicalEdge(data, format);
 }

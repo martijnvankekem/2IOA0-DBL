@@ -148,15 +148,13 @@ function getNodes($csv, $formatting) {
           $node[$item["attribute"]] = $row[$item["name"]];
         }
       }
-      // TODO: add check for source/target
+      
       if (!in_array($node[$mainNodeAttribute], $sourceNodesHandled) && ($node["kind"] == "source")) {
         $sourceNodes[$node[$mainNodeAttribute]] = $node;
         $sourceNodesHandled[sizeof($sourceNodesHandled)] = $node[$mainNodeAttribute];
       } else if (!in_array($node[$mainNodeAttribute], $targetNodesHandled) && ($node["kind"] == "target")) {
         $targetNodes[$node[$mainNodeAttribute]] = $node;
         $targetNodesHandled[sizeof($targetNodesHandled)] = $node[$mainNodeAttribute];
-      } else {
-        $nodes[$node[$mainNodeAttribute]] = array_merge($nodes[$node[$mainNodeAttribute]], $node);
       }
     }
 
@@ -194,6 +192,7 @@ function getLinks($csv, $formatting) {
 }
 
 // Execute the main function
+header("Access-Control-Allow-Origin: *");
 handleRequest();
 
 ?>

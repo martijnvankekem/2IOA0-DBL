@@ -17,10 +17,13 @@ function handleRequest() {
   $formatting = json_decode($_POST["format"]);
   $formatting = convertFormatting($formatting);
 
+  // $filterDate = json_decode($_POST['filterDate']);
+  $filterDate = [];
+
   // Extract CSV data into arrays
   $csv = parseCSV($fileName);
-  $nodes = getNodes($csv, $formatting);
-  $nodes = addLinks($csv, $nodes, $formatting);
+  $nodes = getNodes($csv, $formatting, $filterDate);
+  $nodes = addLinks($csv, $nodes, $formatting, $filterDate);
 
   // Reset the array index
   $nodes = array_values($nodes);
@@ -131,12 +134,14 @@ function convertFormatting($formatting) {
  * @param  Array $formatting The way the data must be formatted
  * @return Array             List of unique email-addresses and job titles
  */
-function getNodes($csv, $formatting) {
+function getNodes($csv, $formatting, $filterDate) {
   $nodes = [];
   $nodesHandled = [];
   $mainNodeAttribute = $formatting["nodeGroups"][0][0]["attribute"];
+  // $dateAttribute = $formatting["date"][0]["attribute"];
 
   foreach ($csv as $row) {
+    // if ($row[$dateAttribute])
 
     foreach ($formatting["nodeGroups"] as $nodeGroup) {
       $node = array();
@@ -149,6 +154,7 @@ function getNodes($csv, $formatting) {
             $node[$mainNodeAttribute] = $row[$item["name"]];
           } else {
             $node["name"] = $row[$item["name"]] . "/" . $node["name"];
+            $node[$item["attribute"]] = $row[$item["name"]];
           }
         }
       }
@@ -174,7 +180,7 @@ function getNodes($csv, $formatting) {
  * @param  Array $nodes   Array with 
  * @param  Array $emails  Array of unique emailaddresses
  */
-function addLinks($csv, $nodes, $formatting) {
+function addLinks($csv, $nodes, $formatting, $filterDate) {
   $nodesArray = $nodes;
 
   foreach ($csv as $row) {
@@ -190,6 +196,7 @@ function addLinks($csv, $nodes, $formatting) {
 }
 
 // Execute the main function
+header("Access-Control-Allow-Origin: *");
 handleRequest();
 
 ?>

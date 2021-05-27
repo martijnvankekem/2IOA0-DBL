@@ -24,7 +24,6 @@ class AdjacencyMatrix {
     this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
     this.pairsData = [];
 
-    this.filterLists = [];
     this.prepareFilters();
 
     this.maxEmailCount = 1;
@@ -48,6 +47,9 @@ class AdjacencyMatrix {
     this.setMatrixSize();
   }
   
+  /**
+   * Setup the filters with the correct values.
+   */
   prepareFilters() {
     this.attributeValues = this.getAttributeValues(this.jsonData);
 
