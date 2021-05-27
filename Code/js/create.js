@@ -3,6 +3,8 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+const urlPrefix = "https://projects.vankekem.com/dbl/";
+
 let formElement;
 let visualizationData = null;
 
@@ -33,7 +35,7 @@ function formSubmit(e) {
   formData = new FormData();
   formData.append('csvFile', file, file.name);
 
-  sendUploadRequest('php/getColumnsFromCSV.php', 0, visType, formData);
+  sendUploadRequest(urlPrefix + 'php/getColumnsFromCSV.php', 0, visType, formData);
 }
 
 /**
@@ -160,12 +162,12 @@ function visualize() {
   // Send data to the backend
   if (visType < 2) {
     // Single visualization
-    let scriptURL = (visType == 0) ? 'php/createAdjacencyData.php' : 'php/createHierarchicalEdgeData.php';
+    let scriptURL = (visType == 0) ? urlPrefix + 'php/createAdjacencyData.php' : urlPrefix + 'php/createHierarchicalEdgeData.php';
     sendUploadRequest(scriptURL, 1, visType, formData);
   } else {
     // Multiple visualizations together
-    sendUploadRequest('php/createAdjacencyData.php', 1, 0, formData);
-    sendUploadRequest('php/createHierarchicalEdgeData.php', 1, 1, formData);
+    sendUploadRequest(urlPrefix + 'php/createAdjacencyData.php', 1, 0, formData);
+    sendUploadRequest(urlPrefix + 'php/createHierarchicalEdgeData.php', 1, 1, formData);
   }
 }
 
