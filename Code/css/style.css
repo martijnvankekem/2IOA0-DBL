@@ -43,6 +43,7 @@ body {
 .popupContainer .container .fileUpload.visible {
   display: block;
 }
+
 .popupContainer .container .selectVis.hidden {
   display: none;
 }
@@ -144,7 +145,8 @@ input[type="file"] {
   margin-bottom: 10px;
 }
 
-button:not([style]), input[type="submit"] {
+button:not([style]):not(.btn),
+input[type="submit"] {
   margin-top: 10px;
   padding: 0 20px;
   cursor: pointer;
@@ -157,7 +159,7 @@ button:not([style]), input[type="submit"] {
   background: linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
     linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
   border: 1px solid linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
-  linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
+    linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
   transition: background-size .6s ease;
 }
 
@@ -165,6 +167,20 @@ button:hover,
 input[type="submit"]:hover {
   background-position: right, left;
   background-size: 0% 100%, 100% 100%;
+}
+
+input[name="daterange"] {
+  min-width: 120px;
+  border-radius: 0px;
+  text-align: center;
+  z-index: 1;
+  color: rgb(51, 51, 51);
+  line-height: 20px;
+  font-size: 14px;
+  padding: 6px 12px;
+  background: white !important;
+  border: 1px solid rgb(153, 153, 153) !important;
+  max-width: 500px;
 }
 
 .pic_example {
@@ -223,7 +239,7 @@ input[type="submit"]:hover {
   margin: 0;
 }
 
-.controlContainer:not(:last-child) {
+.controlContainer:not(:last-child):not(.noMargin) {
   margin-right: 50px;
 }
 
@@ -236,4 +252,10 @@ input[type="submit"]:hover {
   margin-right: 10px;
   text-align: right;
   min-width: 80px;
+}
+
+body.dualVis svg.vissvg {
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0;
 }

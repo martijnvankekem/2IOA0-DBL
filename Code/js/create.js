@@ -12,14 +12,11 @@ let visType = 0;
 let formData;
 let uploadTable;
 
-// Dimensions
-const margins = {
-  left: 70,
-  right: 150,
-  bottom: 150
-};
-const width = document.documentElement.clientWidth - margins.left - margins.right;
-const height = document.documentElement.clientHeight - margins.bottom;
+let dateRangePicker = null;
+let filterPrepared = false;
+
+let width = document.documentElement.clientWidth - 100; // 50 px margin on both sides
+let height = document.documentElement.clientHeight;
 
 /**
  * User submits the upload form.
@@ -121,6 +118,9 @@ function populateTable(data) {
         row["attribute"] = "jobtitle";
         row["useas"] = "Target node attributes"
         break;
+      case "date":
+        row["useas"] = "Date attribute";
+        break;
       case "sentiment":
         row["useas"] = "Link attributes";
         break;
@@ -187,11 +187,56 @@ function cancelClick(cancelType) {
 }
 
 /**
+ * Callback when the date filter has been changed by the user
+ * @param {Object} start The new start date
+ * @param {Object} end   The new end date
+ */
+function dateFilterChanged(start, end) {
+  if (visType == 2) {
+    // Two visualizations
+    adjacencyMatrix.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
+    hierarchicalEdge.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
+
+    adjacencyMatrix.redraw();
+    hierarchicalEdge.redraw();
+  } else if (visType == 0) {
+    // Adjacency only
+    adjacencyMatrix.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
+    adjacencyMatrix.redraw();
+  } else if (visType == 1) {
+    // Hierarchical edge only
+    hierarchicalEdge.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
+    hierarchicalEdge.redraw();
+  }
+}
+
+function filterChanged(attribute) {
+  if (visType == 2) {
+    // Two visualizations
+    adjacencyMatrix.updateFilter(attribute);
+    hierarchicalEdge.updateFilter(attribute);
+  } else if (visType == 0) {
+    // Adjacency only
+    adjacencyMatrix.updateFilter(attribute);
+  } else if (visType == 1) {
+    // Hierarchical edge only
+    hierarchicalEdge.updateFilter(attribute);
+  }
+}
+
+/**
  * Handle visualization type button click
  * @param {Integer} visType_ The type of visualization to generate.
  */
 function selectVis(visType_) {
   visType = visType_;
+
+  if (visType == 2) {
+    document.body.classList.add("dualVis");
+  } else {
+    document.body.classList.remove("dualVis");
+  }
+
   document.getElementById("fileUpload").classList.add("visible");
   document.getElementById("visSelect").classList.add("hidden");
 }
@@ -220,7 +265,7 @@ function onWindowLoaded() {
     movableRows: true,
     groupBy: "useas",
     headerSort: false,
-    groupValues: [["Source node attributes", "Target node attributes", "Link attributes", "Unused"]],
+    groupValues: [["Source node attributes", "Target node attributes", "Link attributes", "Date attribute", "Unused"]],
     columns: [
       { title: "Name", field: "name", width: 200 },
       { title: "Attribute", field: "attribute", editor: "input" },
