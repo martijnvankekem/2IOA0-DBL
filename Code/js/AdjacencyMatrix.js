@@ -3,7 +3,7 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
-let adjacencyMatrix;
+let adjacencyMatrix = null;
 
 /**
  * Adjacency Matrix - Visualization Class
@@ -322,7 +322,7 @@ class AdjacencyMatrix {
 
     // Dual visualization
     if (visType == 2 && !fromOtherClass) {
-      if (!hierarchicalEdge) return;
+      if (hierarchicalEdge == null) return;
       let source = event.target.getAttribute("data-id").split("-")[0];
       let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
       
@@ -371,7 +371,7 @@ class AdjacencyMatrix {
 
     // Dual visualization
     if (visType == 2 && !fromOtherClass) {
-      if (!hierarchicalEdge) return;
+      if (hierarchicalEdge == null) return;
       let source = event.target.getAttribute("data-id").split("-")[0];
       let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
       

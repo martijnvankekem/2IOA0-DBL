@@ -3,7 +3,7 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
-let hierarchicalEdge;
+let hierarchicalEdge = null;
 
 /**
  * Hierarchical Edge Diagram - Visualization Class
@@ -399,7 +399,7 @@ class HierarchicalEdge {
 
     // Dual visualization
     if (visType == 2 && !fromOtherClass) {
-      if (adjacencyMatrix) return;
+      if (adjacencyMatrix == null) return;
       let source = target.getAttribute("data-id");
       let nodeElement = document.querySelectorAll("rect.grid[data-source=\""+source+"\"]")[0];
 
@@ -424,7 +424,7 @@ class HierarchicalEdge {
 
     // Dual visualization
     if (visType == 2 && !fromOtherClass) {
-      if (!adjacencyMatrix) return;
+      if (adjacencyMatrix == null) return;
       adjacencyMatrix.outed(null, null, true);
     }
   }
