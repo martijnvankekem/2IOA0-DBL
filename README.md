@@ -25,7 +25,7 @@ A live example is available via the link below.
 ## About this project
 This project was created by students of the Eindhoven University of Technology, for the course 2IOA0 - DBL HTI + Webtech.
 
-The following authors are responsible for the creating and maintanence of this project:
+The following authors are responsible for the creating and maintaining of this project:
 * Heleen van Dongen
 * Veerle Uhl
 * Quinn van Rooy
