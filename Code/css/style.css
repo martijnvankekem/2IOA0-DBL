@@ -170,7 +170,7 @@ input[type="submit"]:hover {
 }
 
 input[name="daterange"] {
-  min-width: 120px;
+  min-width: 220px;
   border-radius: 0px;
   text-align: center;
   z-index: 1;
