@@ -18,28 +18,26 @@ A live example is available via the link below.
 
 [Open Example](https://projects.vankekem.com/dblinterim/)
 
-## Goals for this project
-**Milestone 1**
-- [x] Creating an adjacency matrix
-- [x] Be able to upload a custom dataset.
-- [x] Ability to work with any possible type of dataset.
+## Milestones
 
-**Milestone 2**
-- [x] Creating an hierarchical edge diagram.
-- [x] Filter visualized nodes based on attributes.
-- [x] Filter visualized links based on date range.
-- [x] Add ability to zoom visualizations.
-- [x] Allowing interaction between the two visualizations.
+[Click here for an overview](MILESTONES.md)
 
-**Milestone 3**
-- [ ] Add line diagram with average sentiment and e-mail count per date range.
-- [ ] Adjust date range by clicking on line diagram.
+## About this project
+This project was created by students of the Eindhoven University of Technology, for the course 2IOA0 - DBL HTI + Webtech.
 
-## Authors
-This project is created and maintained by the following authors:
+The following authors are responsible for the creating and maintanence of this project:
 * Heleen van Dongen
 * Veerle Uhl
 * Quinn van Rooy
 * Geert Wood
 * Hieke van Heesch
 * Martijn van Kekem
+
+## Credits
+The following third party libraries were used for the development of this application:
+* [d3.js](https://github.com/d3/d3)
+* [Tabulator](https://github.com/olifolkerd/tabulator)
+* [VanillaSelectBox](https://github.com/PhilippeMarcMeyer/vanillaSelectBox)
+* [JQuery](https://github.com/jquery/jquery)
+* [Moment](https://github.com/moment/moment)
+* [DateRangePicker](https://github.com/dangrossman/daterangepicker)
