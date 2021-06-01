@@ -3,6 +3,8 @@
  * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
+let adjacencyMatrix = null;
+
 /**
  * Adjacency Matrix - Visualization Class
  */
@@ -17,6 +19,9 @@ class AdjacencyMatrix {
     this.filters = [];
 
     this.jsonData = json;
+    this.dateRange = this.jsonData["date"];
+    this.dateFilter = [this.dateRange[0], this.dateRange[1]];
+
     this.data = this.filterData(json);
     this.format = format;
 
@@ -24,7 +29,6 @@ class AdjacencyMatrix {
     this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
     this.pairsData = [];
 
-    this.filterLists = [];
     this.prepareFilters();
 
     this.maxEmailCount = 1;
@@ -47,9 +51,14 @@ class AdjacencyMatrix {
     this.createMatrix(this.matrix, this.pairsData);
     this.setMatrixSize();
   }
-  
+
+  /**
+   * Setup the filters with the correct values.
+   */
   prepareFilters() {
     this.attributeValues = this.getAttributeValues(this.jsonData);
+
+    if (filterPrepared) return;
 
     let filterContainer = document.getElementById("filterContainer");
 
@@ -61,12 +70,12 @@ class AdjacencyMatrix {
 
       // Create a label
       let newLabel = document.createElement("label");
-      newLabel.setAttribute("for", "select_"+attribute);
+      newLabel.setAttribute("for", "select_" + attribute);
       newLabel.innerHTML = attribute;
 
       // Create a dropdown box
       let newSelect = document.createElement("select");
-      newSelect.setAttribute("id", "select_"+attribute);
+      newSelect.setAttribute("id", "select_" + attribute);
       newSelect.setAttribute("data-attribute", attribute);
       newSelect.setAttribute("multiple", "");
       newSelect.setAttribute("size", 0);
@@ -91,12 +100,12 @@ class AdjacencyMatrix {
       selectBox.setValue('all');
 
       // Add on-click handler
-      let self = this;
       newSelect.addEventListener("change", (event) => {
-        self.updateFilter(attribute);
+        filterChanged(attribute);
       });
-
     }
+
+    filterPrepared = true;
   }
 
   /**
@@ -108,8 +117,8 @@ class AdjacencyMatrix {
 
     // Get selected items
     let collection = document.querySelectorAll("#select_" + attribute + " option");
-    collection.forEach(function(x){
-      if(x.selected){
+    collection.forEach(function (x) {
+      if (x.selected) {
         selected.push(x.value);
 
       }
@@ -123,8 +132,7 @@ class AdjacencyMatrix {
     }
 
     // Redraw visualization
-    this.data = this.filterData(this.jsonData);
-    this.mapJSONData();
+    this.redraw();
   }
 
   /**
@@ -136,27 +144,29 @@ class AdjacencyMatrix {
     // Get the bounds of the SVG content
     let bbox = this.svg.getBBox();
     // Update the width and height using the size of the contents
-    this.sizeData = [bbox.x + bbox.width + bbox.x, bbox.y + bbox.height + bbox.y];
+    this.sizeData = [width, width];
+
     
     this.svg.setAttribute("width", this.sizeData[0]);
     this.svg.setAttribute("height", this.sizeData[1]);
-    this.svg.setAttribute("viewBox", `0 0 ${this.sizeData[0]} ${this.sizeData[1]}`);
+    this.svg.setAttribute("viewBox", `0 0 ${bbox.x + bbox.width + bbox.x} ${bbox.y + bbox.height + bbox.y}`);
+
+    if (visType == 2) this.changeZoom(false, 0.5);
   }
 
   /**
    * Change the current zoom scale of the visualization
-   * @param {Boolean} zoomIn Whether to zoom in or out (true = zoom in, false = zoom out)
+   * @param {Boolean} zoomIn     Whether to zoom in or out (true = zoom in, false = zoom out)
+   * @param {Float}   zoomFactor The factor to zoom in or out with (default: 0.95)
    */
-  changeZoom(zoomIn) {
-    const zoomFactor = 0.95;
-
+  changeZoom(zoomIn, zoomFactor = 0.95) {
     // Divide x and y by the zoom factor
     if (zoomIn) {
       this.sizeData[0] /= zoomFactor;
-      this.sizeData[1] /= zoomFactor;  
+      this.sizeData[1] /= zoomFactor;
     } else {
       this.sizeData[0] *= zoomFactor;
-      this.sizeData[1] *= zoomFactor;  
+      this.sizeData[1] *= zoomFactor;
     }
 
     this.svg.setAttribute("width", this.sizeData[0]);
@@ -173,9 +183,39 @@ class AdjacencyMatrix {
 
     zoomIn.addEventListener("click", () => this.changeZoom(true));
     zoomOut.addEventListener("click", () => this.changeZoom(false));
-    
+
+    // Check if a valid min/max date was received.
+    if (this.dateRange[0] != false && this.dateRange[1] != false &&
+      dateRangePicker == null) {
+      // Get date range object
+      dateRangePicker = document.getElementById("dateRangePicker");
+
+      // Create date range picker
+      $(dateRangePicker).daterangepicker({
+        startDate: this.dateFilter[0],
+        minDate: this.dateRange[0],
+        endDate: this.dateFilter[1],
+        maxDate: this.dateRange[1],
+        alwaysShowCalendars: true,
+        showCustomRangeLabel: true,
+        linkedCalendars: false,
+        showDropdowns: true,
+        ranges: {
+          'All dates': [this.dateRange[0], this.dateRange[1]]
+        }
+      }, dateFilterChanged);
+    }
+
     // Set control window to visible.
     controlWindow.style.display = "block";
+  }
+
+  /**
+   * Redraw the visualization.
+   */
+  redraw() {
+    this.data = this.filterData(this.jsonData);
+    this.mapJSONData();
   }
 
   /**
@@ -192,10 +232,13 @@ class AdjacencyMatrix {
       .data(matrix)
       .enter()
       .append("rect")
+      .on("mouseout", (event, d) => this.outed(event, d))
+      .on("mouseover", (event, d) => this.overed(event, d))
       .attr("class", "grid")
       .attr("width", 10)
       .attr("height", 10)
       .attr("data-id", d => d.id)
+      .attr("data-source", d => d.id.split("-")[0])
       .attr("linkAttr", d => {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the average sentiment
@@ -259,48 +302,120 @@ class AdjacencyMatrix {
       .style("text-anchor", "end")
       .style("font-size", "10px");
 
+    // Hide hover container when mouse leaves visualization.
+    d3.selectAll("#adjacencyG").on("mouseleave", d => {
+      document.getElementById("hoverContainer_adjacency").style.display = "none";
+    });
+  
     // Create interactive parts
     this.createGridHighlights();
-    this.createHoverContainer();
   }
 
   /**
-   * Create and fill information container on hover.
+   * Callback when a grid slot is overed.
+   * @param {Event}   event          The event that has been triggered.
+   * @param {Array}   d              The slot that is overed. 
+   * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
    */
-  createHoverContainer() {
-    d3.selectAll("rect.grid").on("mouseover", d => {
-      // Show hover container at mouse position
-      let hoverContainer = document.getElementById("hoverContainer");
-      hoverContainer.style.display = "block";
-      // Move container to left/top of cursor if we reach the end of the screen.
-      let xOffset = (d.x + hoverContainer.offsetWidth > width) ? (-hoverContainer.offsetWidth - 20) : 20;
-      let yOffset = (d.y + hoverContainer.offsetHeight > height) ? (-hoverContainer.offsetHeight - 20) : 20;
-      hoverContainer.style.left = d.x + xOffset + "px";
-      hoverContainer.style.top = d.y + yOffset + "px";
+  overed(event, d, fromOtherClass = false) {
+    this.showHoverContainer(event);
 
-      // Set labels to correct values
-      let id = this.pairsData[d.target.getAttribute("data-id")].id;
-      this.createInfoList(id);
+    // Dual visualization
+    if (visType == 2 && !fromOtherClass) {
+      if (hierarchicalEdge == null) return;
+      let source = event.target.getAttribute("data-id").split("-")[0];
+      let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
+      
+      // Find element in array
+      let element = null;
+      for (let el of hierarchicalEdge.root.leaves()) {
+        if (el.text == nodeElement) {
+          element = el;
+        }
+      }
+      hierarchicalEdge.overed(nodeElement, element, true);
+    }
+  }
 
-      let linkAttr = d.target.getAttribute("linkAttr");
-      if (linkAttr == "") {
-        // No e-mail traffic between sender-recipient pair, show message
-        document.getElementById("hover_notraffic").style.display = "block";
-        document.getElementById("hover_hastraffic").style.display = "none";
+  /**
+   * Call back when the mouse has moved over a grid slot.
+   * @param {Array}   target         The target element that called the event.
+   * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
+   */
+  moved(target, fromOtherClass = false) {
+    d3.selectAll("rect").style("stroke-width", function (p) {
+      if (fromOtherClass) {
+        // If from other class, highlight current row.
+        if (typeof target != "undefined") {
+          return (p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+        } else {
+          return "1px";
+        }
       } else {
-        // E-mail traffic exists, show avg sentiment and total e-mails.
-        document.getElementById("hover_notraffic").style.display = "none";
-        document.getElementById("hover_hastraffic").style.display = "block";
-        document.getElementById("linkAttrLabel").innerText = linkAttr;
-        document.getElementById("totalLabel").innerText = d.target.getAttribute("total");
+        return (p.x * 10 == target.x.animVal.value || p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+      }
+    });
+  }
+
+  /**
+   * Callback when a grit slot is outed.
+   * @param {Array}   event         The target event that has been triggered.
+   * @param {Array}   d              The slot that is outed. 
+   * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
+   */
+  outed(event, d, fromOtherClass = false) {
+    // If from other class, hide all highlights.
+    if (fromOtherClass) {
+      d3.selectAll("rect").style("stroke-width", "1px");
+    }
+
+    // Dual visualization
+    if (visType == 2 && !fromOtherClass) {
+      if (hierarchicalEdge == null) return;
+      let source = event.target.getAttribute("data-id").split("-")[0];
+      let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
+      
+      // Find element in array
+      let element = null;
+      for (let el of hierarchicalEdge.root.leaves()) {
+        if (el.text == nodeElement) {
+          element = el;
+        }
       }
 
-    });
+      hierarchicalEdge.outed(nodeElement, element, true);
+    }
+  }
 
-    d3.selectAll("#adjacencyG").on("mouseleave", d => {
-      // Hide hover container when mouse leaves visualization.
-      document.getElementById("hoverContainer").style.display = "none";
-    })
+  /**
+   * Show the hover container at the mouse position.
+   */
+  showHoverContainer(event) {
+    let hoverContainer = document.getElementById("hoverContainer_adjacency");
+    hoverContainer.style.display = "block";
+
+    // Set labels to correct values
+    let id = this.pairsData[event.target.getAttribute("data-id")].id;
+    this.createInfoList(id);
+
+    let linkAttr = event.target.getAttribute("linkAttr");
+    if (linkAttr == "") {
+      // No e-mail traffic between sender-recipient pair, show message
+      document.getElementById("hover_notraffic").style.display = "block";
+      document.getElementById("hover_hastraffic").style.display = "none";
+    } else {
+      // E-mail traffic exists, show avg sentiment and total e-mails.
+      document.getElementById("hover_notraffic").style.display = "none";
+      document.getElementById("hover_hastraffic").style.display = "block";
+      document.getElementById("linkAttrLabel").innerText = linkAttr;
+      document.getElementById("totalLabel").innerText = event.target.getAttribute("total");
+    }
+
+    // Move container to left/top of cursor if we reach the end of the screen.
+    let xOffset = (event.x + hoverContainer.offsetWidth > width) ? (-hoverContainer.offsetWidth - 20) : 20;
+    let yOffset = (event.y + hoverContainer.offsetHeight > height) ? (-hoverContainer.offsetHeight - 20) : 20;
+    hoverContainer.style.left = event.x + xOffset + "px";
+    hoverContainer.style.top = event.y + yOffset + "px";
   }
 
   /**
@@ -308,17 +423,17 @@ class AdjacencyMatrix {
    * @param {Integer} id The index of the item in the matrix.
    */
   createInfoList(id) {
-    let sourceList = document.getElementById("sourceList");
-    let targetList = document.getElementById("targetList");
+    let sourceList = document.getElementById("sourceList_adjacency");
+    let targetList = document.getElementById("targetList_adjacency");
     sourceList.innerHTML = "";
     targetList.innerHTML = "";
-    
+
     for (let item of Object.keys(this.matrix[id].attributes)) {
       // Add attribute to source list
       if (typeof this.matrix[id].attributes[item].source != "undefined") {
         let sourceItem = document.createElement("li");
         sourceItem.innerText = item + ": " + this.matrix[id].attributes[item].source;
-        sourceList.appendChild(sourceItem);  
+        sourceList.appendChild(sourceItem);
       }
       // Add attribute to target list
       if (typeof this.matrix[id].attributes[item].target != "undefined") {
@@ -333,11 +448,15 @@ class AdjacencyMatrix {
    * Highlight grid and labels on hover.
    */
   createGridHighlights() {
-    d3.selectAll("rect.grid").on("mousemove", d => {
-      d3.selectAll("rect").style("stroke-width", function(p) {
-        return (p.x * 10 == d.target.x.animVal.value || p.y * 10 == d.target.y.animVal.value) ? "3px" : "1px";
-      });
+    // Highlight column and row on grid hover
+    d3.selectAll("rect.grid").on("mousemove", (event) => {
+      this.moved(event.target);
     });
+
+    // Hide highlights when leaving matrix
+    document.getElementById("adjacencyG").onmouseleave = (event) => {
+      d3.selectAll("rect").style("stroke-width", "1px");
+    }
   }
 
   /**
@@ -392,13 +511,13 @@ class AdjacencyMatrix {
       // Do for both source as target
       for (let i = group.length - 1; i >= 0; i--) {
         let node = group[i];
-        
+
         // Node is null, so remove it and continue.
         if (node == null) {
-          group.splice(group.indexOf(node), 1);
+          group.splice(i, 1);
           continue;
         }
-  
+
         // Check if node matches the filter.
         for (let filter of this.filters) {
           // If filter is not meant for this node kind, skip.
@@ -406,11 +525,20 @@ class AdjacencyMatrix {
           if (nodeGroup == 1 && filter.kind == "source") continue;
 
           if (!filter.checkMatch(node[filter.attribute])) {
-            group.splice(group.indexOf(node), 1);
+            group.splice(i, 1);
           }
         }
       }
-  
+    }
+
+    // Remove links outside date range
+    let start = Math.floor(new Date(this.dateFilter[0]).getTime() / 1000);
+    let end = Math.floor(new Date(this.dateFilter[1]).getTime() / 1000);
+    for (let i = data.links.length - 1; i >= 0; i--) {
+      let dateMillis = Number(data.links[i]["date"]);
+      if (dateMillis > end || dateMillis < start) {
+        data.links.splice(i, 1);
+      }
     }
 
     return data;
@@ -466,6 +594,8 @@ class AdjacencyMatrix {
     for (let nodeGroup of json.nodes) {
       for (let node of nodeGroup) {
         for (let attribute of Object.keys(values)) {
+          // Skip if attribute doesn't exist in dictionary
+          if (!Object.keys(values).includes(attribute)) continue;
           // If the current value of this attribute doesn't exist
           if (!values[attribute].includes(node[attribute])) {
             // Add possible value to dropdown
@@ -473,7 +603,7 @@ class AdjacencyMatrix {
             // Add possible value to filter
             this.filters[attributeIndex[attribute]].values.push(node[attribute]);
           }
-        }  
+        }
       }
     }
 
@@ -507,7 +637,7 @@ class AdjacencyMatrix {
           if (typeof grid.attributes[item.attribute] != "undefined") {
             grid.attributes[item.attribute].source = source[item.attribute];
           } else {
-            grid.attributes[item.attribute] = {source: source[item.attribute]};
+            grid.attributes[item.attribute] = { source: source[item.attribute] };
           }
         }
         // Insert target attributes into matrix
@@ -515,13 +645,13 @@ class AdjacencyMatrix {
           if (typeof grid.attributes[item.attribute] != "undefined") {
             grid.attributes[item.attribute].target = target[item.attribute];
           } else {
-            grid.attributes[item.attribute] = {target: target[item.attribute]};
+            grid.attributes[item.attribute] = { target: target[item.attribute] };
           }
         }
         // Add grid item to matrix
         let insertID = matrix.length;
         matrix[insertID] = grid;
-        this.pairsData[gridID] = {id: insertID, linkAttr: 0, total: 0};
+        this.pairsData[gridID] = { id: insertID, linkAttr: 0, total: 0 };
       });
     });
 
@@ -535,7 +665,7 @@ class AdjacencyMatrix {
  * @param {Array}  format            The visualization format.
  */
 function createAdjacencyMatrix(data, format) {
-  new AdjacencyMatrix(data, format);
+  adjacencyMatrix = new AdjacencyMatrix(data, format);
 }
 
 /**
@@ -546,6 +676,6 @@ function createAdjacencyMatrix(data, format) {
  * @param  {Number} d End range maximum.
  * @return {Number}   A number ranged between c and d.
  */
-Number.prototype.map = function(a, b, c, d) {
+Number.prototype.map = function (a, b, c, d) {
   return c + (d - c) * ((this - a) / (b - a))
 };

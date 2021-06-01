@@ -75,6 +75,7 @@ function formatData($columns) {
 }
 
 // Execute the main function
+header("Access-Control-Allow-Origin: *");
 handleRequest();
 
 ?>

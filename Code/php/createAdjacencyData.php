@@ -19,12 +19,14 @@ function handleRequest() {
 
   // Extract CSV data into arrays
   $csv = parseCSV($fileName);
+  $minMaxDate = getMinMaxDate($csv, $formatting);
   $nodes = getNodes($csv, $formatting);
   $links = getLinks($csv, $formatting);
 
   // Create JSON array
   $jsonArray = array(
     "format" => $formatting,
+    "date" => $minMaxDate,
     "nodes" => $nodes,
     "links" => $links
   );
@@ -103,6 +105,9 @@ function convertFormatting($formatting) {
         // Group of link attributes
         $currentAttribute = "linkAttributes";
         continue;
+      } else if (preg_match("/(Date\sattribute)/", $row["headerContent"])) {
+        // Group of date attributes
+        $currentAttribute = "dateAttribute";
       } else if (preg_match("/(Unused)/", $row["headerContent"])) {
         // Group of unused attributes, so exit loop
         break;
@@ -112,7 +117,8 @@ function convertFormatting($formatting) {
       if ($currentAttribute == "nodeGroups") {
         $newIndex = sizeof($format[$currentAttribute][$currentIndex]);
         $format[$currentAttribute][$currentIndex][$newIndex] = $row;  
-      } else if ($currentAttribute == "linkAttributes") {
+      } else if ($currentAttribute == "linkAttributes" ||
+                 $currentAttribute == "dateAttribute") {
         $newIndex = sizeof($format[$currentAttribute]);
         $format[$currentAttribute][$newIndex] = $row;
       }
@@ -148,15 +154,13 @@ function getNodes($csv, $formatting) {
           $node[$item["attribute"]] = $row[$item["name"]];
         }
       }
-      // TODO: add check for source/target
+      
       if (!in_array($node[$mainNodeAttribute], $sourceNodesHandled) && ($node["kind"] == "source")) {
         $sourceNodes[$node[$mainNodeAttribute]] = $node;
         $sourceNodesHandled[sizeof($sourceNodesHandled)] = $node[$mainNodeAttribute];
       } else if (!in_array($node[$mainNodeAttribute], $targetNodesHandled) && ($node["kind"] == "target")) {
         $targetNodes[$node[$mainNodeAttribute]] = $node;
         $targetNodesHandled[sizeof($targetNodesHandled)] = $node[$mainNodeAttribute];
-      } else {
-        $nodes[$node[$mainNodeAttribute]] = array_merge($nodes[$node[$mainNodeAttribute]], $node);
       }
     }
 
@@ -168,10 +172,10 @@ function getNodes($csv, $formatting) {
 }
 
 /**
- * Get an array of links between emailaddresses from uploaded CSV
- * @param  Array $csv     Array with CSV contents
- * @param  Array $emails  Array of unique emailaddresses
- * @return Array          Array of links between emails
+ * Get an array of links from uploaded CSV
+ * @param  Array $csv        Array with CSV contents
+ * @param  Array $formatting The way the data must be formatted
+ * @return Array             Array of links between emails
  */
 function getLinks($csv, $formatting) {
   $links = [];
@@ -185,6 +189,10 @@ function getLinks($csv, $formatting) {
         $link[$linkAttribute["attribute"]] = $row[$linkAttribute["name"]];
       }
     }
+    // Add date attribute to link
+    if (array_key_exists($formatting["dateAttribute"][0]["name"], $row)) {
+      $link[$formatting["dateAttribute"][0]["attribute"]] = strtotime($row[$formatting["dateAttribute"][0]["name"]]);
+    }
     $link["source"] = $row[$formatting["nodeGroups"][0][0]["name"]];
     $link["target"] = $row[$formatting["nodeGroups"][1][0]["name"]];
     $links[sizeof($links)] = $link;
@@ -193,7 +201,43 @@ function getLinks($csv, $formatting) {
   return $links;
 }
 
+/**
+ * Get the minimum and maximum date from the dataset.
+ * @param  Array $csv        Array with CSV contents.
+ * @param  Array $formatting The way the data must be formatted.
+ * @return Array             The min and max date.
+ */
+function getMinMaxDate($csv, $formatting) {
+  $dateAttribute = $formatting["dateAttribute"][0]["name"];
+  $maxDate = "";
+  $minDate = "";
+
+  foreach ($csv as $row) {
+    if (!array_key_exists($dateAttribute, $row)) {
+      continue; // attribute doesn't exist, so check next row
+    } else {
+      // Get date from dataset
+      $currentDate = strtotime($row[$dateAttribute]);
+      
+      // Check max date
+      if ($maxDate == "" ||
+          $currentDate > $maxDate) {
+        $maxDate = $currentDate;
+      }
+
+      // Check min date
+      if ($minDate == "" ||
+          $currentDate < $minDate) {
+        $minDate = $currentDate;
+      }
+    }
+  }
+
+  return array(date("m/d/Y", $minDate), date("m/d/Y", $maxDate));
+}
+
 // Execute the main function
+header("Access-Control-Allow-Origin: *");
 handleRequest();
 
 ?>
