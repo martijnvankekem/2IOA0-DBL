@@ -163,7 +163,7 @@ input[type="submit"] {
   transition: background-size .6s ease;
 }
 
-button:hover,
+button:not([style]):not(.btn):hover,
 input[type="submit"]:hover {
   background-position: right, left;
   background-size: 0% 100%, 100% 100%;
