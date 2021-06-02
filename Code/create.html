@@ -100,6 +100,7 @@
   <div class="visualization" id="visContainer">
     <svg class="vissvg" id="vis_adjacancy"></svg>
     <svg class="vissvg" id="vis_hierarchical"></svg>
+    <svg class="vissvg" id="vis_linediagram"></svg>
     <div id="hoverContainer_adjacency" class="hoverContainer">
       <div class="content">
         <h3>Information<span class="color">.</span></h3>
@@ -151,7 +152,8 @@
         <p>Select the type of visualization you would like to generate.</p>
         <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
         <button onclick="selectVis(1);">Hierarchical Edge</button><br>
-        <button onclick="selectVis(2);">Both</button><br>
+        <button class="rightMargin" onclick="selectVis(2);">Line Diagram</button>
+        <button onclick="selectVis(3);">All three</button><br>
         <a href="#" onclick="cancelClick(0);">Back to previous page</a>
       </div>
     </div>
@@ -170,6 +172,7 @@
   <script src="js/create.js"></script>
   <script src="js/AdjacencyMatrix.js"></script>
   <script src="js/HierarchicalEdge.js"></script>
+  <script src="js/LineDiagram.js"></script>
   <script src="js/Filter.js"></script>
 
 </body>

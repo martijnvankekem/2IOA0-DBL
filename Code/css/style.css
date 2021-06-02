@@ -163,6 +163,10 @@ input[type="submit"] {
   transition: background-size .6s ease;
 }
 
+.selectVis button {
+  width: 167px;
+}
+
 button:not([style]):not(.btn):hover,
 input[type="submit"]:hover {
   background-position: right, left;

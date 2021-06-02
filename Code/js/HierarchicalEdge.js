@@ -308,7 +308,7 @@ class HierarchicalEdge {
     this.svg.setAttribute("width", this.sizeData[0]);
     this.svg.setAttribute("height", this.sizeData[1]);
 
-    if (visType == 2) this.changeZoom(false, 0.5);
+    if (visType == combinedVisType) this.changeZoom(false, 0.5);
   }
 
   /**
@@ -398,7 +398,7 @@ class HierarchicalEdge {
     d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr("fill", this.colorout).attr("font-weight", "bold");
 
     // Dual visualization
-    if (visType == 2 && !fromOtherClass) {
+    if (visType == combinedVisType && !fromOtherClass) {
       if (adjacencyMatrix == null) return;
       let source = target.getAttribute("data-id");
       let nodeElement = document.querySelectorAll("rect.grid[data-source=\""+source+"\"]")[0];
@@ -423,7 +423,7 @@ class HierarchicalEdge {
     d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr("fill", null).attr("font-weight", null);
 
     // Dual visualization
-    if (visType == 2 && !fromOtherClass) {
+    if (visType == combinedVisType && !fromOtherClass) {
       if (adjacencyMatrix == null) return;
       adjacencyMatrix.outed(null, null, true);
     }

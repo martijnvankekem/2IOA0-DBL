@@ -151,7 +151,7 @@ class AdjacencyMatrix {
     this.svg.setAttribute("height", this.sizeData[1]);
     this.svg.setAttribute("viewBox", `0 0 ${bbox.x + bbox.width + bbox.x} ${bbox.y + bbox.height + bbox.y}`);
 
-    if (visType == 2) this.changeZoom(false, 0.5);
+    if (visType == combinedVisType) this.changeZoom(false, 0.5);
   }
 
   /**
@@ -321,7 +321,7 @@ class AdjacencyMatrix {
     this.showHoverContainer(event);
 
     // Dual visualization
-    if (visType == 2 && !fromOtherClass) {
+    if (visType == combinedVisType && !fromOtherClass) {
       if (hierarchicalEdge == null) return;
       let source = event.target.getAttribute("data-id").split("-")[0];
       let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
@@ -370,7 +370,7 @@ class AdjacencyMatrix {
     }
 
     // Dual visualization
-    if (visType == 2 && !fromOtherClass) {
+    if (visType == combinedVisType && !fromOtherClass) {
       if (hierarchicalEdge == null) return;
       let source = event.target.getAttribute("data-id").split("-")[0];
       let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");

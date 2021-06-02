@@ -4,6 +4,12 @@
  */
 
 const urlPrefix = "https://projects.vankekem.com/dbl/";
+const combinedVisType = 3; // Vis type for all visualizations combined.
+const scriptURL = {
+  0: urlPrefix + 'php/createAdjacencyData.php',
+  1: urlPrefix + 'php/createHierarchicalEdgeData.php',
+  2: urlPrefix + 'php/createLineDiagramData.php'
+}
 
 let formElement;
 let visualizationData = null;
@@ -84,6 +90,8 @@ function uploadCallbackSuccess(data, uploadType, visType_) {
       createAdjacencyMatrix(responseData, responseData["format"]);
     } else if (visType_ == 1) {
       createHierarchicalEdge(responseData, responseData["format"]);
+    } else if (visType_ == 2) {
+      createLineDiagram(responseData, responseData["format"]);
     }
   }
 
@@ -160,14 +168,15 @@ function visualize() {
   let jsonString = JSON.stringify(groupData);
   formData.append("format", jsonString);
   // Send data to the backend
-  if (visType < 2) {
+  if (visType < combinedVisType) {
     // Single visualization
-    let scriptURL = (visType == 0) ? urlPrefix + 'php/createAdjacencyData.php' : urlPrefix + 'php/createHierarchicalEdgeData.php';
-    sendUploadRequest(scriptURL, 1, visType, formData);
+    sendUploadRequest(scriptURL[visType], 1, visType, formData);
   } else {
     // Multiple visualizations together
-    sendUploadRequest(urlPrefix + 'php/createAdjacencyData.php', 1, 0, formData);
-    sendUploadRequest(urlPrefix + 'php/createHierarchicalEdgeData.php', 1, 1, formData);
+    for (let visID of Object.keys(scriptURL)) {
+      let url = scriptURL[visID]
+      sendUploadRequest(url, 1, visID, formData);
+    }
   }
 }
 
@@ -192,7 +201,7 @@ function cancelClick(cancelType) {
  * @param {Object} end   The new end date
  */
 function dateFilterChanged(start, end) {
-  if (visType == 2) {
+  if (visType == combinedVisType) {
     // Two visualizations
     adjacencyMatrix.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
     hierarchicalEdge.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
@@ -211,7 +220,7 @@ function dateFilterChanged(start, end) {
 }
 
 function filterChanged(attribute) {
-  if (visType == 2) {
+  if (visType == combinedVisType) {
     // Two visualizations
     adjacencyMatrix.updateFilter(attribute);
     hierarchicalEdge.updateFilter(attribute);
@@ -231,7 +240,7 @@ function filterChanged(attribute) {
 function selectVis(visType_) {
   visType = visType_;
 
-  if (visType == 2) {
+  if (visType == combinedVisType) {
     document.body.classList.add("dualVis");
   } else {
     document.body.classList.remove("dualVis");
