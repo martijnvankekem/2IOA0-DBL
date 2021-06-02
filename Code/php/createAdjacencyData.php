@@ -87,7 +87,7 @@ function parseCSV($fileName) {
 function convertFormatting($formatting) {
   $currentAttribute = "nodeGroups";
   $currentIndex = 0;
-  $format = array("nodeGroups" => array(), "linkAttributes" => array());
+  $format = array("nodeGroups" => array(), "linkAttributes" => array(), "dateAttribute" => array());
 
   // Get node groups
   foreach ($formatting as $item) {
