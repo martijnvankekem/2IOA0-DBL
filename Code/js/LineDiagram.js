@@ -15,13 +15,11 @@ class LineDiagram {
    * @param {Array}  format            The visualization format.
    */
   constructor(json, format) {
-    let data = JSON.parse(JSON.stringify(json));
-    console.log(data);
     this.filters = [];
 
-    this.jsonData = json;
-    console.log(json);
+    this.jsonData = JSON.parse(JSON.stringify(json));
     this.data = this.filterData(json);
+    console.log(this.data);
     this.format = format;
 
     this.dateRange = this.jsonData["json[0]"];
@@ -39,45 +37,58 @@ class LineDiagram {
    */
   mapJSONData() {
 
-    this.x = d3.scaleTime().domain([0, width]);
+    // Convert data to numbers
+    for (let row of Object.keys(this.data.links)) {
+      let item = this.data.links[row];
+      item.date = row;
+      for (let attribute of Object.keys(item)) {
+        if (attribute != "date") {
+          item[attribute] = Number(item[attribute]);
+        }
+      }
+    }
+
+    console.log(this.data.links);
+
+    this.x = d3.scaleTime().domain([0, this.width]);
     console.log(this.x);
-    this.y0 = d3.scaleLinear().domain([height, 0]);
+    this.y0 = d3.scaleLinear().domain([this.height, 0]);
     //var y1 = d3.scaleLinear().range([height, 0]);
 
-    this.xAxis = d3.axisBottom(this.x).ticks(5);
+    let xAxis = d3.axisBottom(this.x).ticks(5);
 
-    this.yAxisLeft = d3.axisLeft(this.y0).ticks(5);
+    let yAxisLeft = d3.axisLeft(this.y0).ticks(5);
 
     //var yAxisRight = d3.axisRight(y1).ticks(5);
 
-    this.valueline = d3.line()
+    let valueline = d3.line()
       .x(function(d) {
+        console.log(d);
         return this.x(d.date);
       })
       .y(function(d) {
+        console.log(d);
         return this.y0(d.close);
       });
 
-      this.setDiagramSize();
+    this.setDiagramSize();
 
-      this.createDiagram();
+    this.createDiagram(valueline, xAxis, yAxisLeft);
 
 
   }
 
-  createDiagram(){
+  createDiagram(valueline, xAxis, yAxisLeft){
     d3.select("#vis_linediagram").append("path")
-      .attr("d", this.valueline(this.data))
-    d3.select("#vis_linediagram")
+      .attr("d", valueline(this.data.links))
       .append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(this.xAxis);
-    d3.select("#vis_linediagram")
+      .attr("transform", "translate(0," + this.height + ")")
+      .call(xAxis)
       .append("g")
       .attr("class", "y axis")
       .style("fill", "steelblue")
-      .call(this.yAxisLeft);
+      .call(yAxisLeft);
   }
 
   setDiagramSize(){
