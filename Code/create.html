@@ -9,7 +9,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
-  <title>New visualization - DBL</title>
+  <title>New visualization - Adge</title>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
@@ -26,11 +26,11 @@
   <!-- Upload Header -->
   <header>
     <div class="wrapper">
-      <h1>Create<span class="color">.</span></h1>
+      <h1>Adge<span class="color">.</span></h1>
       <nav>
         <ul>
           <li><a href="index.html"><button>Home</button></a></li>
-          <li><a href="create.html"><button>Visualizations</button></a></li>
+          <li><a href="create.html" class="selected"><button>Visualizations</button></a></li>
           <li><a href="backgroundinfo.html"><button>Background Info</button></a></li>
         </ul>
       </nav>
@@ -128,6 +128,16 @@
           <li>Outgoing: <span id="targetList_hierarchy_outgoing"></span></li>
           <li>Incoming: <span id="targetList_hierarchy_incoming"></span></li>
         </ul>
+      </div>
+    </div>
+    <div id="legend_hierarchy" class="legend">
+      <h3>Legend<span class="color">.</span></h3>
+      <div class="data">
+        <span class="color blue">Incoming edge</span><br>
+        <span class="color red">Outgoing edge</span><br>
+        <span class="color orange">Incoming & outgoing edges</span><br>
+        <span class="color purple">Edge to self</span><br>
+      </div>
       </div>
     </div>
   </div>

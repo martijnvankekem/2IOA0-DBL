@@ -6,3 +6,52 @@
 .nodes g {
   cursor: pointer;
 }
+
+.legend {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #add8e6;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.legend h3 {
+  margin: 0 0 5px 0;
+}
+
+.legend .data span.color {
+  position: relative;
+  color: #000;
+  margin-left: 15px;
+  vertical-align: middle;
+}
+
+.legend .data span.color::before {
+  content: " ";
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  vertical-align: middle;
+}
+
+.legend .data span.color.red::before {
+  background-color: red;
+}
+
+.legend .data span.color.blue::before {
+  background-color: blue;
+}
+
+.legend span.color.orange::before {
+  background-color: orange;
+}
+
+.legend span.color.purple::before {
+  background-color: purple;
+}

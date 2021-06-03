@@ -27,6 +27,8 @@ class HierarchicalEdge {
     this.colornone = "#ccc";
     this.colorout = "#f00";
     this.colorin = "#00f";
+    this.colorboth = "#ffa500";
+    this.colorself = "#800080";
 
     this.mainNodeAttribute = this.format.nodeGroups[0][0].attribute;
 
@@ -52,6 +54,9 @@ class HierarchicalEdge {
 
     zoomIn.addEventListener("click", () => this.changeZoom(true));
     zoomOut.addEventListener("click", () => this.changeZoom(false));
+
+    // Show legend
+    document.getElementById("legend_hierarchy").style.display = "block";
 
     // Check if a valid min/max date was received.
     if (this.dateRange[0] != false && this.dateRange[1] != false &&
@@ -391,19 +396,71 @@ class HierarchicalEdge {
   overed(target, d, fromOtherClass = false) {
     this.link.style("mix-blend-mode", null);
     d3.select(target).attr("font-weight", "bold");
-    // Highlight all related links and nodes.
-    d3.selectAll(d.incoming.map(d => d.path)).attr("stroke", this.colorin).raise();
-    d3.selectAll(d.incoming.map(([d]) => d.text)).attr("fill", this.colorin).attr("font-weight", "bold");
-    d3.selectAll(d.outgoing.map(d => d.path)).attr("stroke", this.colorout).raise();
-    d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr("fill", this.colorout).attr("font-weight", "bold");
+
+    // Get nodes with both incoming and outgoing edge.
+    let incomingLines = d.incoming.map(d => d.path);
+    let incomingNodes = d.incoming.map(([d]) => d.text);
+    let outgoingLines = d.outgoing.map(d => d.path);
+    let outgoingNodes = d.outgoing.map(([, d]) => d.text);
+    let combinedLines = [];
+    let combinedNodes = [];
+
+    for (let i = 0; i < incomingNodes.length; i++) {
+      if (outgoingNodes.includes(incomingNodes[i])) {
+        // Add to combined
+        combinedNodes.push(incomingNodes[i]);
+        combinedLines.push(incomingLines[i]);
+        // Remove from incoming
+        incomingNodes.splice(i, 1);
+        incomingLines.splice(i, 1);
+        // Remove from outgoing
+        const outgoingIndex = outgoingNodes.indexOf(incomingNodes[i]);
+        outgoingNodes.splice(outgoingIndex, 1);
+        outgoingLines.splice(outgoingIndex, 1);
+      }
+    }
+
+    // Give incoming nodes a color
+    d3.selectAll(incomingLines).attr("stroke", this.colorin).raise();
+    d3.selectAll(incomingNodes).attr("fill", this.colorin).attr("font-weight", "bold");
+    // Give outgoing nodes a color
+    d3.selectAll(outgoingLines).attr("stroke", this.colorout).raise();
+    d3.selectAll(outgoingNodes).attr("fill", this.colorout).attr("font-weight", "bold");
+    // Give combined nodes a color
+    d3.selectAll(combinedLines).attr("stroke", this.colorboth).raise();
+    d3.selectAll(combinedNodes).attr("fill", this.colorboth).attr("font-weight", "bold");
+    // Give distinct color if it has a node to self
+    if (incomingNodes.map(d => d.innerHTML).includes(d.data.name) ||
+        outgoingNodes.map(d => d.innerHTML).includes(d.data.name) ||
+        combinedNodes.map(d => d.innerHTML).includes(d.data.name)) {
+      d3.select(target).attr("fill", this.colorself);
+    }
 
     // Dual visualization
     if (visType == combinedVisType && !fromOtherClass) {
       if (adjacencyMatrix == null) return;
       let source = target.getAttribute("data-id");
-      let nodeElement = document.querySelectorAll("rect.grid[data-source=\""+source+"\"]")[0];
+      let results = document.querySelectorAll("rect.grid[data-id=\""+source+"-"+source+"\"]");
+      let nodeElement;
+      let resultEl = "";
+      // Check if both the source and target exist in the adjacency matrix
+      if (results.length > 0) {
+        nodeElement = results[0];
+        resultEl = "both";
+      } else {
+        // Doesn't exist, so get just the source/target
+        let resultSource = document.querySelectorAll("rect.grid[data-source=\""+source+"\"]");
+        let resultTarget = document.querySelectorAll("rect.grid[data-target=\""+source+"\"]");
+        if (resultSource.length > 0) {
+          resultEl = "source";
+          nodeElement = resultSource[0];
+        } else {
+          resultEl = "target";
+          nodeElement = resultTarget[0];
+        }
+      }
 
-      adjacencyMatrix.moved(nodeElement, true);
+      adjacencyMatrix.moved(nodeElement, true, resultEl);
     }
   }
 

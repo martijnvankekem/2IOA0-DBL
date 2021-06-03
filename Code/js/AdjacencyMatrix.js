@@ -239,6 +239,7 @@ class AdjacencyMatrix {
       .attr("height", 10)
       .attr("data-id", d => d.id)
       .attr("data-source", d => d.id.split("-")[0])
+      .attr("data-target", d => d.id.split("-")[1])
       .attr("linkAttr", d => {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the average sentiment
@@ -341,13 +342,20 @@ class AdjacencyMatrix {
    * Call back when the mouse has moved over a grid slot.
    * @param {Array}   target         The target element that called the event.
    * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
+   * @param {String}  resultEl       Whether both the source and target exists, or only one of the two (default: both)
    */
-  moved(target, fromOtherClass = false) {
+  moved(target, fromOtherClass = false, resultEl = "both") {
     d3.selectAll("rect").style("stroke-width", function (p) {
       if (fromOtherClass) {
         // If from other class, highlight current row.
         if (typeof target != "undefined") {
-          return (p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+          if (resultEl == "both") {
+            return (p.x * 10 == target.x.animVal.value || p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+          } else if (resultEl == "source") {
+            return (p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+          } else if (resultEl == "target") {
+            return (p.x * 10 == target.x.animVal.value) ? "3px" : "1px";
+          }
         } else {
           return "1px";
         }
