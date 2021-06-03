@@ -15,6 +15,8 @@ class LineDiagram {
    * @param {Array}  format            The visualization format.
    */
   constructor(json, format) {
+    this.parseTime= d3.timeParse("%d-%b-%y");
+
     this.filters = [];
 
     this.jsonData = JSON.parse(JSON.stringify(json));
@@ -24,9 +26,9 @@ class LineDiagram {
 
     this.dateRange = this.jsonData["json[0]"];
 
-
-    this.width=600;
-    this.height=270;
+    this.margin= {top:20,right:40,bottom:30,left:50},
+      this.width=960-this.margin.left-this.margin.right,
+      this.height=500-this.margin.top-this.margin.bottom;
 
 
     this.mapJSONData();
@@ -39,73 +41,80 @@ class LineDiagram {
 
     // Convert data to numbers
     for (let row of Object.keys(this.data.links)) {
-      let item = this.data.links[row];
-      item.date = row;
-      for (let attribute of Object.keys(item)) {
+      this.item = this.data.links[row];
+      this.item.date = row;
+      for (let attribute of Object.keys(this.item)) {
         if (attribute != "date") {
-          item[attribute] = Number(item[attribute]);
+          this.item[attribute] = Number(this.item[attribute]);
         }
       }
     }
 
-    console.log(this.data.links);
-
-    this.x = d3.scaleTime().domain([0, this.width]);
-    console.log(this.x);
-    this.y0 = d3.scaleLinear().domain([this.height, 0]);
+    this.x = d3.scaleTime().range([0,this.width]);
+    this.y0 = d3.scaleLinear().range([this.height, 0]);
     //var y1 = d3.scaleLinear().range([height, 0]);
 
-    let xAxis = d3.axisBottom(this.x).ticks(5);
-
-    let yAxisLeft = d3.axisLeft(this.y0).ticks(5);
-
-    //var yAxisRight = d3.axisRight(y1).ticks(5);
 
     let valueline = d3.line()
-      .x(function(d) {
-        console.log(d);
-        return this.x(d.date);
-      })
-      .y(function(d) {
-        console.log(d);
-        return this.y0(d.close);
-      });
+        .x(function(d) { return x(d.this.links.date); })
+        .y(function(d) { return y0(d.this.links.count); });
 
     this.setDiagramSize();
 
-    this.createDiagram(valueline, xAxis, yAxisLeft);
+    this.createDiagram(valueline);
 
 
   }
 
-  createDiagram(valueline, xAxis, yAxisLeft){
-    d3.select("#vis_linediagram").append("path")
-      .attr("d", valueline(this.data.links))
-      .append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + this.height + ")")
-      .call(xAxis)
-      .append("g")
-      .attr("class", "y axis")
-      .style("fill", "steelblue")
-      .call(yAxisLeft);
+  createDiagram(valueline){
+    // Scale the range of the data
+    //this.x.domain([this.data.date[0], this.data.date[1]]);
+    this.scale_x = d3.scaleTime()
+      .domain([this.data.date[0], this.data.date[1]])
+      .range([0, this.width]);
+    console.log(this.data.date[0], this.data.date[1]);
+    this.y0.domain([0, 200]); //might change later to iterable scale
+
+
+
+    // Add the valueline path.
+    this.svg.append("path")
+        .data([this.jsonData])
+        .attr("class", "line")
+        .attr("d", valueline);
+        console.log("test1");
+
+
+    // Add the X Axis
+    this.x_axis= d3.axisBottom(this.x)
+      .scale(this.scale_x);
+
+    this.svg.append("g")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(this.x_axis);
+        console.log("test2");
+
+    // Add the Y0 Axis
+    this.svg.append("g")
+        .attr("class", "axisSteelBlue")
+        .call(d3.axisLeft(this.y0));
+        console.log("test3");
+
+
   }
 
   setDiagramSize(){
     this.svg = document.getElementById("vis_linediagram");
-
-    // Get the bounds of the SVG content
-    let bbox = this.svg.getBBox();
-    // Update the width and height using the size of the contents
-    this.sizeData = [width, height];
-
-
-
-    this.svg.setAttribute("width", this.sizeData[0]);
-    this.svg.setAttribute("height", this.sizeData[1]);
+    this.svg = d3.select("body").append("svg")
+    .attr("width", this.width + this.margin.left + this.margin.right)
+    .attr("height", this.height + this.margin.top + this.margin.bottom)
+    .append("g")
+    .attr("transform",
+        "translate(" + this.margin.left + "," + this.margin.top + ")");
 
     if (visType == combinedVisType) this.changeZoom(false, 0.5);
   }
+
 
   /**
    * Filter out invalid data from the dataset

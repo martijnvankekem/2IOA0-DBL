@@ -265,3 +265,18 @@ body.dualVis svg.vissvg {
 body svg.vissvg {
   text-rendering: geometricprecision;
 }
+
+/*line Diagram*/
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.axisSteelBlue text{
+  fill: steelblue;
+}
+
+.axisRed text{
+  fill: red;
+}
