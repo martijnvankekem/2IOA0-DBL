@@ -1,4 +1,4 @@
-# Dataset Visualization - 2IOA0-DBL
+# Adge - Universal visualization project
 This project was created with the intent to simplify the visualization of datasets.
 
 ## Browser support
