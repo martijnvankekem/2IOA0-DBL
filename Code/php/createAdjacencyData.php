@@ -151,7 +151,13 @@ function getNodes($csv, $formatting) {
         if (!array_key_exists($item["name"], $row)) {
           continue 2; // attribute doesn't exist, so check next node group
         } else {
-          $node[$item["attribute"]] = $row[$item["name"]];
+          if ($item["attribute"] == $mainNodeAttribute) {
+            $node["name"] .= $row[$item["name"]];
+            $node[$mainNodeAttribute] = $row[$item["name"]];
+          } else {
+            $node["name"] = $row[$item["name"]] . "/" . $node["name"];
+            $node[$item["attribute"]] = $row[$item["name"]];
+          }
         }
       }
       

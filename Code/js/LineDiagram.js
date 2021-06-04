@@ -17,18 +17,18 @@ class LineDiagram {
   constructor(json, format) {
     this.parseTime= d3.timeParse("%d-%b-%y");
 
-    this.filters = [];
-
     this.jsonData = JSON.parse(JSON.stringify(json));
-    this.data = this.filterData(json);
-    console.log(this.data);
+    this.data = json;
     this.format = format;
+
+    // TODO: remove this after debugging
+    console.log(this.data);
 
     this.dateRange = this.jsonData["json[0]"];
 
-    this.margin= {top:20,right:40,bottom:30,left:50},
-      this.width=960-this.margin.left-this.margin.right,
-      this.height=500-this.margin.top-this.margin.bottom;
+    this.margin = {top: 20, right: 40, bottom: 30, left: 50};
+    this.width = 960 - this.margin.left - this.margin.right;
+    this.height = 500 - this.margin.top - this.margin.bottom;
 
 
     this.mapJSONData();
@@ -72,6 +72,7 @@ class LineDiagram {
     this.scale_x = d3.scaleTime()
       .domain([this.data.date[0], this.data.date[1]])
       .range([0, this.width]);
+      
     console.log(this.data.date[0], this.data.date[1]);
     this.y0.domain([0, 200]); //might change later to iterable scale
 
@@ -79,10 +80,10 @@ class LineDiagram {
 
     // Add the valueline path.
     this.svg.append("path")
-        .data([this.jsonData])
-        .attr("class", "line")
-        .attr("d", valueline);
-        console.log("test1");
+      .data([this.jsonData])
+      .attr("class", "line")
+      .attr("d", valueline);
+      console.log("test1");
 
 
     // Add the X Axis
@@ -90,45 +91,28 @@ class LineDiagram {
       .scale(this.scale_x);
 
     this.svg.append("g")
-        .attr("transform", "translate(0," + this.height + ")")
-        .call(this.x_axis);
-        console.log("test2");
+      .attr("transform", "translate(0," + this.height + ")")
+      .call(this.x_axis);
+      console.log("test2");
 
     // Add the Y0 Axis
     this.svg.append("g")
-        .attr("class", "axisSteelBlue")
-        .call(d3.axisLeft(this.y0));
-        console.log("test3");
+      .attr("class", "axisSteelBlue")
+      .call(d3.axisLeft(this.y0));
+      console.log("test3");
 
 
   }
 
   setDiagramSize(){
-    this.svg = document.getElementById("vis_linediagram");
-    this.svg = d3.select("body").append("svg")
-    .attr("width", this.width + this.margin.left + this.margin.right)
-    .attr("height", this.height + this.margin.top + this.margin.bottom)
-    .append("g")
-    .attr("transform",
-        "translate(" + this.margin.left + "," + this.margin.top + ")");
-
-    if (visType == combinedVisType) this.changeZoom(false, 0.5);
+    this.svg = d3.select("#vis_linediagram")
+      .attr("width", this.width + this.margin.left + this.margin.right)
+      .attr("height", this.height + this.margin.top + this.margin.bottom)
+      .append("g")
+      .attr("transform",
+          "translate(" + this.margin.left + "," + this.margin.top + ")");
   }
 
-
-  /**
-   * Filter out invalid data from the dataset
-   * @param  {Array} json The array of json data.
-   * @return {Array}       The filtered array of nodes.
-   */
-  filterData(json) {
-    // Make a clone of the array
-    let data = JSON.parse(JSON.stringify(json));
-
-    // TODO: insert code to filter data.
-
-    return data;
-  }
 }
 
 /**

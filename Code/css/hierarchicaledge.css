@@ -18,6 +18,10 @@
 }
 
 .legend h3 {
+  margin: 0;
+}
+
+.legend p {
   margin: 0 0 5px 0;
 }
 

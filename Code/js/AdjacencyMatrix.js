@@ -366,8 +366,8 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Callback when a grit slot is outed.
-   * @param {Array}   event         The target event that has been triggered.
+   * Callback when a grid slot is outed.
+   * @param {Event}   event          The target event that has been triggered.
    * @param {Array}   d              The slot that is outed. 
    * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
    */
@@ -512,6 +512,7 @@ class AdjacencyMatrix {
   filterData(json) {
     // Make a clone of the array
     let data = JSON.parse(JSON.stringify(json));
+    data = this.sortData(data);
 
     // Remove nodes that don't match the filter.
     for (let nodeGroup = 0; nodeGroup < data.nodes.length; nodeGroup++) {
@@ -547,6 +548,22 @@ class AdjacencyMatrix {
       if (dateMillis > end || dateMillis < start) {
         data.links.splice(i, 1);
       }
+    }
+
+    return data;
+  }
+
+  /**
+   * Sort the data by the second parameter
+   * @param   {Array} data The data to sort
+   * @returns {Array}      The sorted data
+   */
+  sortData(data) {
+    console.log(data);
+
+    for (let i = 0; i < data.nodes.length; i++) {
+      let nodeGroup = data.nodes[i];
+      nodeGroup.sort((first, second) => first.name.localeCompare(second.name));
     }
 
     return data;
