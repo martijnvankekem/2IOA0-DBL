@@ -1,7 +1,7 @@
 # How to visualize
-Currently, only one visualization type can be generated. Although the support for the Hierarchical Edge Diagram is built in the application, this is not functional yet.
+Currently, two visualization type can be generated, the Adjecency matrix and Hierarchical Edge Diagram. Although the support for the Graph is built in the application, this is not functional yet.
 
-To create an adjacency matrix, visit the 'Visualizations' tab in the menu-bar, and click 'Adjacency Matrix' in the visualization type window.
+To create an adjacency matrix, visit the 'Visualizations' tab in the menu-bar, and click 'Adjacency Matrix' or 'Hierarchical Edge Diagram' in the visualization type window.
 You can now upload a dataset to visualize. We recommend using the Enron e-mail dataset in the 'Relevant files' folder, as this is guaranteed to be a working example.
 
 The user now can re-order the columns in the CSV file to give them a specific meaning.
@@ -9,10 +9,10 @@ All columns are ordered by default for the Enron e-mail dataset. When the user u
 
 However, the user also has the freedom to consider another attribute as the main attribute. Please read the information under [Creating a custom visualization](#creating-a-custom-visualization) below for more information.
 
-After the visualization has been generated, the user can interact with it. By hovering over the matrix, the current row and column will highlight, and an information box will appear.
+After the visualization has been generated, the user can interact with it. By hovering over the matrix, the current row and column will highlight, and an information box will appear. By hovering over the Hierarchical Edge Diagram, the email traffic will be shown, red being outgoing email, blue being incoming email. The information box will tell you all about the atributes you want to show. 
 The 'Average' number in the information box is the average of the main link attribute, which by default is the sentiment. Also, the total amount of links between two nodes is shown.
 
-To make the visualization larger or smaller, the user can use the buttons 'Zoom in' and 'Zoom out' at the top of the page.
+To make the visualization larger or smaller, the user can use the buttons 'Zoom in' and 'Zoom out' at the top of the page. There is also an option to change the timeframe, this can be done by changing the times in the calander on top of the page. 
 
 ### Creating a custom visualization
 As explained above, the application is built to work with the Enron e-mail dataset by default. This dataset is included in the 'Relevant files' folder, under the name ```enron-v1.csv```.
