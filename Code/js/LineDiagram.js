@@ -15,7 +15,8 @@ class LineDiagram {
    * @param {Array}  format            The visualization format.
    */
   constructor(json, format) {
-    this.parseTime= d3.timeParse("%d-%b-%y");
+
+    this.parseTime = d3.timeParse("%d-%b-%y");
 
     this.jsonData = JSON.parse(JSON.stringify(json));
     this.data = json;
@@ -23,8 +24,6 @@ class LineDiagram {
 
     // TODO: remove this after debugging
     console.log(this.data);
-
-    this.dateRange = this.jsonData["json[0]"];
 
     this.margin = {top: 20, right: 40, bottom: 30, left: 50};
     this.width = 960 - this.margin.left - this.margin.right;
@@ -38,26 +37,41 @@ class LineDiagram {
    * Parse JSON and map data.
    */
   mapJSONData() {
+    this.dates = []
+    this.counts = []
 
     // Convert data to numbers
     for (let row of Object.keys(this.data.links)) {
       this.item = this.data.links[row];
       this.item.date = row;
+      this.dates.push(this.item.date);
+      this.counts.push(this.item.count);
       for (let attribute of Object.keys(this.item)) {
+
         if (attribute != "date") {
           this.item[attribute] = Number(this.item[attribute]);
         }
       }
     }
 
-    this.x = d3.scaleTime().range([0,this.width]);
+    this.dates2 = [];
+    for (let row of Object.keys(this.item.date)){
+      this.dates2.push(this.parseTime(Object.keys(this.item)))
+    }
+
+    console.log(this.dates2);
+
+    this.x = d3.scaleTime()
+      .domain(d3.extent(this.dates, function(d) { return d.date}))
+      .range([0,this.width]);
     this.y0 = d3.scaleLinear().range([this.height, 0]);
     //var y1 = d3.scaleLinear().range([height, 0]);
 
 
     let valueline = d3.line()
-        .x(function(d) { return x(d.this.links.date); })
-        .y(function(d) { return y0(d.this.links.count); });
+        //.x(function(d) { return x(d.this.links.date); })
+        //.y(function(d) { return y0(d.this.links.count); });
+
 
     this.setDiagramSize();
 
@@ -68,38 +82,37 @@ class LineDiagram {
 
   createDiagram(valueline){
     // Scale the range of the data
-    //this.x.domain([this.data.date[0], this.data.date[1]]);
     this.scale_x = d3.scaleTime()
-      .domain([this.data.date[0], this.data.date[1]])
-      .range([0, this.width]);
-      
-    console.log(this.data.date[0], this.data.date[1]);
+      .domain([new Date("1998-12-11 00:00:00"), new Date("2002-06-20 00:00:00")])
+      .range([0, width - this.margin.right]);
+
     this.y0.domain([0, 200]); //might change later to iterable scale
+
 
 
 
     // Add the valueline path.
     this.svg.append("path")
-      .data([this.jsonData])
+      .data([this.counts])
       .attr("class", "line")
       .attr("d", valueline);
-      console.log("test1");
+
 
 
     // Add the X Axis
-    this.x_axis= d3.axisBottom(this.x)
-      .scale(this.scale_x);
+
+
 
     this.svg.append("g")
       .attr("transform", "translate(0," + this.height + ")")
-      .call(this.x_axis);
-      console.log("test2");
+      .call(d3.axisBottom(this.scale_x));
+
 
     // Add the Y0 Axis
     this.svg.append("g")
       .attr("class", "axisSteelBlue")
       .call(d3.axisLeft(this.y0));
-      console.log("test3");
+
 
 
   }
