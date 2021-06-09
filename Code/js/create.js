@@ -11,6 +11,12 @@ const scriptURL = {
   2: urlPrefix + 'php/createLineDiagramData.php'
 }
 
+const helpText = {
+  0: "",
+  1: "",
+  2: ""
+}
+
 let formElement;
 let visualizationData = null;
 
@@ -93,6 +99,8 @@ function uploadCallbackSuccess(data, uploadType, visType_) {
     } else if (visType_ == 2) {
       createLineDiagram(responseData, responseData["format"]);
     }
+
+    
   }
 
   // Hide the spinner and upload container
