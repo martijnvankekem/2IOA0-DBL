@@ -280,3 +280,37 @@ body svg.vissvg {
 .axisRed text{
   fill: red;
 }
+
+/* Tooltip container */
+.popup {
+  position: relative;
+  display: inline-block;
+
+}
+
+/* Tooltip text */
+.popup .popuptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #86c5da;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.popup:hover .popuptext {
+  visibility: visible;
+  opacity: 1;
+}
