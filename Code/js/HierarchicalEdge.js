@@ -394,6 +394,8 @@ class HierarchicalEdge {
      * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
      */
   overed(target, d, fromOtherClass = false) {
+    if (d == null) return;
+
     this.link.style("mix-blend-mode", null);
     d3.select(target).attr("font-weight", "bold");
 
@@ -471,6 +473,8 @@ class HierarchicalEdge {
  * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
  */
   outed(target, d, fromOtherClass = false) {
+    if (d == null) return;
+
     this.link.style("mix-blend-mode", "multiply");
     d3.select(target).attr("font-weight", null);
     // Remove highlights from all related links and nodes.

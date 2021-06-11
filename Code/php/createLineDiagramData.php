@@ -144,6 +144,7 @@ function getLinksPerDate($csv, $formatting) {
     // Createnew array for date if it doesn't exists.
     if (!array_key_exists($row["date"], $links)) {
       $links[$row["date"]] = array(
+        "date" => $row["date"],
         "count" => 1,
         $mainLinkAttribute["attribute"] => $row[$mainLinkAttribute["name"]]
       );
@@ -160,7 +161,8 @@ function getLinksPerDate($csv, $formatting) {
     $date[$mainLinkAttribute["attribute"]] /= $date["count"];
   }
 
-  return $links;
+  ksort($links);
+  return array_values($links);
 }
 
 /**

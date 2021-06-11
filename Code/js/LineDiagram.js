@@ -25,7 +25,7 @@ class LineDiagram {
     this.format = format;
 
     this.margin = {top: 20, right: 40, bottom: 30, left: 50};
-    this.width = 960 - this.margin.left - this.margin.right;
+    this.width = width;
     this.height = 500 - this.margin.top - this.margin.bottom;
 
 
@@ -39,93 +39,78 @@ class LineDiagram {
    * Parse JSON and map data.
    */
   mapJSONData() {
+    let self = this;
+    let parseTime = d3.timeParse("%Y-%m-%d");
 
-    this.dates = []
-    this.counts = []
+    // set the ranges
+    this.x = d3.scaleTime().range([0, this.width]);
+    this.yLeft = d3.scaleLinear().range([this.height, 0]);
+    this.yRight = d3.scaleLinear().range([this.height, 0]);
 
-    // Convert data to numbers
-    for (let row of Object.keys(this.data.links)) {
-      this.item = this.data.links[row];
-      this.item.date = row;
-      this.item.date = this.parseTime(this.item.date);
-      this.dates.push(this.item.date);
-      this.counts.push(this.item.count);
+    // define the 1st line
+    var valueline = d3.line()
+      .x(function(d) { return self.x(d.date); })
+      .y(function(d) { return self.yLeft(d.count); });
 
-      for (let attribute of Object.keys(this.item)) {
-        if (attribute != "date") {
-          this.item[attribute] = Number(this.item[attribute]);
-        }
-      }
-    }
-    this.getdata = function() {
-      this.dataset = [];
-      for (let i = 0; i < 20; i++) {
-        const datecount = {"date": this.dates[i], "counts": this.counts[i]};
-        this.dataset.push(datecount);
-      }
-      console.log(this.dataset);
-      return this.dataset
-    }
+    // define the 2nd line
+    var valueline2 = d3.line()
+      .x(function(d) { return self.x(d.date); })
+      .y(function(d) { return self.yRight(d.sentiment); });
 
-    this.arrdata = this.getdata();
+    // format the data
+    this.data.links.forEach(function(d) {
+      d.date = parseTime(d.date);
+      d.count = +d.count;
+      d.sentiment = +d.sentiment;
+    });
 
-    //scale X axis
-
-    var domain = d3.extent(this.dates);
-
-    this.scale_x = d3.scaleTime()
-      .domain(domain)
-      .range([0,this.width]);
-
-    // Scale Y0 axis
-    this.y0 = d3.scaleLinear()
-      .range([this.height, 0])
-      .domain([0, 200]);
-
-    // Scale Y1 axis
-    this.y1 = d3.scaleLinear()
-      .range([this.height, 0])
-      .domain([-1,1]);
-
+    // Scale the range of the data
+    this.x.domain(d3.extent(this.data.links, function(d) { return d.date; }));
+    this.yLeft.domain([0, d3.max(this.data.links, d => d.count)]);
+    this.yRight.domain([d3.min(this.data.links, d => d.sentiment), d3.max(this.data.links, d => d.sentiment)]);
+      
     // Set diagram size
     this.setDiagramSize();
 
     //plot diagram
-    this.createDiagram();
+    this.createDiagram(valueline, valueline2);
   }
 
-  createDiagram(){
+  createDiagram(valueline, valueline2){
+    let self = this;
 
-    this.arrdata.forEach(function(d){
-      d.count = +d.count;
-      d.new = +this.arrdata.counts;
-    });
-    console.log(this.arrdata);
+    this.svg.append("path")
+      .data([this.data.links])
+      .attr("class", "line")
+      .style("opacity", "0.5")
+      .attr("d", valueline);
 
-    //Define first line (count and date)
-    var valueline = d3.line()
-      .x(function(d) { return scale_x(d.x); })
-      .y(function(d) { return y0(d.y); });
+    // Add the valueline2 path.
+    this.svg.append("path")
+      .data([this.data.links])
+      .attr("class", "line")
+      .style("opacity", "0.5")
+      .style("stroke", "red")
+      .attr("d", valueline2)
+      .on("mouseover", d => {
+        // d3.select(d.target).style("fill", "#000");
+      });
 
-      this.svg.append("path")
-        .attr("class", "line")
-        .attr("d", valueline(this.data));
+    // Add the X Axis
+    this.svg.append("g")
+      .attr("transform", "translate(0," + this.height + ")")
+      .call(d3.axisBottom(this.x));
 
-      // Add the X axis
-      this.svg.append("g")
-          .attr("transform", "translate(0," + this.height + ")")
-          .call(d3.axisBottom(this.scale_x));
+    // Add the Y Axis on the left
+    this.svg.append("g")
+      .attr("class", "axisLeft")
+      .call(d3.axisLeft(this.yLeft));
 
-        // Add the Y0 Axis
-      this.svg.append("g")
-          .attr("class", "axisSteelBlue")
-          .call(d3.axisLeft(this.y0));
-
-        // Add the Y1 axis
-      this.svg.append("g")
-        .attr("class", "axisRed")
-        .attr("transform", "translate( " + this.width + ", 0 )")
-        .call(d3.axisRight(this.y1));
+    // Add the Y Axis on the left
+    this.svg.append("g")
+      .attr("transform", "translate(" + this.width + ", 0)")
+      .attr("class", "axisRight")
+      .call(d3.axisRight(this.yRight));
   }
 
   setDiagramSize(){

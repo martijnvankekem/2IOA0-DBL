@@ -1,0 +1,14 @@
+.axisLeft .domain,
+.axisLeft .line {
+    stroke: steelblue;
+}
+
+.axisRight .domain,
+.axisRight .line {
+    stroke: red;
+}
+
+.circle {
+  stroke: none;
+  fill: #9c9c9c;
+}
