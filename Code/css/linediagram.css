@@ -1,14 +1,18 @@
-.axisLeft .domain,
-.axisLeft .line {
+#vis_linediagram .axisLeft .domain,
+#vis_linediagram .axisLeft .line {
     stroke: steelblue;
 }
 
-.axisRight .domain,
-.axisRight .line {
+#vis_linediagram .axisRight .domain,
+#vis_linediagram .axisRight .line {
     stroke: red;
 }
 
-.circle {
+#vis_linediagram .circle {
   stroke: none;
   fill: #9c9c9c;
+}
+
+#vis_linediagram rect {
+  fill: transparent;
 }
