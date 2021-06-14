@@ -12,5 +12,5 @@
 - [x] Allowing interaction between the two visualizations.
 
 **Milestone 3**
-- [ ] Add line diagram with average sentiment and e-mail count per date range.
-- [ ] Adjust date range by clicking on line diagram.
+- [x] Add line diagram with average sentiment and e-mail count per date range.
+- [x] Adjust date range by clicking on line diagram.
