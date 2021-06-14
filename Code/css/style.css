@@ -309,6 +309,10 @@ body svg.vissvg {
   transition: opacity 0.3s;
 }
 
+.popup .popuptext .informationText {
+  display: none;
+}
+
 /* Show the tooltip text when you mouse over the tooltip container */
 .popup:hover .popuptext {
   visibility: visible;

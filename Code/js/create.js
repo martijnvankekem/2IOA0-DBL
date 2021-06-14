@@ -11,12 +11,6 @@ const scriptURL = {
   2: urlPrefix + 'php/createLineDiagramData.php'
 }
 
-const helpText = {
-  0: "",
-  1: "",
-  2: ""
-}
-
 let formElement;
 let visualizationData = null;
 
@@ -179,8 +173,18 @@ function visualize() {
   if (visType < combinedVisType) {
     // Single visualization
     sendUploadRequest(scriptURL[visType], 1, visType, formData);
+
+    if (visType == 0) {
+      document.getElementById("information_adjacency").style.display = "block";
+    } else if (visType == 1) {
+      document.getElementById("information_hierarchical").style.display = "block";
+    } else if (visType == 2) {
+      document.getElementById("information_linediagram").style.display = "block";
+    }
   } else {
     // Multiple visualizations together
+    document.getElementById("information_combined").style.display = "block";
+
     for (let visID of Object.keys(scriptURL)) {
       let url = scriptURL[visID]
       sendUploadRequest(url, 1, visID, formData);
