@@ -151,7 +151,7 @@ class AdjacencyMatrix {
     this.svg.setAttribute("height", this.sizeData[1]);
     this.svg.setAttribute("viewBox", `0 0 ${bbox.x + bbox.width + bbox.x} ${bbox.y + bbox.height + bbox.y}`);
 
-    if (visType == 2) this.changeZoom(false, 0.5);
+    if (visType == combinedVisType) this.changeZoom(false, 0.5);
   }
 
   /**
@@ -239,6 +239,7 @@ class AdjacencyMatrix {
       .attr("height", 10)
       .attr("data-id", d => d.id)
       .attr("data-source", d => d.id.split("-")[0])
+      .attr("data-target", d => d.id.split("-")[1])
       .attr("linkAttr", d => {
         if (pairsData[d.id].total > 0) {
           // This pair exists, so get the average sentiment
@@ -321,7 +322,7 @@ class AdjacencyMatrix {
     this.showHoverContainer(event);
 
     // Dual visualization
-    if (visType == 2 && !fromOtherClass) {
+    if (visType == combinedVisType && !fromOtherClass) {
       if (hierarchicalEdge == null) return;
       let source = event.target.getAttribute("data-id").split("-")[0];
       let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
@@ -341,13 +342,20 @@ class AdjacencyMatrix {
    * Call back when the mouse has moved over a grid slot.
    * @param {Array}   target         The target element that called the event.
    * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
+   * @param {String}  resultEl       Whether both the source and target exists, or only one of the two (default: both)
    */
-  moved(target, fromOtherClass = false) {
+  moved(target, fromOtherClass = false, resultEl = "both") {
     d3.selectAll("rect").style("stroke-width", function (p) {
       if (fromOtherClass) {
         // If from other class, highlight current row.
         if (typeof target != "undefined") {
-          return (p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+          if (resultEl == "both") {
+            return (p.x * 10 == target.x.animVal.value || p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+          } else if (resultEl == "source") {
+            return (p.y * 10 == target.y.animVal.value) ? "3px" : "1px";
+          } else if (resultEl == "target") {
+            return (p.x * 10 == target.x.animVal.value) ? "3px" : "1px";
+          }
         } else {
           return "1px";
         }
@@ -358,8 +366,8 @@ class AdjacencyMatrix {
   }
 
   /**
-   * Callback when a grit slot is outed.
-   * @param {Array}   event         The target event that has been triggered.
+   * Callback when a grid slot is outed.
+   * @param {Event}   event          The target event that has been triggered.
    * @param {Array}   d              The slot that is outed. 
    * @param {Boolean} fromOtherClass Whether the request came from another class (default: false).
    */
@@ -370,7 +378,7 @@ class AdjacencyMatrix {
     }
 
     // Dual visualization
-    if (visType == 2 && !fromOtherClass) {
+    if (visType == combinedVisType && !fromOtherClass) {
       if (hierarchicalEdge == null) return;
       let source = event.target.getAttribute("data-id").split("-")[0];
       let nodeElement = document.querySelector("text[data-id=\""+source+"\"]");
@@ -504,6 +512,7 @@ class AdjacencyMatrix {
   filterData(json) {
     // Make a clone of the array
     let data = JSON.parse(JSON.stringify(json));
+    data = this.sortData(data);
 
     // Remove nodes that don't match the filter.
     for (let nodeGroup = 0; nodeGroup < data.nodes.length; nodeGroup++) {
@@ -539,6 +548,22 @@ class AdjacencyMatrix {
       if (dateMillis > end || dateMillis < start) {
         data.links.splice(i, 1);
       }
+    }
+
+    return data;
+  }
+
+  /**
+   * Sort the data by the second parameter
+   * @param   {Array} data The data to sort
+   * @returns {Array}      The sorted data
+   */
+  sortData(data) {
+    console.log(data);
+
+    for (let i = 0; i < data.nodes.length; i++) {
+      let nodeGroup = data.nodes[i];
+      nodeGroup.sort((first, second) => first.name.localeCompare(second.name));
     }
 
     return data;

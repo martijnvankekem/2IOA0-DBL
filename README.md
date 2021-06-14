@@ -1,4 +1,4 @@
-# Dataset Visualization - 2IOA0-DBL
+# Adge - Universal visualization project
 This project was created with the intent to simplify the visualization of datasets.
 
 ## Browser support
@@ -25,7 +25,7 @@ A live example is available via the link below.
 ## About this project
 This project was created by students of the Eindhoven University of Technology, for the course 2IOA0 - DBL HTI + Webtech.
 
-The following authors are responsible for the creating and maintaining of this project:
+The following authors are responsible for creating and maintaining this project:
 * Heleen van Dongen
 * Veerle Uhl
 * Quinn van Rooy

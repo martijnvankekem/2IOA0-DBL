@@ -1,0 +1,18 @@
+#vis_linediagram .axisLeft .domain,
+#vis_linediagram .axisLeft .line {
+    stroke: steelblue;
+}
+
+#vis_linediagram .axisRight .domain,
+#vis_linediagram .axisRight .line {
+    stroke: red;
+}
+
+#vis_linediagram .circle {
+  stroke: none;
+  fill: #9c9c9c;
+}
+
+#vis_linediagram rect {
+  fill: transparent;
+}

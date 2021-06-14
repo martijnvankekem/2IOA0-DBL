@@ -9,12 +9,13 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
-  <title>New visualization - DBL</title>
+  <title>New visualization - Adge</title>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/adjacencymatrix.css">
   <link rel="stylesheet" href="css/hierarchicaledge.css">
+  <link rel="stylesheet" href="css/linediagram.css">
   <link rel="stylesheet" href="css/spinner.css">
   <link rel="stylesheet" href="css/tabulator_simple.min.css">
   <link rel="stylesheet" href="css/vanillaSelectBox.css">
@@ -26,11 +27,11 @@
   <!-- Upload Header -->
   <header>
     <div class="wrapper">
-      <h1>Create<span class="color">.</span></h1>
+      <h1>Adge<span class="color">.</span></h1>
       <nav>
         <ul>
           <li><a href="index.html"><button>Home</button></a></li>
-          <li><a href="create.html"><button>Visualizations</button></a></li>
+          <li><a href="create.html" class="selected"><button>Visualizations</button></a></li>
           <li><a href="backgroundinfo.html"><button>Background Info</button></a></li>
         </ul>
       </nav>
@@ -92,6 +93,7 @@
 
     <div class="popup">
       <button type="button" name="button">help</button>
+<<<<<<< HEAD
     <span class="popuptext"><h3>Information<span class="color">.</span></h3></span>
 
 </div>
@@ -100,10 +102,27 @@
       Scroll.<br>
     <b>Notice:</b> Depending on the size of your dataset, and your browser, the animation can become quite slow. Please apply a filter to regain fluency.</p>
 
+=======
+      <!-- <span class="popuptext"><h3>Information<span class="color">.</span></h3></span> -->
+      <div class="popuptext">
+        <h3>Information<span class="color">.</span></h3>
+        <span class="informationText" id="information_hierarchical">Hierarchical text</span>
+        <span class="informationText" id="information_adjacency">Adjacency text</span>
+        <span class="informationText" id="information_linediagram">Line diagram text</span>
+        <span class="informationText" id="information_combined">Combined text</span>
+      </div>
+    </div>
+
+    <p class="helpText">The horizontal scroll bar is at the bottom of the visualization. You can also use SHIFT +
+      Scroll.<br>
+    <b>Notice:</b> Depending on your browser, and the size of your dataset, the animations can become quite slow. Please apply a filter to regain fluency.</p>
+    
+>>>>>>> b61fd812a30caaef4142969437912620b95c1103
   </div>
 
   <!-- Visualizations -->
   <div class="visualization" id="visContainer">
+    <svg class="vissvg" id="vis_linediagram"></svg>
     <svg class="vissvg" id="vis_adjacancy"></svg>
     <svg class="vissvg" id="vis_hierarchical"></svg>
     <div id="hoverContainer_adjacency" class="hoverContainer">
@@ -135,6 +154,32 @@
         </ul>
       </div>
     </div>
+    <div id="hoverContainer_linediagram" class="hoverContainer">
+      <div class="content">
+        <h3>Information<span class="color">.</span></h3>
+
+        <p>Closest date to cursor: <span id="hover_linediagram_closest"></span></p>
+        <p>Link attributes</p>
+        <ul id="linklist_linediagram">
+        </ul>
+        <p>Left bound: <span id="hover_linediagram_left"></span></p>
+        <p>Right bound: <span id="hover_linediagram_right"></span></p>
+      </div>
+    </div>
+    <div id="legend_hierarchy" class="legend">
+      <h3>Legend<span class="color">.</span></h3>
+      <p class="noMargin">For hierarchical edge diagram.</p>
+      <div class="data">
+        <p>Selected node:</p>
+        <span class="color purple">Has link(s) to itself</span><br>
+        <span class="color black">Has no link to itself</span><br>
+        <p>Other nodes:</p>
+        <span class="color blue">Incoming link(s)</span><br>
+        <span class="color red">Outgoing link(s)</span><br>
+        <span class="color orange">Incoming & outgoing link(s)</span><br>
+      </div>
+      </div>
+    </div>
   </div>
 
   <!-- Upload container -->
@@ -157,7 +202,8 @@
         <p>Select the type of visualization you would like to generate.</p>
         <button class="rightMargin" onclick="selectVis(0);">Adjacency matrix</button>
         <button onclick="selectVis(1);">Hierarchical Edge</button><br>
-        <button onclick="selectVis(2);">Both</button><br>
+        <button class="rightMargin" onclick="selectVis(2);">Line Diagram</button>
+        <button onclick="selectVis(3);">All three</button><br>
         <a href="#" onclick="cancelClick(0);">Back to previous page</a>
       </div>
     </div>
@@ -176,6 +222,7 @@
   <script src="js/create.js"></script>
   <script src="js/AdjacencyMatrix.js"></script>
   <script src="js/HierarchicalEdge.js"></script>
+  <script src="js/LineDiagram.js"></script>
   <script src="js/Filter.js"></script>
 
 </body>

@@ -158,9 +158,11 @@ input[type="submit"] {
   font-size: 1rem;
   background: linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
     linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
-  border: 1px solid linear-gradient(#86C5DA, #86C5DA) left / 100% 100% no-repeat,
-    linear-gradient(#E6BBAD, #E6BBAD) right / 0% 100% no-repeat;
   transition: background-size .6s ease;
+}
+
+.selectVis button {
+  width: 167px;
 }
 
 button:not([style]):not(.btn):hover,
@@ -297,3 +299,59 @@ body.dualVis svg.vissvg {
 body svg.vissvg {
   text-rendering: geometricprecision;
 }
+<<<<<<< HEAD
+=======
+
+/*line Diagram*/
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.axisSteelBlue text{
+  fill: steelblue;
+}
+
+.axisRed text{
+  fill: red;
+}
+
+/* Tooltip container */
+.popup {
+  position: relative;
+  display: inline-block;
+
+}
+
+/* Tooltip text */
+.popup .popuptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #86c5da;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.popup .popuptext .informationText {
+  display: none;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.popup:hover .popuptext {
+  visibility: visible;
+  opacity: 1;
+}
+>>>>>>> b61fd812a30caaef4142969437912620b95c1103

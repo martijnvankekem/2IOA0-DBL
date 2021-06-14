@@ -1,6 +1,6 @@
 <?php
 /**
-  * Convert CSV data for Adjacency Matrix visualization - DBL Visualization
+  * Convert CSV data for Line Diagram visualization - DBL Visualization
   * Authors: Heleen van Dongen, Veerle Uhl, Quinn van Rooy, Geert Wood, Hieke van Heesch, Martijn van Kekem.
  */
 
@@ -20,14 +20,12 @@ function handleRequest() {
   // Extract CSV data into arrays
   $csv = parseCSV($fileName);
   $minMaxDate = getMinMaxDate($csv, $formatting);
-  $nodes = getNodes($csv, $formatting);
-  $links = getLinks($csv, $formatting);
+  $links = getLinksPerDate($csv, $formatting);
 
   // Create JSON array
   $jsonArray = array(
     "format" => $formatting,
     "date" => $minMaxDate,
-    "nodes" => $nodes,
     "links" => $links
   );
   $json = json_encode($jsonArray, JSON_PRETTY_PRINT);
@@ -129,82 +127,42 @@ function convertFormatting($formatting) {
 }
 
 /**
- * Get an array of unique people from uploaded CSV
- * @param  Array $csv        Array with CSV contents
- * @param  Array $formatting The way the data must be formatted
- * @return Array             List of unique email-addresses and job titles
- */
-function getNodes($csv, $formatting) {
-  $sourceNodes = [];
-  $targetNodes = [];
-  $sourceNodesHandled = [];
-  $targetNodesHandled = [];
-  $mainNodeAttribute = $formatting["nodeGroups"][0][0]["attribute"];
-
-  foreach ($csv as $row) {
-
-    for ($i = 0; $i < sizeof($formatting["nodeGroups"]); $i++) {
-      $nodeGroup = $formatting["nodeGroups"][$i];
-      $node = array("kind" => ($i == 0) ? "source" : "target");
-
-      foreach ($nodeGroup as $item) {
-        if (!array_key_exists($item["name"], $row)) {
-          continue 2; // attribute doesn't exist, so check next node group
-        } else {
-          if ($item["attribute"] == $mainNodeAttribute) {
-            $node["name"] .= $row[$item["name"]];
-            $node[$mainNodeAttribute] = $row[$item["name"]];
-          } else {
-            $node["name"] = $row[$item["name"]] . "/" . $node["name"];
-            $node[$item["attribute"]] = $row[$item["name"]];
-          }
-        }
-      }
-      
-      if (!in_array($node[$mainNodeAttribute], $sourceNodesHandled) && ($node["kind"] == "source")) {
-        $sourceNodes[$node[$mainNodeAttribute]] = $node;
-        $sourceNodesHandled[sizeof($sourceNodesHandled)] = $node[$mainNodeAttribute];
-      } else if (!in_array($node[$mainNodeAttribute], $targetNodesHandled) && ($node["kind"] == "target")) {
-        $targetNodes[$node[$mainNodeAttribute]] = $node;
-        $targetNodesHandled[sizeof($targetNodesHandled)] = $node[$mainNodeAttribute];
-      }
-    }
-
-  }
-  // Reset the array index
-  $sourceNodes = array_values($sourceNodes);
-  $targetNodes = array_values($targetNodes);
-  return array($sourceNodes, $targetNodes);
-}
-
-/**
- * Get an array of links from uploaded CSV
+ * Get an array of links per date from uploaded CSV
  * @param  Array $csv        Array with CSV contents
  * @param  Array $formatting The way the data must be formatted
  * @return Array             Array of links between emails
  */
-function getLinks($csv, $formatting) {
+function getLinksPerDate($csv, $formatting) {
   $links = [];
 
+  $mainLinkAttribute = $formatting["linkAttributes"][0];
+
   foreach ($csv as $row) {
-    $link = array();
-    foreach ($formatting["linkAttributes"] as $linkAttribute) {
-      if (!array_key_exists($linkAttribute["name"], $row)) {
-        continue 2; // attribute doesn't exist, so check next node group
-      } else {
-        $link[$linkAttribute["attribute"]] = $row[$linkAttribute["name"]];
-      }
+    // Skip if this row doesn't have a date attribute.
+    if (!array_key_exists($formatting["dateAttribute"][0]["name"], $row)) continue;
+    
+    // Createnew array for date if it doesn't exists.
+    if (!array_key_exists($row["date"], $links)) {
+      $links[$row["date"]] = array(
+        "date" => $row["date"],
+        "count" => 1,
+        $mainLinkAttribute["attribute"] => $row[$mainLinkAttribute["name"]]
+      );
+    } else {
+      // Increase total by one.
+      $links[$row["date"]]["count"] += 1;
+      // Update total link attribute sum
+      $links[$row["date"]][$mainLinkAttribute["attribute"]] += $row[$mainLinkAttribute["name"]];
     }
-    // Add date attribute to link
-    if (array_key_exists($formatting["dateAttribute"][0]["name"], $row)) {
-      $link[$formatting["dateAttribute"][0]["attribute"]] = strtotime($row[$formatting["dateAttribute"][0]["name"]]);
-    }
-    $link["source"] = $row[$formatting["nodeGroups"][0][0]["name"]];
-    $link["target"] = $row[$formatting["nodeGroups"][1][0]["name"]];
-    $links[sizeof($links)] = $link;
   }
 
-  return $links;
+  // Calculate average per date
+  foreach ($links as $date) {
+    $date[$mainLinkAttribute["attribute"]] /= $date["count"];
+  }
+
+  ksort($links);
+  return array_values($links);
 }
 
 /**
