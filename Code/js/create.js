@@ -213,21 +213,30 @@ function cancelClick(cancelType) {
  * @param {Object} end   The new end date
  */
 function dateFilterChanged(start, end) {
+  document.getElementById("spinner").style.display = "block";
+
   if (visType == combinedVisType) {
     // Two visualizations
     adjacencyMatrix.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
     hierarchicalEdge.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
 
-    adjacencyMatrix.redraw();
-    hierarchicalEdge.redraw();
+    adjacencyMatrix.redraw(() => {
+      hierarchicalEdge.redraw(() => {
+        document.getElementById("spinner").style.display = "none";
+      });
+    });
   } else if (visType == 0) {
     // Adjacency only
     adjacencyMatrix.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
-    adjacencyMatrix.redraw();
+    adjacencyMatrix.redraw(() => {
+      document.getElementById("spinner").style.display = "none";
+    });
   } else if (visType == 1) {
     // Hierarchical edge only
     hierarchicalEdge.dateFilter = [start.format("MM/DD/YYYY"), end.format("MM/DD/YYYY")];
-    hierarchicalEdge.redraw();
+    hierarchicalEdge.redraw(() => {
+      document.getElementById("spinner").style.display = "none";
+    });
   }
 }
 

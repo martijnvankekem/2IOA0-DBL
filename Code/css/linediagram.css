@@ -8,6 +8,14 @@
     stroke: red;
 }
 
+#vis_linediagram text.axisLeft {
+  fill: steelblue;
+}
+
+#vis_linediagram text.axisRight {
+  fill: red;
+}
+
 #vis_linediagram .circle {
   stroke: none;
   fill: #9c9c9c;

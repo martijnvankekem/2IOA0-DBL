@@ -87,9 +87,10 @@ class HierarchicalEdge {
   /**
    * Redraw the visualization
    */
-  redraw() {
+  redraw(callback) {
     this.data = this.parseLinks(this.filterData(this.jsonData));
     this.mapJSONData();
+    callback();
   }
 
   /**
