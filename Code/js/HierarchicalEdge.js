@@ -90,13 +90,15 @@ class HierarchicalEdge {
   redraw(callback) {
     this.data = this.parseLinks(this.filterData(this.jsonData));
     this.mapJSONData();
-    callback();
+    if (typeof callback != "undefined") callback();
   }
 
   /**
    * Parse JSON and map data.
    */
   mapJSONData() {
+    if (this.data.nodes[0].length == 0 || this.data.nodes[1].length == 0) return;
+
     document.getElementById("vis_hierarchical").innerHTML = ""; // Clear SVG data
 
     let data = this.hierarchy(this.data.nodes);

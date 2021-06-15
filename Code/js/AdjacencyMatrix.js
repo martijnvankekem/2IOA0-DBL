@@ -43,6 +43,8 @@ class AdjacencyMatrix {
    * Parse JSON and map data.
    */
   mapJSONData() {
+    if (this.data.nodes[0].length == 0 || this.data.nodes[1].length == 0) return;
+
     this.matrix = this.createMatrixData(this.data.nodes[0], this.data.nodes[1]);
 
     // Get all information about each sender-recipient pair
@@ -216,7 +218,7 @@ class AdjacencyMatrix {
   redraw(callback) {
     this.data = this.filterData(this.jsonData);
     this.mapJSONData();
-    callback();
+    if (typeof callback != "undefined") callback();
   }
 
   /**
