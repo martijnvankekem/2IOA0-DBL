@@ -16,7 +16,7 @@ Other browsers are not thoroughly tested yet, and therefore full functionality i
 ## Live example
 A live example is available via the link below.
 
-[Open Example](https://projects.vankekem.com/dblinterim/)
+[Open Example](https://projects.vankekem.com/dbl/)
 
 ## Milestones
 
