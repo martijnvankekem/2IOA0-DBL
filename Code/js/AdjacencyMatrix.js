@@ -43,6 +43,8 @@ class AdjacencyMatrix {
    * Parse JSON and map data.
    */
   mapJSONData() {
+    if (this.data.nodes[0].length == 0 || this.data.nodes[1].length == 0) return;
+
     this.matrix = this.createMatrixData(this.data.nodes[0], this.data.nodes[1]);
 
     // Get all information about each sender-recipient pair
@@ -139,7 +141,7 @@ class AdjacencyMatrix {
    * Set the size of the matrix based on its contents
    */
   setMatrixSize() {
-    this.svg = document.getElementById("vis_adjacancy");
+    this.svg = document.getElementById("vis_adjacency");
 
     // Get the bounds of the SVG content
     let bbox = this.svg.getBBox();
@@ -213,9 +215,10 @@ class AdjacencyMatrix {
   /**
    * Redraw the visualization.
    */
-  redraw() {
+  redraw(callback) {
     this.data = this.filterData(this.jsonData);
     this.mapJSONData();
+    if (typeof callback != "undefined") callback();
   }
 
   /**
@@ -225,7 +228,7 @@ class AdjacencyMatrix {
    */
   createMatrix(matrix, pairsData) {
     // Create grid
-    d3.select("#vis_adjacancy").append("g")
+    d3.select("#vis_adjacency").append("g")
       .attr("transform", "translate(160,160)")
       .attr("id", "adjacencyG")
       .selectAll("rect")
@@ -276,7 +279,7 @@ class AdjacencyMatrix {
       });
 
     // Create text on x-axis
-    d3.select("#vis_adjacancy")
+    d3.select("#vis_adjacency")
       .append("g")
       .attr("transform", "translate(150,150)")
       .selectAll("text")
@@ -291,7 +294,7 @@ class AdjacencyMatrix {
       .style("font-size", "10px");
 
     // Create text on y-axis
-    d3.select("#vis_adjacancy")
+    d3.select("#vis_adjacency")
       .append("g").attr("transform", "translate(150,150)")
       .selectAll("text")
       .data(this.data.nodes[0])
@@ -345,7 +348,7 @@ class AdjacencyMatrix {
    * @param {String}  resultEl       Whether both the source and target exists, or only one of the two (default: both)
    */
   moved(target, fromOtherClass = false, resultEl = "both") {
-    d3.selectAll("rect").style("stroke-width", function (p) {
+    d3.selectAll("rect.grid").style("stroke-width", function (p) {
       if (fromOtherClass) {
         // If from other class, highlight current row.
         if (typeof target != "undefined") {
@@ -643,7 +646,7 @@ class AdjacencyMatrix {
    * @return {Array}       The array with formatted matrix data.
    */
   createMatrixData(sourceNodes, targetNodes) {
-    document.getElementById("vis_adjacancy").innerHTML = ""; // Clear SVG data
+    document.getElementById("vis_adjacency").innerHTML = ""; // Clear SVG data
 
     let matrix = [];
     sourceNodes.forEach((source, a) => {

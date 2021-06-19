@@ -24,9 +24,11 @@ class LineDiagram {
     console.log(this.data);
     this.format = format;
 
-    this.margin = {top: 20, right: 40, bottom: 30, left: 50};
-    this.width = width;
+    this.margin = {top: 20, right: 60, bottom: 30, left: 50};
+    this.width = width - 100;
     this.height = 500 - this.margin.top - this.margin.bottom;
+
+    this.mainLinkAttribute = this.format.linkAttributes[0].attribute;
 
     this.hoverDistance = 5; // The amount of elements to the left/right of the hovered data point
 
@@ -54,19 +56,19 @@ class LineDiagram {
     // define the 2nd line
     var valueline2 = d3.line()
       .x(function(d) { return self.x(d.date); })
-      .y(function(d) { return self.yRight(d.sentiment); });
+      .y(function(d) { return self.yRight(d[self.mainLinkAttribute]); });
 
     // format the data
     this.data.links.forEach(function(d) {
       d.date = parseTime(d.date);
       d.count = +d.count;
-      d.sentiment = +d.sentiment;
+      d[self.mainLinkAttribute] = +d[self.mainLinkAttribute];
     });
 
     // Scale the range of the data
     this.x.domain(d3.extent(this.data.links, function(d) { return d.date; }));
     this.yLeft.domain([0, d3.max(this.data.links, d => d.count)]);
-    this.yRight.domain([d3.min(this.data.links, d => d.sentiment), d3.max(this.data.links, d => d.sentiment)]);
+    this.yRight.domain([d3.min(this.data.links, d => d[self.mainLinkAttribute]), d3.max(this.data.links, d => d[self.mainLinkAttribute])]);
       
     // Set diagram size
     this.setDiagramSize();
@@ -114,6 +116,34 @@ class LineDiagram {
       .attr("class", "axisRight")
       .call(d3.axisRight(this.yRight));
 
+    // Add the left Y-axis label
+    this.svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - this.margin.left)
+      .attr("x", 0 - (this.height / 2))
+      .attr("dy", "1em")
+      .attr("class", "axisLeft")
+      .style("text-anchor", "middle")
+      .text("count");  
+
+    // Add the right Y-axis label
+    this.svg.append("text")
+      .attr("transform", "rotate(90)")
+      .attr("y", -this.width-this.margin.right)
+      .attr("x", (this.height / 2))
+      .attr("dy", "1em")
+      .attr("class", "axisRight")
+      .style("text-anchor", "middle")
+      .text(this.mainLinkAttribute);  
+
+    // Add the bottom X-axis label
+    this.svg.append("text")
+      .attr("x", this.width / 2)
+      .attr("y", this.height + this.margin.bottom)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("date");  
+
     // Draw the hover rectangle for mouse interactions.
     this.svg.append("rect")
       .attr("class", "mouseEventRect")
@@ -131,7 +161,7 @@ class LineDiagram {
    */
   mouseclick(self, event) {
     // Only allow mouse click for all vis combined
-    if (visType < combinedVisType) return;
+    if (visType < combinedVisType || !adjacencyMatrix || !hierarchicalEdge) return;
 
     let [closestIndex, leftIndex, rightIndex] = self.getBoundsByMousePos(self, event);
 
@@ -139,6 +169,10 @@ class LineDiagram {
     const rightElement = self.data.links[rightIndex];
 
     // TODO: set date filter with left/right bounds.
+    let picker = $(dateRangePicker).data('daterangepicker');
+    picker.setStartDate(leftElement.date);
+    picker.setEndDate(rightElement.date);
+    dateFilterChanged(picker.startDate, picker.endDate);
   }
 
   /**
@@ -209,6 +243,7 @@ class LineDiagram {
     // Remove left/right lines
     this.svg.selectAll("line.hoverLineLeft").remove();
     this.svg.selectAll("line.hoverLineRight").remove();
+    document.getElementById("hoverContainer_linediagram").style.display = "none";
   }
 
   /**
@@ -236,7 +271,7 @@ class LineDiagram {
   setDiagramSize(){
     this.svg = d3.select("#vis_linediagram")
       .attr("width", this.width + this.margin.left + this.margin.right)
-      .attr("height", this.height + this.margin.top + this.margin.bottom)
+      .attr("height", this.height + this.margin.top + this.margin.bottom + this.margin.bottom)
       .append("g")
       .attr("transform",
           "translate(" + this.margin.left + "," + this.margin.top + ")");
