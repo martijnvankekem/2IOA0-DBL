@@ -309,8 +309,6 @@ body svg.vissvg {
   text-rendering: geometricprecision;
   
 }
-<<<<<<< HEAD
-=======
 
 /*line Diagram*/
 .line {
@@ -371,4 +369,3 @@ body svg.vissvg {
   visibility: visible;
   opacity: 1;
 }
->>>>>>> b61fd812a30caaef4142969437912620b95c1103
