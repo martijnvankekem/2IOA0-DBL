@@ -40,7 +40,7 @@
 
   <!-- Loading spinner -->
   <div class="spinner" id="spinner">
-    <div class="container" txt="Loading...">
+    <div class="container" txt="This can take a while for big datasets...">
       <div class="lds-dual-ring"></div>
     </div>
   </div>
@@ -97,21 +97,30 @@
   </div>
   
   <div class="helpPopup">
-    <button type="button" name="button" class="helpButton">?</button>
+    <button type="button" name="button" class="helpButton">Help</button>
     <div class="text">
       <h3>Information<span class="color">.</span></h3>
-      <span class="informationText" id="information_hierarchical">Hierarchical text</span>
-      <span class="informationText" id="information_adjacency">Adjacency text</span>
-      <span class="informationText" id="information_linediagram">Line diagram text</span>
-      <span class="informationText" id="information_combined">Combined text</span>
+      <span class="informationText" id="information_hierarchical">The hierarchical edge diagram is clustered per job title. The explanation of the colours is in the legend below, these indicate in what way the e-mail traffic was sent. Hover over the diagram to see more information on specific links. It's up to you how you decide to filter the data. It's possible to filter on date, job title or per person.</span>
+      <span class="informationText" id="information_adjacency">In the adjacency matrix, the sources are on the vertical axis and the targets on the horizontal axis. The colours in the matrix go from red to green indicating the average sentiment of the e-mails. Hover over the matrix, to see more information on specific nodes. It's up to you how you decide to filter the data. It's possible to filter on date, job title or per person.</span>
+      <span class="informationText" id="information_linediagram">In the line diagram, the number of e-mails as well as the sentiment of the e-mails is shown. The blue line indicating the amount of e-mails, the red line indicating the average sentiment of that day. When hovering over the visualization, the information box pops up for the date closest to your cursor. A left and right bound is set depending on the data points surrounding the cursor.</span>
+      <span class="informationText" id="information_combined">The line diagram, adjacency matrix and hierarchical edge diagram are shown here. Hover over the line diagram and click on a date to set a bound. This will filter all three visualizations to this given set. For the information on the visualization individually go back to the visualizations alone.</span>
     </div>
   </div>
 
   <!-- Visualizations -->
   <div class="visualization" id="visContainer">
-    <svg class="vissvg" id="vis_linediagram"></svg>
-    <svg class="vissvg" id="vis_adjacency"></svg>
-    <svg class="vissvg" id="vis_hierarchical"></svg>
+    <div class="vis" id="container_line">
+      <h2>Line Diagram</h2>
+      <svg class="vissvg" id="vis_linediagram"></svg>
+    </div>
+    <div class="vis" id="container_adjacency">
+      <h2>Adjacency Matrix</h2>
+      <svg class="vissvg" id="vis_adjacency"></svg>
+    </div>
+    <div class="vis" id="container_hierarchical">
+      <h2>Hierarchical Edge</h2>
+      <svg class="vissvg" id="vis_hierarchical"></svg>
+    </div>
     <div id="hoverContainer_adjacency" class="hoverContainer">
       <div class="content">
         <h3>Information<span class="color">.</span></h3>

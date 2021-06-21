@@ -11,10 +11,11 @@ let adjacencyMatrix = null;
 class AdjacencyMatrix {
   /**
    * Constructor for AdjacencyMatrix.
-   * @param {Array}  json              JSON array with data to visualize.
-   * @param {Array}  format            The visualization format.
+   * @param {Array}    json              JSON array with data to visualize.
+   * @param {Array}    format            The visualization format.
+   * @param {Function} callback          The function to execute after drawing the visualization.
    */
-  constructor(json, format) {
+  constructor(json, format, callback) {
     this.sizeData = [0, 0, 0, 0];
     this.filters = [];
 
@@ -36,13 +37,14 @@ class AdjacencyMatrix {
     this.maxLinkAttr = -1;
 
     this.createControlWindow();
-    this.mapJSONData();
+    this.mapJSONData(callback);
   }
 
   /**
    * Parse JSON and map data.
+   * @param {Function} callback The function to execute after drawing the visualization
    */
-  mapJSONData() {
+  mapJSONData(callback) {
     if (this.data.nodes[0].length == 0 || this.data.nodes[1].length == 0) return;
 
     this.matrix = this.createMatrixData(this.data.nodes[0], this.data.nodes[1]);
@@ -50,7 +52,7 @@ class AdjacencyMatrix {
     // Get all information about each sender-recipient pair
     this.pairsData = this.createPairsData(this.data);
 
-    this.createMatrix(this.matrix, this.pairsData);
+    this.createMatrix(this.matrix, this.pairsData, callback);
     this.setMatrixSize();
   }
 
@@ -103,6 +105,7 @@ class AdjacencyMatrix {
 
       // Add on-click handler
       newSelect.addEventListener("change", (event) => {
+        document.getElementById("spinner").style.display = "block";
         filterChanged(attribute);
       });
     }
@@ -112,9 +115,10 @@ class AdjacencyMatrix {
 
   /**
    * Update the filters
-   * @param {String} attribute The attribute name to change the filter for.
+   * @param {String}   attribute The attribute name to change the filter for.
+   * @param {Function} callback  The function to execute after redrawing the vis.
    */
-  updateFilter(attribute) {
+  updateFilter(attribute, callback) {
     let selected = [];
 
     // Get selected items
@@ -134,7 +138,7 @@ class AdjacencyMatrix {
     }
 
     // Redraw visualization
-    this.redraw();
+    this.redraw(callback);
   }
 
   /**
@@ -217,16 +221,19 @@ class AdjacencyMatrix {
    */
   redraw(callback) {
     this.data = this.filterData(this.jsonData);
-    this.mapJSONData();
-    if (typeof callback != "undefined") callback();
+    this.mapJSONData(callback);
   }
 
   /**
    * Create the visualization itself.
    * @param {Array}      matrix     The matrix data to visualize.
    * @param {Dictionary} pairsData  Dictionary containing the data of each sender-recipient pair.
+   * @param {Function}   callback   The function to execute after drawing the visualization.
    */
-  createMatrix(matrix, pairsData) {
+  createMatrix(matrix, pairsData, callback) {
+    // Show adjacency container
+    document.getElementById("container_adjacency").classList.add("visible");
+
     // Create grid
     d3.select("#vis_adjacency").append("g")
       .attr("transform", "translate(160,160)")
@@ -313,6 +320,8 @@ class AdjacencyMatrix {
   
     // Create interactive parts
     this.createGridHighlights();
+
+    if (typeof callback != "undefined") callback();
   }
 
   /**
@@ -562,8 +571,6 @@ class AdjacencyMatrix {
    * @returns {Array}      The sorted data
    */
   sortData(data) {
-    console.log(data);
-
     for (let i = 0; i < data.nodes.length; i++) {
       let nodeGroup = data.nodes[i];
       nodeGroup.sort((first, second) => first.name.localeCompare(second.name));
@@ -692,8 +699,8 @@ class AdjacencyMatrix {
  * @param {Array}  data              JSON array with the data to visualize.
  * @param {Array}  format            The visualization format.
  */
-function createAdjacencyMatrix(data, format) {
-  adjacencyMatrix = new AdjacencyMatrix(data, format);
+function createAdjacencyMatrix(data, format, callback) {
+  adjacencyMatrix = new AdjacencyMatrix(data, format, callback);
 }
 
 /**

@@ -9,10 +9,12 @@ const scriptURL = {
   0: urlPrefix + 'php/createAdjacencyData.php',
   1: urlPrefix + 'php/createHierarchicalEdgeData.php',
   2: urlPrefix + 'php/createLineDiagramData.php'
-}
+};
 
 let formElement;
 let visualizationData = null;
+
+let drawedCount = 0;
 
 let visType = 0;
 let formData;
@@ -81,25 +83,40 @@ function uploadCallbackSuccess(data, uploadType, visType_) {
   if (uploadType == 0) {
     // Retrieve column upload, so fill table
     populateTable(responseData);
+    document.getElementById("spinner").style.display = "none";
   } else if (uploadType == 1) {
     // Visualization request, so start visualizing
     // Hide column pick table
     document.getElementById("dataFormatter").style.display = "none";
 
     if (visType_ == 0) {
-      createAdjacencyMatrix(responseData, responseData["format"]);
+      createAdjacencyMatrix(responseData, responseData["format"], () => {
+        drawedCount++;
+        if (drawedCount == Object.keys(scriptURL).length || visType < combinedVisType) {
+          document.getElementById("spinner").style.display = "none";
+        }
+      });
     } else if (visType_ == 1) {
-      createHierarchicalEdge(responseData, responseData["format"]);
+      createHierarchicalEdge(responseData, responseData["format"], () => {
+        drawedCount++;
+        if (drawedCount == Object.keys(scriptURL).length || visType < combinedVisType) {
+          document.getElementById("spinner").style.display = "none";
+        }
+      });
     } else if (visType_ == 2) {
-      createLineDiagram(responseData, responseData["format"]);
+      createLineDiagram(responseData, responseData["format"], () => {
+        drawedCount++;
+        if (drawedCount == Object.keys(scriptURL).length || visType < combinedVisType) {
+          document.getElementById("spinner").style.display = "none";
+        }
+      });
     }
 
     
   }
 
-  // Hide the spinner and upload container
+  // Hide the upload container
   document.getElementById("uploadContainer").style.display = "none";
-  document.getElementById("spinner").style.display = "none";
 }
 
 /**
@@ -185,9 +202,10 @@ function visualize() {
     // Multiple visualizations together
     document.getElementById("information_combined").style.display = "block";
 
-    for (let visID of Object.keys(scriptURL)) {
+    for (let i = 0; i < Object.keys(scriptURL).length; i++) {
+      let visID = Object.keys(scriptURL)[i];
       let url = scriptURL[visID]
-      sendUploadRequest(url, 1, visID, formData);
+      sendUploadRequest(url, 1, visID, formData, i == (Object.keys(scriptURL).length - 1));
     }
   }
 }
@@ -244,13 +262,19 @@ function filterChanged(attribute) {
   if (visType == combinedVisType) {
     // Two visualizations
     adjacencyMatrix.updateFilter(attribute);
-    hierarchicalEdge.updateFilter(attribute);
+    hierarchicalEdge.updateFilter(attribute, () => {
+      document.getElementById("spinner").style.display = "none";
+    });
   } else if (visType == 0) {
     // Adjacency only
-    adjacencyMatrix.updateFilter(attribute);
+    adjacencyMatrix.updateFilter(attribute, () => {
+      document.getElementById("spinner").style.display = "none";
+    });
   } else if (visType == 1) {
     // Hierarchical edge only
-    hierarchicalEdge.updateFilter(attribute);
+    hierarchicalEdge.updateFilter(attribute, () => {
+      document.getElementById("spinner").style.display = "none";
+    });
   }
 }
 

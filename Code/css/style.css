@@ -59,15 +59,6 @@ body {
 }
 
 /* visualization container */
-canvas.visualization {
-  z-index: -2;
-  position: fixed;
-  left: 10;
-  top: 90;
-  width: 25%;
-  height: 25%;
-}
-
 div.visualization {
   z-index: -1;
   display: inline-block;
@@ -75,8 +66,13 @@ div.visualization {
   width: 100%;
 }
 
-div.visualization svg:empty {
+div.visualization div.vis {
   display: none;
+  text-align: center;
+}
+
+div.visualization div.vis.visible {
+  display: block;
 }
 
 /* Header */
@@ -292,16 +288,20 @@ input[name="daterange"] {
   min-width: 80px;
 }
 
-body.dualVis svg.vissvg {
+body.dualVis {
+  margin-bottom: 200px;
+}
+
+body.dualVis .vis {
   display: block;
   margin: 0 auto;
 }
 
-body.dualVis svg.vissvg#vis_adjacency {
+body.dualVis .vis#container_adjacency {
   float: left;
 }
 
-body.dualVis svg.vissvg#vis_hierarchical {
+body.dualVis .vis#container_hierarchical {
   float: right;
 }
 
@@ -335,22 +335,25 @@ body svg.vissvg {
 /* Tooltip text */
 .helpPopup .text {
   visibility: hidden;
-  width: 120px;
+  max-width: 400px;
   background-color: #86c5da;
-  text-align: center;
-  padding: 5px 0;
+  text-align: left;
+  padding: 15px 10px;
   border-radius: 6px;
 
   /* Position the tooltip text */
   position: fixed;
   z-index: 1;
-  top: 200px;
+  top: 100px;
   right: 20px;
-  margin-left: -60px;
 
   /* Fade in tooltip */
   opacity: 0;
   transition: opacity 0.3s;
+}
+
+.helpPopup .text h3 {
+  margin: 0 0 5px 0;
 }
 
 .helpPopup .text .informationText {
@@ -361,7 +364,9 @@ body svg.vissvg {
   position: fixed;
   min-width: 0 !important;
   right: 20px;
-  top: 140px;
+  margin-top: 0 !important;
+  top: 60px;
+  transform: translateY(-50%);
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */

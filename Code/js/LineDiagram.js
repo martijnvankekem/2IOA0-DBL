@@ -11,17 +11,17 @@ let lineDiagram = null;
 class LineDiagram {
   /**
    * Constructor for LineDiagram.
-   * @param {Array}  json              JSON array with data to visualize.
-   * @param {Array}  format            The visualization format.
+   * @param {Array}    json     JSON array with data to visualize.
+   * @param {Array}    format   The visualization format.
+   * @param {Function} callback The function to execute after drawing the visualization.
    */
-  constructor(json, format) {
+  constructor(json, format, callback) {
 
     this.parseTime = d3.timeParse("%Y-%m-%d");
     this.data = json;
 
     this.jsonData = JSON.parse(JSON.stringify(json));
 
-    console.log(this.data);
     this.format = format;
 
     this.margin = {top: 20, right: 60, bottom: 30, left: 50};
@@ -32,14 +32,15 @@ class LineDiagram {
 
     this.hoverDistance = 5; // The amount of elements to the left/right of the hovered data point
 
-    this.mapJSONData();
+    this.mapJSONData(callback);
   }
 
 
   /**
    * Parse JSON and map data.
+   * @param {Function} callback The function to execute after drawing the visualization.
    */
-  mapJSONData() {
+  mapJSONData(callback) {
     let self = this;
     let parseTime = d3.timeParse("%Y-%m-%d");
 
@@ -74,15 +75,19 @@ class LineDiagram {
     this.setDiagramSize();
 
     //plot diagram
-    this.createDiagram(valueline, valueline2);
+    this.createDiagram(valueline, valueline2, callback);
   }
 
   /**
    * Start drawing the visualization
-   * @param {d3.line} valueline  The valueline for the left axis.
-   * @param {d3.line} valueline2 The valueline for the right axis.
+   * @param {d3.line}  valueline  The valueline for the left axis.
+   * @param {d3.line}  valueline2 The valueline for the right axis.
+   * @param {Function} callback  The function to execute after drawing the visualization.
    */
-  createDiagram(valueline, valueline2){
+  createDiagram(valueline, valueline2, callback){
+    // Show adjacency container
+    document.getElementById("container_line").classList.add("visible");
+
     let self = this;
 
     // Draw the lines for the left axis
@@ -152,6 +157,8 @@ class LineDiagram {
       .on("mousemove", (event) => this.mousemove(self, event))
       .on("mouseleave", (event) => this.mouseleave(self, event))
       .on("click", (event) => this.mouseclick(self, event));
+
+      if (typeof callback != "undefined") callback();
   }
 
   /**
@@ -281,9 +288,11 @@ class LineDiagram {
 
 /**
  * Create an line diagram visualization from an array.
- * @param {Array}  data   JSON array with the data to visualize.
- * @param {Array}  format The visualization format.
+ * @param {Array}    data     JSON array with the data to visualize.
+ * @param {Array}    format   The visualization format.
+ * @param {Function} callback The function to execute after drawing the visualization.
+ * 
  */
-function createLineDiagram(data, format) {
-  lineDiagram = new LineDiagram(data, format);
+function createLineDiagram(data, format, callback) {
+  lineDiagram = new LineDiagram(data, format, callback);
 }

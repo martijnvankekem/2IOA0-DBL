@@ -13,8 +13,9 @@ class HierarchicalEdge {
    * Constructor for HierarcicalEdge.
    * @param {Array}  json              JSON array with data to visualize.
    * @param {Array}  format            The visualization format.
+   * @param {Function} callback          The function to execute after drawing the visualization.
    */
-  constructor(json, format) {
+  constructor(json, format, callback) {
     this.jsonData = JSON.parse(JSON.stringify(json));
     this.filters = [];
 
@@ -41,7 +42,7 @@ class HierarchicalEdge {
     this.width = width - 300;
 
     this.createControlWindow();
-    this.mapJSONData();
+    this.mapJSONData(callback);
   }
 
   /**
@@ -89,14 +90,14 @@ class HierarchicalEdge {
    */
   redraw(callback) {
     this.data = this.parseLinks(this.filterData(this.jsonData));
-    this.mapJSONData();
-    if (typeof callback != "undefined") callback();
+    this.mapJSONData(callback);
   }
 
   /**
    * Parse JSON and map data.
+   * @param {Function} callback The function to execute after drawing the visualization.
    */
-  mapJSONData() {
+  mapJSONData(callback) {
     if (this.data.nodes[0].length == 0 || this.data.nodes[1].length == 0) return;
 
     document.getElementById("vis_hierarchical").innerHTML = ""; // Clear SVG data
@@ -111,7 +112,7 @@ class HierarchicalEdge {
       .radius(d => d.y)
       .angle(d => d.x)
 
-    this.createVisualization(data, tree, line);
+    this.createVisualization(data, tree, line, callback);
     this.setVisSize();
   }
 
@@ -164,6 +165,7 @@ class HierarchicalEdge {
 
       // Add on-click handler
       newSelect.addEventListener("change", (event) => {
+        document.getElementById("spinner").style.display = "block";
         filterChanged(attribute);
       });
     }
@@ -173,9 +175,10 @@ class HierarchicalEdge {
 
   /**
    * Update the filters
-   * @param {String} attribute The attribute name to change the filter for.
+   * @param {String}   attribute The attribute name to change the filter for.
+   * @param {Function} callback  The function to execute after redraw of the vis.
    */
-  updateFilter(attribute) {
+  updateFilter(attribute, callback) {
     let selected = [];
 
     // Get selected items
@@ -194,7 +197,7 @@ class HierarchicalEdge {
     }
 
     // Redraw visualization
-    this.redraw();
+    this.redraw(callback);
   }
 
   /**
@@ -340,12 +343,16 @@ class HierarchicalEdge {
 
   /**
    * Create the visualization
-   * @param   {Array}         data The data to visualize.
-   * @param   {d3.cluster}    tree The d3 tree object.
-   * @param   {d3.lineRadial} line The d3 line radial object.
-   * @returns {svg.node}           The created node.
+   * @param   {Array}         data     The data to visualize.
+   * @param   {d3.cluster}    tree     The d3 tree object.
+   * @param   {d3.lineRadial} line     The d3 line radial object.
+   * @param   {Function}      callback The function to execute after drawing the visualization.
+   * @returns {svg.node}               The created node.
    */
-  createVisualization(data, tree, line) {
+  createVisualization(data, tree, line, callback) {
+    // Show adjacency container
+    document.getElementById("container_hierarchical").classList.add("visible");
+
     this.root = tree(this.bilink(d3.hierarchy(data)
       .sort((a, b) => d3.ascending(a.height, b.height) || d3.ascending(a.data.name, b.data.name))));
 
@@ -387,6 +394,7 @@ class HierarchicalEdge {
 
     this.createHoverContainer();
 
+    if (typeof callback != "undefined") callback();
     return svg.node();
   }
 
@@ -662,9 +670,10 @@ class HierarchicalEdge {
 
 /**
  * Create an hierarchical edge visualization from an array.
- * @param {Array}  data              JSON array with the data to visualize.
- * @param {Array}  format            The visualization format.
+ * @param {Array}    data              JSON array with the data to visualize.
+ * @param {Array}    format            The visualization format.
+ * @param {Function} callback          The function to execute after drawing the visualization.
  */
-function createHierarchicalEdge(data, format) {
-  hierarchicalEdge = new HierarchicalEdge(data, format);
+function createHierarchicalEdge(data, format, callback) {
+  hierarchicalEdge = new HierarchicalEdge(data, format, callback);
 }
