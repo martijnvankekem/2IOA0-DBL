@@ -191,22 +191,27 @@ input[name="daterange"] {
 }
 
 .pic_example .pic1,
-.pic_example .pic2 {
+.pic_example .pic2,
+.pic_example .pic3 {
   display: inline-block;
 }
 
 .pic_example .pic1 {
-  margin-right: 100px;
+  margin-right: 10px;
 }
 
 .pic_example .pic1 img {
+  display: inline-block;
   max-height: 200px;
 }
 
 .pic_example .pic2 img {
   display: inline-block;
   height: 200px;
-  width: 200px;
+}
+.pic_example .pic3 img{
+  display: inline-grid;
+  height:200px;
 }
 
 .infobox {
@@ -307,7 +312,7 @@ body.dualVis .vis#container_hierarchical {
 
 body svg.vissvg {
   text-rendering: geometricprecision;
-  
+
 }
 
 /*line Diagram*/
